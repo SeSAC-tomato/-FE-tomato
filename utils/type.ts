@@ -1,6 +1,23 @@
-export type SubmitButtonProps = {
+export type ButtonProps = {
   children: React.ReactNode
-  submitButtonName?: string
   disabled?: boolean
-  color?: "blue" | "green" | "red" | "gray"
+  backGroundColor?: string
+}
+
+export type LikeButtonProps = {
+  isLiked: boolean
+  fillColor?: string
+  handleLike: () => void
+}
+
+export type PageListProps = {
+  currentPage: number
+  totalPage: number
+  onPageListHandle: (page: number) => void
+}
+
+export type DropdownProps = {
+  buttonText: string
+  items: string[]
+  onSelect: (item: string) => void
 }

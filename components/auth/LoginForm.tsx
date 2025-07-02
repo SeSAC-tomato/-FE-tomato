@@ -2,10 +2,27 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { Login as loginApi } from "@/utils/api/auth/api";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const setAuth = useAuthStore((state) => state.login);
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const accessToken = await loginApi(email, password);
+      setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
+      alert("로그인 성공!");
+    } catch (err: any) {
+      alert(err.message || "로그인 실패");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-md mt-24 border border-gray-200 rounded-lg px-8 pt-10 pb-6 flex flex-col items-center">
@@ -38,8 +55,12 @@ export default function LoginForm() {
         />
       </div>
       {/* 로그인 버튼 */}
-      <button className="w-full bg-black text-white py-3 rounded-md text-base font-semibold hover:bg-neutral-800 transition-colors mb-4">
-        로그인
+      <button
+        className="w-full bg-black text-white py-3 rounded-md text-base font-semibold hover:bg-neutral-800 transition-colors mb-4 disabled:opacity-50"
+        onClick={handleLogin}
+        disabled={loading}
+      >
+        {loading ? "로그인 중..." : "로그인"}
       </button>
       {/* 하단 링크 */}
       <div className="w-full flex justify-between text-sm">

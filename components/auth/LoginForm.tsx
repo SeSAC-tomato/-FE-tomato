@@ -13,13 +13,13 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     try {
       const accessToken = await loginApi(email, password);
       setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
-      alert("로그인 성공!\nAccessToken: " + accessToken);
-      router.push("/posts");
+      router.push("/");
     } catch (err: any) {
       alert(err.message || "로그인 실패");
     } finally {
@@ -29,58 +29,63 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md mt-24 border border-gray-200 rounded-lg px-8 pt-10 pb-6 flex flex-col items-center">
-      {/* 로고 */}
-      <div className="mb-3">
-        <Image src="/logo.svg" alt="logo" width={36} height={36} />
-      </div>
-      {/* 로그인 텍스트 */}
-      <h2 className="mb-6 font-medium text-xl">로그인</h2>
-      {/* 이메일 입력 */}
-      <div className="w-full mb-3">
-        <label className="text-sm font-semibold">이메일</label>
-        <input
-          type="email"
-          placeholder="이메일을 입력해 주세요"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400"
-        />
-      </div>
-      {/* 비밀번호 입력 */}
-      <div className="w-full mb-5">
-        <label className="text-sm font-semibold">비밀번호</label>
-        <input
-          type="password"
-          placeholder="비밀번호를 입력해 주세요"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400"
-        />
-      </div>
-      {/* 로그인 버튼 */}
-      <button
-        className="w-full bg-black text-white py-3 rounded-md text-base font-semibold hover:bg-neutral-800 transition-colors mb-4 disabled:opacity-50"
-        onClick={handleLogin}
-        disabled={loading}
+      <form
+        onSubmit={handleLogin}
+        className="w-full flex flex-col items-center"
       >
-        {loading ? "로그인 중..." : "로그인"}
-      </button>
-      {/* 하단 링크 */}
-      <div className="w-full flex justify-between text-sm">
-        <a href="#" className="text-black underline hover:text-neutral-600">
-          비밀번호를 잊어버리셨나요?
-        </a>
-        <a
-          href="#"
-          className="text-black underline hover:text-neutral-600"
-          onClick={(e) => {
-            e.preventDefault();
-            router.push("/register");
-          }}
+        {/* 로고 */}
+        <div className="mb-3">
+          <Image src="/logo.svg" alt="logo" width={36} height={36} />
+        </div>
+        {/* 로그인 텍스트 */}
+        <h2 className="mb-6 font-medium text-xl">로그인</h2>
+        {/* 이메일 입력 */}
+        <div className="w-full mb-3">
+          <label className="text-sm font-semibold">이메일</label>
+          <input
+            type="email"
+            placeholder="이메일을 입력해 주세요"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400"
+          />
+        </div>
+        {/* 비밀번호 입력 */}
+        <div className="w-full mb-5">
+          <label className="text-sm font-semibold">비밀번호</label>
+          <input
+            type="password"
+            placeholder="비밀번호를 입력해 주세요"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400"
+          />
+        </div>
+        {/* 로그인 버튼 */}
+        <button
+          type="submit"
+          className="w-full bg-black text-white py-3 rounded-md text-base font-semibold hover:bg-neutral-800 transition-colors mb-4 disabled:opacity-50"
+          disabled={loading}
         >
-          회원가입
-        </a>
-      </div>
+          {loading ? "로그인 중..." : "로그인"}
+        </button>
+        {/* 하단 링크 */}
+        <div className="w-full flex justify-between text-sm">
+          <a href="#" className="text-black underline hover:text-neutral-600">
+            비밀번호를 잊어버리셨나요?
+          </a>
+          <a
+            href="#"
+            className="text-black underline hover:text-neutral-600"
+            onClick={(e) => {
+              e.preventDefault();
+              router.push("/register");
+            }}
+          >
+            회원가입
+          </a>
+        </div>
+      </form>
     </div>
   );
 }

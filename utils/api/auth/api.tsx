@@ -23,3 +23,12 @@ export const Login = async (
   }
   return accessToken;
 };
+
+export const EmailCheck = async (
+    email: string
+) => {
+    return await axios.get(`http://localhost:8080/api/v1/auth/email?email=${email}`)
+    .then((res): CommonResponse<EmailCheckResponse> => {
+        return res.data
+    }).catch(e => console.error(e));
+}

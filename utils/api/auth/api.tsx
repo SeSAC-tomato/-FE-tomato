@@ -55,3 +55,17 @@ export const checkNicknameDuplicate = async (
       throw new Error(e);
     });
 };
+
+export const register = async (register: register): Promise<void> => {
+  await axios
+    .post(`${AUTH_API_PATH}/register`, {
+      email: register.email,
+      password: register.password,
+      passwordConfirm: register.passwordConfirm,
+      nickname: register.nickname,
+      address: register.address,
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
+};

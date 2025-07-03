@@ -6,8 +6,10 @@ import axios from "axios";
 import {
   checkEmailDuplicate,
   checkNicknameDuplicate,
+  register,
 } from "@/utils/api/auth/api";
 import CheckModal from "../modals/CheckModal";
+import { useRouter } from "next/navigation";
 
 type ModalType = "email" | "nickname" | null;
 
@@ -36,6 +38,8 @@ export default function RegisterForm() {
 
   const [passwordError, setPasswordError] = useState("");
   const [passwordCheckError, setPasswordCheckError] = useState("");
+
+  const router = useRouter();
 
   // 카카오 주소 검색 스크립트 동적 로드
   useEffect(() => {
@@ -167,9 +171,30 @@ export default function RegisterForm() {
     password === passwordCheck &&
     address.length > 0;
 
+  // 회원가입 폼 제출
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await register({
+        email,
+        password,
+        passwordConfirm: passwordCheck,
+        nickname,
+        address,
+      });
+      alert("회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.");
+      router.push("/login");
+    } catch (err: any) {
+      alert(err.message || "회원가입에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
-      <form className="w-full max-w-md flex flex-col items-center">
+      <form
+        className="w-full max-w-md flex flex-col items-center"
+        onSubmit={handleRegister}
+      >
         {/* 로고 */}
         <div className="mb-3">
           <Image src="/logo.svg" alt="logo" width={36} height={36} />

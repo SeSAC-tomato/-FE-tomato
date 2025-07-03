@@ -1,11 +1,13 @@
 import axios from "axios";
 
+const AUTH_API_PATH = "http://localhost:8080/api/v1/auth";
+
 export const Login = async (
   email: string,
   password: string
 ): Promise<string> => {
   const res = await axios.post(
-    `http://localhost:8080/api/v1/auth/login`,
+    `${AUTH_API_PATH}/login`,
     {
       email: email,
       password: password,
@@ -28,7 +30,7 @@ export const checkEmailDuplicate = async (
   email: string
 ): Promise<CommonResponse<EmailCheckResponse>> => {
   return await axios
-    .get(`http://localhost:8080/api/v1/auth/email?email=${email}`)
+    .get(`${AUTH_API_PATH}/email?email=${email}`)
     .then((res): CommonResponse<EmailCheckResponse> => {
       console.log(res.data);
 
@@ -43,7 +45,7 @@ export const checkNicknameDuplicate = async (
   nickname: string
 ): Promise<CommonResponse<NicknameCheckResponse>> => {
   return await axios
-    .get(`http://localhost:8080/api/v1/auth/nickname?nickname=${nickname}`)
+    .get(`${AUTH_API_PATH}/nickname?nickname=${nickname}`)
     .then((res): CommonResponse<NicknameCheckResponse> => {
       console.log(res.data);
 

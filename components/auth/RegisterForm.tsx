@@ -69,17 +69,27 @@ export default function RegisterForm() {
               placeholder="이메일을 입력해 주세요"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              className={
+                "w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400" +
+                (emailValify
+                  ? " bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : " bg-gray-100")
+              }
               disabled={emailValify}
             />
           </div>
           <button
             type="button"
-            className="ml-2 mt-6 px-4 py-2 bg-black text-white rounded-md font-semibold"
+            className={
+              "ml-2 mt-6 px-4 py-2 rounded-md font-semibold " +
+              (emailValify
+                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+                : "bg-black text-white")
+            }
             onClick={handleCheckEmail}
             disabled={emailValify}
           >
-            중복 검사
+            {emailValify ? "검사 완료" : "중복 검사"}
           </button>
         </div>
         {/* 닉네임 */}

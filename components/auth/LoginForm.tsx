@@ -19,7 +19,7 @@ export default function LoginForm() {
       const accessToken = await loginApi(email, password);
       setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
       alert("로그인 성공!\nAccessToken: " + accessToken);
-      router.push("/");
+      router.push("/posts");
     } catch (err: any) {
       alert(err.message || "로그인 실패");
     } finally {

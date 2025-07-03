@@ -18,8 +18,8 @@ export default function LoginForm() {
     try {
       const accessToken = await loginApi(email, password);
       setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
-      alert("로그인 성공!");
-      // 로그인 성공 시 메인 화면으로 이동 기능 추가 필요
+      alert("로그인 성공!\nAccessToken: " + accessToken);
+      router.push("/");
     } catch (err: any) {
       alert(err.message || "로그인 실패");
     } finally {

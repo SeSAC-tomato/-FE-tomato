@@ -34,6 +34,9 @@ export default function RegisterForm() {
 
   const emailInputRef = useRef<HTMLInputElement>(null);
 
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordCheckError, setPasswordCheckError] = useState("");
+
   // 카카오 주소 검색 스크립트 동적 로드
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -119,6 +122,51 @@ export default function RegisterForm() {
     }
   };
 
+  // 비밀번호 정규식
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+  // 비밀번호 입력 시 정규식 검사
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (!passwordRegex.test(value)) {
+      setPasswordError(
+        "영문 대소문자, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
+      );
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  // 비밀번호 확인 입력 후 포커스 아웃 시 검사
+  const handlePasswordCheckBlur = () => {
+    if (passwordCheck && password !== passwordCheck) {
+      setPasswordCheckError("비밀번호가 일치하지 않습니다.");
+    } else {
+      setPasswordCheckError("");
+    }
+  };
+
+  // 비밀번호 조건별 체크
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+  const hasLength = password.length >= 8;
+
+  // 회원가입 버튼 활성화 조건
+  const isFormValid =
+    emailValify &&
+    nicknameValify &&
+    hasUpper &&
+    hasLower &&
+    hasNumber &&
+    hasSpecial &&
+    hasLength &&
+    password === passwordCheck &&
+    address.length > 0;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <form className="w-full max-w-md flex flex-col items-center">
@@ -200,9 +248,27 @@ export default function RegisterForm() {
             type="password"
             placeholder="비밀번호를 입력해 주세요"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
           />
+          {/* 비밀번호 조건별 체크 UI */}
+          <div className="mt-2 space-y-1 text-xs">
+            <div className={hasUpper ? "text-green-600" : "text-gray-400"}>
+              {hasUpper ? "✔" : "✖"} 영문 대문자 포함
+            </div>
+            <div className={hasLower ? "text-green-600" : "text-gray-400"}>
+              {hasLower ? "✔" : "✖"} 영문 소문자 포함
+            </div>
+            <div className={hasNumber ? "text-green-600" : "text-gray-400"}>
+              {hasNumber ? "✔" : "✖"} 숫자 포함
+            </div>
+            <div className={hasSpecial ? "text-green-600" : "text-gray-400"}>
+              {hasSpecial ? "✔" : "✖"} 특수문자 포함
+            </div>
+            <div className={hasLength ? "text-green-600" : "text-gray-400"}>
+              {hasLength ? "✔" : "✖"} 8자 이상
+            </div>
+          </div>
         </div>
         {/* 비밀번호 확인 */}
         <div className="w-full mb-3">
@@ -212,8 +278,12 @@ export default function RegisterForm() {
             placeholder="비밀번호를 다시 입력해 주세요"
             value={passwordCheck}
             onChange={(e) => setPasswordCheck(e.target.value)}
+            onBlur={handlePasswordCheckBlur}
             className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
           />
+          {passwordCheckError && (
+            <p className="text-red-500 text-xs mt-1">{passwordCheckError}</p>
+          )}
         </div>
         {/* 주소 */}
         <div className="w-full flex items-center mb-8">
@@ -239,7 +309,13 @@ export default function RegisterForm() {
         {/* 회원가입 버튼 */}
         <button
           type="submit"
-          className="w-full bg-black text-white py-3 rounded-md text-base font-semibold hover:bg-neutral-800 transition-colors"
+          className={
+            "w-full py-3 rounded-md text-base font-semibold transition-colors " +
+            (isFormValid
+              ? "bg-black text-white hover:bg-neutral-800 cursor-pointer"
+              : "bg-gray-300 text-gray-400 cursor-not-allowed")
+          }
+          disabled={!isFormValid}
         >
           회원가입
         </button>

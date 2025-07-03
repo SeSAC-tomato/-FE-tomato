@@ -1,4 +1,4 @@
-import api from "../api";
+import api from "@/utils/api/axios";
 
 const AUTH_API_PATH = "/auth";
 
@@ -68,4 +68,13 @@ export const register = async (register: register): Promise<void> => {
     .catch((e) => {
       throw new Error(e);
     });
+};
+
+export const refreshToken = async () => {
+  const res = await api.put(`${AUTH_API_PATH}/refresh`, {}, {
+    withCredentials: true
+  });
+  console.log(res);
+  
+  return res;
 };

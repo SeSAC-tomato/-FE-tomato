@@ -4,12 +4,14 @@ import Image from "next/image";
 import { useState } from "react";
 import { Login as loginApi } from "@/utils/api/auth/api";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const setAuth = useAuthStore((state) => state.login);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async () => {
     setLoading(true);
@@ -17,6 +19,7 @@ export default function LoginForm() {
       const accessToken = await loginApi(email, password);
       setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
       alert("로그인 성공!");
+      // 로그인 성공 시 메인 화면으로 이동 기능 추가 필요
     } catch (err: any) {
       alert(err.message || "로그인 실패");
     } finally {
@@ -67,7 +70,14 @@ export default function LoginForm() {
         <a href="#" className="text-black underline hover:text-neutral-600">
           비밀번호를 잊어버리셨나요?
         </a>
-        <a href="#" className="text-black underline hover:text-neutral-600">
+        <a
+          href="#"
+          className="text-black underline hover:text-neutral-600"
+          onClick={(e) => {
+            e.preventDefault();
+            router.push("/register");
+          }}
+        >
           회원가입
         </a>
       </div>

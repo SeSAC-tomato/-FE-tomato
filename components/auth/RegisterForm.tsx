@@ -1,10 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { checkEmailDuplicate } from "@/utils/api/auth/api";
+import {
+  checkEmailDuplicate,
+  checkNicknameDuplicate,
+} from "@/utils/api/auth/api";
 import CheckModal from "../modals/CheckModal";
+
+type ModalType = "email" | "nickname" | null;
+
+declare global {
+  interface Window {
+    daum: any;
+  }
+}
 
 export default function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -15,41 +26,98 @@ export default function RegisterForm() {
   const [passwordCheck, setPasswordCheck] = useState("");
   const [address, setAddress] = useState("");
 
-  // 이메일 중복 검사 모달 관련 상태
+  // 중복 검사 모달 관련 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [canUse, setCanUse] = useState(false);
+  const [modalType, setModalType] = useState<ModalType>(null);
+
+  const emailInputRef = useRef<HTMLInputElement>(null);
+
+  // 카카오 주소 검색 스크립트 동적 로드
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.daum && window.daum.Postcode) return;
+    const script = document.createElement("script");
+    script.src =
+      "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // 주소 검색 핸들러
+  const handleSearchAddress = () => {
+    if (typeof window === "undefined" || !window.daum?.Postcode) return;
+    new window.daum.Postcode({
+      oncomplete: function (data: any) {
+        setAddress(data.address);
+      },
+    }).open();
+  };
 
   // 이메일 중복 검사
   const handleCheckEmail = async () => {
     if (!email) return;
+    // 이메일 형식 검사
+    const emailRegex = /^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setModalMessage("올바른 이메일 형식이 아닙니다.");
+      setCanUse(false);
+      setModalType("email");
+      setIsModalOpen(true);
+      return;
+    }
     try {
       const data = await checkEmailDuplicate(email);
-
       if (data.data) {
-        if (data.data.duplication) {
-          setModalMessage(data.data.message);
-          setCanUse(!data.data.duplication);
-        } else {
-          setModalMessage(data.data.message);
-          setCanUse(!data.data.duplication);
-        }
+        setModalMessage(data.data.message);
+        setCanUse(!data.data.duplication);
       }
     } catch {
       setModalMessage("오류가 발생했습니다.");
       setCanUse(false);
     }
+    setModalType("email");
+    setIsModalOpen(true);
+  };
+
+  // 닉네임 중복 검사
+  const handleCheckNickname = async () => {
+    if (!nickname) return;
+    try {
+      const data = await checkNicknameDuplicate(nickname);
+      if (data.data) {
+        setModalMessage(data.data.message);
+        setCanUse(!data.data.duplication);
+      }
+    } catch {
+      setModalMessage("오류가 발생했습니다.");
+      setCanUse(false);
+    }
+    setModalType("nickname");
     setIsModalOpen(true);
   };
 
   // 모달에서 사용 버튼 클릭
-  const handleUseEmail = () => {
-    setEmailValify(true);
+  const handleUse = () => {
+    if (modalType === "email") setEmailValify(true);
+    if (modalType === "nickname") setNicknameValify(true);
     setIsModalOpen(false);
+    setModalType(null);
   };
 
   // 모달 닫기
-  const handleCloseModal = () => setIsModalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalType(null);
+    // 이메일 모달일 때 이메일 input에 포커스
+    if (modalType === "email" && emailInputRef.current && !emailValify) {
+      emailInputRef.current.focus();
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -76,6 +144,7 @@ export default function RegisterForm() {
                   : " bg-gray-100")
               }
               disabled={emailValify}
+              ref={emailInputRef}
             />
           </div>
           <button
@@ -101,14 +170,27 @@ export default function RegisterForm() {
               placeholder="닉네임을 입력해 주세요"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              className={
+                "w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400" +
+                (nicknameValify
+                  ? " bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : " bg-gray-100")
+              }
+              disabled={nicknameValify}
             />
           </div>
           <button
             type="button"
-            className="ml-2 mt-6 px-4 py-2 bg-black text-white rounded-md font-semibold"
+            className={
+              "ml-2 mt-6 px-4 py-2 rounded-md font-semibold " +
+              (nicknameValify
+                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+                : "bg-black text-white")
+            }
+            onClick={handleCheckNickname}
+            disabled={nicknameValify}
           >
-            중복 검사
+            {nicknameValify ? "검사 완료" : "중복 검사"}
           </button>
         </div>
         {/* 비밀번호 */}
@@ -139,15 +221,17 @@ export default function RegisterForm() {
             <label className="text-sm font-semibold">주소</label>
             <input
               type="text"
-              placeholder="주소 검색색"
+              placeholder="주소 검색"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              readOnly
             />
           </div>
           <button
             type="button"
             className="ml-2 mt-6 px-4 py-2 bg-black text-white rounded-md font-semibold"
+            onClick={handleSearchAddress}
           >
             주소 검색
           </button>
@@ -165,7 +249,7 @@ export default function RegisterForm() {
         open={isModalOpen}
         message={modalMessage}
         canUse={canUse}
-        onUse={handleUseEmail}
+        onUse={handleUse}
         onClose={handleCloseModal}
       />
     </div>

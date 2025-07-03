@@ -11,7 +11,7 @@ export default function Login() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      router.replace("/posts");
+      router.replace("/");
     }
   }, [isLoggedIn, router]);
 

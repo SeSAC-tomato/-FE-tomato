@@ -4,16 +4,17 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect } from "react";
+import RefreshTestButton from "@/components/button/RefreshTestButton";
 
 export default function MainPage() {
-  const { isLoggedIn, user, logout } = useAuthStore();
+  const { isLoggedIn, user, logout, accessToken } = useAuthStore();
   const router = useRouter();
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      router.replace("/posts");
-    }
-  }, [isLoggedIn, router]);
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     router.replace("/posts");
+  //   }
+  // }, [isLoggedIn, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-700 flex flex-col items-center">
@@ -21,7 +22,7 @@ export default function MainPage() {
       <header className="w-full flex justify-between items-center px-8 py-6">
         <div className="flex items-center gap-2">
           <Image src="/logo.svg" alt="logo" width={40} height={40} />
-          <span className="text-2xl font-bold text-white">tomato</span>
+          <span className="text-2xl font-bold text-white">토마토</span>
         </div>
         <div>
           {!isLoggedIn ? (
@@ -67,11 +68,26 @@ export default function MainPage() {
             둘러보기(게스트)
           </button>
         ) : (
-          <div className="text-2xl text-white font-semibold">
-            {user?.email}님, 환영합니다!
+          <div className="flex flex-col items-center">
+            <div className="text-2xl text-white font-semibold mb-2">
+              {user?.email}님, 환영합니다!
+            </div>
+            <div className="text-gray-300 mb-6">
+              오늘도 토마토와 함께 즐거운 하루 보내세요 🍅
+            </div>
+            <button
+              className="px-8 py-3 bg-red-500 text-white rounded font-semibold hover:bg-red-600 transition mb-4"
+              onClick={() => router.push("/posts")}
+            >
+              게시글 목록 보기
+            </button>
+            <div className="mt-4 text-xs text-gray-400">
+              accessToken: {accessToken?.slice(0, 10)}...
+            </div>
           </div>
         )}
       </main>
+      {isLoggedIn && <RefreshTestButton />}
     </div>
   );
 }

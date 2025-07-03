@@ -24,11 +24,15 @@ export const Login = async (
   return accessToken;
 };
 
-export const EmailCheck = async (
+export const checkEmailDuplicate = async (
     email: string
-) => {
+): Promise<CommonResponse<EmailCheckResponse>> => {
     return await axios.get(`http://localhost:8080/api/v1/auth/email?email=${email}`)
     .then((res): CommonResponse<EmailCheckResponse> => {
+      console.log(res.data);
+      
         return res.data
-    }).catch(e => console.error(e));
+    }).catch(e => {
+      throw new Error("");
+});
 }

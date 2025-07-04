@@ -155,7 +155,7 @@ export default function Post() {
                 <div className="text-xl font-bold mb-4">{post?.price}</div>
               </div>
               <div
-                className="w-full p-2 border border-gray-100 rounded-md whitespace-pre-wrap overflow-y-auto 
+                className="w-full p-2 border border-gray-100 rounded-md whitespace-pre-wrap overflow-y-auto
               text-sm md:text-base lg:text-lm"
               ></div>
 

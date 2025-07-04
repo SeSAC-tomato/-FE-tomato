@@ -1,4 +1,4 @@
-const mockPosts = Array.from({ length: 40 }, (_, i) => ({
+const mockPosts = Array.from({ length: 100 }, (_, i) => ({
   id: i + 1,
   imageUrl: `https://picsum.photos/seed/item${i + 1}/400/400`,
   title: `상품 ${i + 1}`,

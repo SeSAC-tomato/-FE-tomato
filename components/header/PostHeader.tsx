@@ -13,8 +13,7 @@ const PostHeader = () => {
 
   return (
     <>
-      <MainHeader />
-      <div className="pt-32 pb-4 w-full flex flex-col items-center">
+      <MainHeader>
         <div className="w-full max-w-4xl flex flex-col gap-2 items-center px-4 bg-white/90 shadow-lg rounded-xl py-4">
           <SearchBar value={search} onChange={setSearch} />
           <FilterBar
@@ -30,7 +29,7 @@ const PostHeader = () => {
             setMaxPrice={setMaxPrice}
           />
         </div>
-      </div>
+      </MainHeader>
     </>
   );
 };

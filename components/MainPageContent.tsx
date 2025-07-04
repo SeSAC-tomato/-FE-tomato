@@ -43,8 +43,7 @@ export default function MainPageContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#ffecd2] via-[#fcb69f] to-[#ff8177] flex flex-col items-center relative overflow-x-hidden">
-      <MainHeader />
-
+      <MainHeader>
       {/* 메인 콘텐츠 */}
       <main className="flex-1 flex flex-col items-center justify-center text-center w-full pt-40 pb-16 px-4">
         <div className="flex flex-col items-center mb-6">
@@ -96,6 +95,7 @@ export default function MainPageContent() {
       )}
       {/* 헤더 공간 확보용 더미 */}
       <div className="h-24 w-full" />
+      </MainHeader>
     </div>
   );
 }

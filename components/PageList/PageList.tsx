@@ -1,21 +1,21 @@
-"use client";
+"use client"
 
-import { PageListProps } from "@/utils/type/type";
+import { PageListProps } from "@/utils/type/post/type"
 
 export default function PageList({
   currentPage,
   totalPage,
   onPageListHandle,
 }: PageListProps) {
-  const pageSize = 10;
-  const currentGroup = Math.ceil(currentPage / pageSize) - 1;
-  const startPage = currentGroup * pageSize + 1;
-  const endPage = Math.min(startPage + pageSize - 1, totalPage);
+  const pageSize = 10
+  const currentGroup = Math.ceil(currentPage / pageSize) - 1
+  const startPage = currentGroup * pageSize + 1
+  const endPage = Math.min(startPage + pageSize - 1, totalPage)
 
   const pages = Array.from(
     { length: endPage - startPage + 1 },
     (_, i) => startPage + i
-  );
+  )
   return (
     <>
       <div className="h-[28px] flex items-center justify-center text-sm sm:text-base mt-8 mb-8">
@@ -47,5 +47,5 @@ export default function PageList({
         )}
       </div>
     </>
-  );
+  )
 }

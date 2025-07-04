@@ -83,6 +83,18 @@ export default function Post({ params }: PostPageProps) {
   };
 
   return (
+    <div>
+      <div className="w-full h-screen flex-col min-h-screen">
+        <div className="mx-auto w-full lg:w-[1024px] flex flex-col">
+          <PostHeader2 />
+          <div className="flex flex-grow p-4 md:p-6 lg:p-8">
+            <div className="w-full lg:w-1/2 mb-6 lg:mb-0">
+              <div className="text-sm text-gray900 mb-2 font-bold">
+                <span>홈 &gt;&nbsp;</span>
+                <span>제품 목록 &gt;&nbsp;</span>
+                <span>{post?.title}</span>
+              </div>
+              <div className="w-4/5 h-auto m-5 rounded-lg overflow-hidden shadow-md">
     <>
       <MainHeader />
       {/* 카드/내용 영역만 스크롤, 전체는 overflow-hidden */}
@@ -152,6 +164,11 @@ export default function Post({ params }: PostPageProps) {
                 </div>
                 <div className="text-xl font-bold mb-4">{post.price}</div>
               </div>
+              <div
+                className="w-full p-2 border border-gray-100 rounded-md whitespace-pre-wrap overflow-y-auto 
+              text-sm md:text-base lg:text-lm"
+              >
+                {post?.content}
               {/* 설명 박스 (사진과 같은 크기, 내부 스크롤) */}
               <div className="w-full max-w-md h-90 bg-gray-200 rounded-xl p-5 text-gray-700 text-base whitespace-pre-line overflow-y-auto mx-auto hide-scrollbar">
                 {postContent}

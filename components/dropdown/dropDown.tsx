@@ -1,8 +1,8 @@
-import { DropdownProps } from "@/utils/type/type";
-import { useState, useRef, useEffect } from "react";
+import { DropdownProps } from "@/utils/type/type"
+import { useState, useRef, useEffect } from "react"
 
 interface DropDownPropsWithClass extends DropdownProps {
-  className?: string;
+  className?: string
 }
 
 export default function DropDown({
@@ -11,22 +11,22 @@ export default function DropDown({
   onSelect,
   className = "",
 }: DropDownPropsWithClass) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
   const toggleDropDown = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [isOpen]);
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [isOpen])
 
   return (
     <div
@@ -68,5 +68,5 @@ export default function DropDown({
         </div>
       )}
     </div>
-  );
+  )
 }

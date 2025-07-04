@@ -1,4 +1,4 @@
-import { ButtonProps } from "@/utils/type"
+import { ButtonProps } from "@/utils/type/type";
 
 export default function Button({
   children,
@@ -20,5 +20,5 @@ export default function Button({
     >
       {children}
     </button>
-  )
+  );
 }

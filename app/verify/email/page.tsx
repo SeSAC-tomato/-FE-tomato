@@ -25,7 +25,7 @@ export default function EmailVerifyPage() {
       try {
         await new Promise((resolve) => setTimeout(resolve, 5000));
         const res = await verify(email ?? "", token ?? "", "EMAIL");
-        if (res.status == 200 && res.data?.success) {
+        if (res.status == 200) {
           setStatus("success");
         } else {
           setErrorMsg(res.data?.error?.message || "인증에 실패했습니다.");

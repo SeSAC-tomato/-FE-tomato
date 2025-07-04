@@ -81,3 +81,27 @@ export const logout = async () => {
   const res = await api.delete(`${AUTH_API_PATH}/logout`);
   console.log(res);
 };
+
+export const verify = async (
+  email: string,
+  token: string,
+  type: string
+) => {
+  return await api.post(`${AUTH_API_PATH}/verify`,{
+    email,
+    token,
+    type
+  })
+}
+
+export const reverify = async (
+  email: string,
+  token: string,
+  type: string
+) => {
+  return await api.post(`${AUTH_API_PATH}/reverify`, {
+    email,
+    token,
+    type
+  })
+}

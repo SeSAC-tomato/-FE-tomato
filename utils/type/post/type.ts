@@ -57,6 +57,7 @@ export type PostResponse = {
     | "KIDS"
   createdAt: string
   updatedAt: string
+  email: string
   userId: number
-  userName: string
+  nickname: string
 }

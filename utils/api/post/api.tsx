@@ -16,6 +16,7 @@ export const getPostById = async (
   postId: Number | undefined
 ): Promise<PostResponse | null> => {
   const data = await api.get(`/post/${postId}`)
-  console.log(data)
-  return data.data
+  const contents = data.data.data
+  console.log(contents)
+  return contents
 }

@@ -21,3 +21,9 @@ export type DropdownProps = {
   items: string[]
   onSelect: (item: string) => void
 }
+
+export type PostPageProps = {
+  params: {
+    id: string
+  }
+}

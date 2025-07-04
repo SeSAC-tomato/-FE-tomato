@@ -1,28 +1,38 @@
-import Button from "../button/Button"
-import LogoIcon from "../icons/LogoIcon"
-import SearchIcon from "../icons/SearchIcon"
+import MainHeader from "@/components/header/MainHeader";
+import SearchBar from "@/components/search/SearchBar";
+import FilterBar from "@/components/filter/FilterBar";
+import { useState } from "react";
 
-export default function PostHeader() {
+const PostHeader = () => {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<string | null>(null);
+  const [region, setRegion] = useState<string | null>(null);
+  const [onlyAvailable, setOnlyAvailable] = useState(false);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
   return (
     <>
-      <div className="mt-[5.57vh] h-[82px] flex items-center justify-between font-bold text-xl">
-        <div className="w-1/10 pl-5">
-          <LogoIcon />
-        </div>
-        <div className="relative w-6/10 h-10 hidden md:flex">
-          <input
-            type="text"
-            className="w-full h-10 border border-gray-300 rounded-md"
+      <MainHeader />
+      <div className="pt-32 pb-4 w-full flex flex-col items-center">
+        <div className="w-full max-w-4xl flex flex-col gap-2 items-center px-4 bg-white/90 shadow-lg rounded-xl py-4">
+          <SearchBar value={search} onChange={setSearch} />
+          <FilterBar
+            category={category}
+            setCategory={setCategory}
+            region={region}
+            setRegion={setRegion}
+            onlyAvailable={onlyAvailable}
+            setOnlyAvailable={setOnlyAvailable}
+            minPrice={minPrice}
+            setMinPrice={setMinPrice}
+            maxPrice={maxPrice}
+            setMaxPrice={setMaxPrice}
           />
-          <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-            <SearchIcon />
-          </div>
-        </div>
-        <div className="flex flex-col justify-center">
-          <Button children="로그인" />
-          <Button children="회원가입" />
         </div>
       </div>
     </>
-  )
-}
+  );
+};
+
+export default PostHeader;

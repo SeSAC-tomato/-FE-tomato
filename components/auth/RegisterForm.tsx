@@ -190,161 +190,167 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <form
-        className="w-full max-w-md flex flex-col items-center"
-        onSubmit={handleRegister}
-      >
-        {/* 로고 */}
-        <div className="mb-3">
-          <Image src="/logo.svg" alt="logo" width={36} height={36} />
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="relative w-full max-w-md bg-white/90 rounded-xl shadow-xl px-8 pt-12 pb-10 flex flex-col items-center z-10">
+        <div className="mb-4 flex flex-col items-center">
+          <Image src="/logo.svg" alt="logo" width={48} height={48} />
+          <span className="text-2xl font-extrabold text-[#e53935] flex items-center gap-2 mt-2">
+            토마토마켓 <span className="text-xl animate-bounce">🍅</span>
+          </span>
         </div>
-        {/* 제목 */}
-        <h2 className="mb-8 font-medium text-xl text-center">회원가입</h2>
-        {/* 이메일 */}
-        <div className="w-full flex items-center mb-3">
-          <div className="flex-1">
-            <label className="text-sm font-semibold">이메일</label>
-            <input
-              type="email"
-              placeholder="이메일을 입력해 주세요"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={
-                "w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400" +
-                (emailValify
-                  ? " bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : " bg-gray-100")
-              }
-              disabled={emailValify}
-              ref={emailInputRef}
-            />
-          </div>
-          <button
-            type="button"
-            className={
-              "ml-2 mt-6 px-4 py-2 rounded-md font-semibold " +
-              (emailValify
-                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
-                : "bg-black text-white")
-            }
-            onClick={handleCheckEmail}
-            disabled={emailValify}
-          >
-            {emailValify ? "검사 완료" : "중복 검사"}
-          </button>
-        </div>
-        {/* 닉네임 */}
-        <div className="w-full flex items-center mb-3">
-          <div className="flex-1">
-            <label className="text-sm font-semibold">닉네임</label>
-            <input
-              type="text"
-              placeholder="닉네임을 입력해 주세요"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              className={
-                "w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400" +
-                (nicknameValify
-                  ? " bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : " bg-gray-100")
-              }
-              disabled={nicknameValify}
-            />
-          </div>
-          <button
-            type="button"
-            className={
-              "ml-2 mt-6 px-4 py-2 rounded-md font-semibold " +
-              (nicknameValify
-                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
-                : "bg-black text-white")
-            }
-            onClick={handleCheckNickname}
-            disabled={nicknameValify}
-          >
-            {nicknameValify ? "검사 완료" : "중복 검사"}
-          </button>
-        </div>
-        {/* 비밀번호 */}
-        <div className="w-full mb-3">
-          <label className="text-sm font-semibold">비밀번호</label>
-          <input
-            type="password"
-            placeholder="비밀번호를 입력해 주세요"
-            value={password}
-            onChange={handlePasswordChange}
-            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
-          />
-          {/* 비밀번호 조건별 체크 UI */}
-          <div className="mt-2 space-y-1 text-xs">
-            <div className={hasUpper ? "text-green-600" : "text-gray-400"}>
-              {hasUpper ? "✔" : "✖"} 영문 대문자 포함
-            </div>
-            <div className={hasLower ? "text-green-600" : "text-gray-400"}>
-              {hasLower ? "✔" : "✖"} 영문 소문자 포함
-            </div>
-            <div className={hasNumber ? "text-green-600" : "text-gray-400"}>
-              {hasNumber ? "✔" : "✖"} 숫자 포함
-            </div>
-            <div className={hasSpecial ? "text-green-600" : "text-gray-400"}>
-              {hasSpecial ? "✔" : "✖"} 특수문자 포함
-            </div>
-            <div className={hasLength ? "text-green-600" : "text-gray-400"}>
-              {hasLength ? "✔" : "✖"} 8자 이상
-            </div>
-          </div>
-        </div>
-        {/* 비밀번호 확인 */}
-        <div className="w-full mb-3">
-          <label className="text-sm font-semibold">비밀번호 확인</label>
-          <input
-            type="password"
-            placeholder="비밀번호를 다시 입력해 주세요"
-            value={passwordCheck}
-            onChange={(e) => setPasswordCheck(e.target.value)}
-            onBlur={handlePasswordCheckBlur}
-            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
-          />
-          {passwordCheckError && (
-            <p className="text-red-500 text-xs mt-1">{passwordCheckError}</p>
-          )}
-        </div>
-        {/* 주소 */}
-        <div className="w-full flex items-center mb-8">
-          <div className="flex-1">
-            <label className="text-sm font-semibold">주소</label>
-            <input
-              type="text"
-              placeholder="주소 검색"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
-              readOnly
-            />
-          </div>
-          <button
-            type="button"
-            className="ml-2 mt-6 px-4 py-2 bg-black text-white rounded-md font-semibold"
-            onClick={handleSearchAddress}
-          >
-            주소 검색
-          </button>
-        </div>
-        {/* 회원가입 버튼 */}
-        <button
-          type="submit"
-          className={
-            "w-full py-3 rounded-md text-base font-semibold transition-colors " +
-            (isFormValid
-              ? "bg-black text-white hover:bg-neutral-800 cursor-pointer"
-              : "bg-gray-300 text-gray-400 cursor-not-allowed")
-          }
-          disabled={!isFormValid}
+        <h2 className="mb-2 font-bold text-xl text-gray-900">회원가입</h2>
+        <p className="mb-6 text-gray-600 text-center text-sm">
+          믿을 수 있는 이웃과 함께, 토마토마켓에서 중고 거래를 시작하세요!
+        </p>
+        <form
+          className="w-full flex flex-col items-center"
+          onSubmit={handleRegister}
         >
-          회원가입
-        </button>
-      </form>
+          {/* 이메일 */}
+          <div className="w-full flex items-center mb-3">
+            <div className="flex-1">
+              <label className="text-sm font-semibold">이메일</label>
+              <input
+                type="email"
+                placeholder="이메일을 입력해 주세요"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={
+                  "w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400" +
+                  (emailValify
+                    ? " bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : " bg-gray-100")
+                }
+                disabled={emailValify}
+                ref={emailInputRef}
+              />
+            </div>
+            <button
+              type="button"
+              className={
+                "ml-2 mt-6 px-4 py-2 rounded-md font-semibold " +
+                (emailValify
+                  ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+                  : "bg-black text-white")
+              }
+              onClick={handleCheckEmail}
+              disabled={emailValify}
+            >
+              {emailValify ? "검사 완료" : "중복 검사"}
+            </button>
+          </div>
+          {/* 닉네임 */}
+          <div className="w-full flex items-center mb-3">
+            <div className="flex-1">
+              <label className="text-sm font-semibold">닉네임</label>
+              <input
+                type="text"
+                placeholder="닉네임을 입력해 주세요"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                className={
+                  "w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-neutral-400" +
+                  (nicknameValify
+                    ? " bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : " bg-gray-100")
+                }
+                disabled={nicknameValify}
+              />
+            </div>
+            <button
+              type="button"
+              className={
+                "ml-2 mt-6 px-4 py-2 rounded-md font-semibold " +
+                (nicknameValify
+                  ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+                  : "bg-black text-white")
+              }
+              onClick={handleCheckNickname}
+              disabled={nicknameValify}
+            >
+              {nicknameValify ? "검사 완료" : "중복 검사"}
+            </button>
+          </div>
+          {/* 비밀번호 */}
+          <div className="w-full mb-3">
+            <label className="text-sm font-semibold">비밀번호</label>
+            <input
+              type="password"
+              placeholder="비밀번호를 입력해 주세요"
+              value={password}
+              onChange={handlePasswordChange}
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+            />
+            {/* 비밀번호 조건별 체크 UI */}
+            <div className="mt-2 space-y-1 text-xs">
+              <div className={hasUpper ? "text-green-600" : "text-gray-400"}>
+                {hasUpper ? "✔" : "✖"} 영문 대문자 포함
+              </div>
+              <div className={hasLower ? "text-green-600" : "text-gray-400"}>
+                {hasLower ? "✔" : "✖"} 영문 소문자 포함
+              </div>
+              <div className={hasNumber ? "text-green-600" : "text-gray-400"}>
+                {hasNumber ? "✔" : "✖"} 숫자 포함
+              </div>
+              <div className={hasSpecial ? "text-green-600" : "text-gray-400"}>
+                {hasSpecial ? "✔" : "✖"} 특수문자 포함
+              </div>
+              <div className={hasLength ? "text-green-600" : "text-gray-400"}>
+                {hasLength ? "✔" : "✖"} 8자 이상
+              </div>
+            </div>
+          </div>
+          {/* 비밀번호 확인 */}
+          <div className="w-full mb-3">
+            <label className="text-sm font-semibold">비밀번호 확인</label>
+            <input
+              type="password"
+              placeholder="비밀번호를 다시 입력해 주세요"
+              value={passwordCheck}
+              onChange={(e) => setPasswordCheck(e.target.value)}
+              onBlur={handlePasswordCheckBlur}
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+            />
+            {passwordCheckError && (
+              <p className="text-red-500 text-xs mt-1">{passwordCheckError}</p>
+            )}
+          </div>
+          {/* 주소 */}
+          <div className="w-full flex items-center mb-8">
+            <div className="flex-1">
+              <label className="text-sm font-semibold">주소</label>
+              <input
+                type="text"
+                placeholder="주소 검색"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+                readOnly
+              />
+            </div>
+            <button
+              type="button"
+              className="ml-2 mt-6 px-4 py-2 bg-black text-white rounded-md font-semibold"
+              onClick={handleSearchAddress}
+            >
+              주소 검색
+            </button>
+          </div>
+          {/* 회원가입 버튼 */}
+          <button
+            type="submit"
+            className={
+              "w-full py-3 rounded-md text-base font-semibold transition-colors " +
+              (isFormValid
+                ? "bg-black text-white hover:bg-neutral-800 cursor-pointer"
+                : "bg-gray-300 text-gray-400 cursor-not-allowed")
+            }
+            disabled={!isFormValid}
+          >
+            회원가입
+          </button>
+        </form>
+      </div>
       {/* 중복 검사 모달 */}
       <CheckModal
         open={isModalOpen}

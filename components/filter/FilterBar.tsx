@@ -38,22 +38,28 @@ const FilterBar: React.FC<FilterBarProps> = ({
   className = "",
 }) => (
   <div
-    className={`flex flex-wrap gap-2 w-full md:w-auto items-center ${className}`}
+    className={`w-full bg-white/50 rounded-xl flex flex-wrap md:flex-nowrap gap-3 px-4 py-3 items-center justify-between ${className}`}
   >
-    <DropDown
-      buttonText={category || "카테고리"}
-      items={categories}
-      onSelect={setCategory}
-    />
-    <DropDown
-      buttonText={region || "지역"}
-      items={regions}
-      onSelect={setRegion}
-    />
+    <div className="flex gap-2 flex-1 min-w-0">
+      <DropDown
+        buttonText={category || "카테고리"}
+        items={categories}
+        onSelect={setCategory}
+        className="bg-gray-100 focus:bg-gray-200 rounded-md shadow-none border-none"
+      />
+      <DropDown
+        buttonText={region || "지역"}
+        items={regions}
+        onSelect={setRegion}
+        className="bg-gray-100 focus:bg-gray-200 rounded-md shadow-none border-none"
+      />
+    </div>
     <button
-      className={`px-4 py-2 rounded-md font-semibold border ${
-        onlyAvailable ? "bg-[#e53935] text-white" : "bg-white text-gray-700"
-      } transition`}
+      className={`px-4 py-2 rounded-md font-semibold transition h-12 min-w-[110px] shadow-none border-none focus:outline-none ${
+        onlyAvailable
+          ? "bg-[#e53935] text-white"
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+      }`}
       onClick={() => setOnlyAvailable(!onlyAvailable)}
       type="button"
     >
@@ -65,15 +71,15 @@ const FilterBar: React.FC<FilterBarProps> = ({
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
         placeholder="최소가격"
-        className="w-20 px-2 py-1 border rounded"
+        className="w-20 px-2 py-2 rounded h-12 text-base bg-gray-100 focus:bg-gray-200 border-none shadow-none focus:outline-none"
       />
-      <span>~</span>
+      <span className="text-gray-400">~</span>
       <input
         type="number"
         value={maxPrice}
         onChange={(e) => setMaxPrice(e.target.value)}
         placeholder="최대가격"
-        className="w-20 px-2 py-1 border rounded"
+        className="w-20 px-2 py-2 rounded h-12 text-base bg-gray-100 focus:bg-gray-200 border-none shadow-none focus:outline-none"
       />
     </div>
   </div>

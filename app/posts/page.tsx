@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 16;
+  const pageSize = 12;
   const totalPage = Math.ceil(mockPosts.length / pageSize);
 
   const onPageListHandle = (page: number) => {

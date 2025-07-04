@@ -1,15 +1,15 @@
-import { DropdownProps } from "@/utils/type"
-import { useState } from "react"
+import { DropdownProps } from "@/utils/type/type";
+import { useState } from "react";
 
 export default function DropDown({
   buttonText,
   items,
   onSelect,
 }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleDropDown = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div className="relative inline-block text-left w-48 z-50">
@@ -48,5 +48,5 @@ export default function DropDown({
         </div>
       )}
     </div>
-  )
+  );
 }

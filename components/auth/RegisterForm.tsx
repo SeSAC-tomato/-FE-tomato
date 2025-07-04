@@ -182,8 +182,8 @@ export default function RegisterForm() {
         nickname,
         address,
       });
-      alert("회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.");
-      router.push("/login");
+      alert("회원가입이 완료되었습니다! 마지막 단계인 이메일 인증을 진행해 주세요!");
+      router.push("/");
     } catch (err: any) {
       alert(err.message || "회원가입에 실패했습니다.");
     }

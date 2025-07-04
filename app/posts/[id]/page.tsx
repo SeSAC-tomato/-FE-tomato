@@ -1,100 +1,90 @@
-"use client";
-import MainHeader from "@/components/header/MainHeader";
-import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import productImage from "../../../public/제품이미지.png";
-import { PostPageProps } from "@/utils/type/type";
+"use client"
+import MainHeader from "@/components/header/MainHeader"
+import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import productImage from "../../../public/제품이미지.png"
+import { useParams } from "next/navigation"
+import { PostResponse } from "@/utils/type/post/type"
+import { getPostById } from "@/utils/api/post/api"
 
-export default function Post({ params }: PostPageProps) {
-  // 더미 데이터
-  const post = {
-    title: "아이패드 9세대 64GB",
-    category: "디지털 기기",
-    updatedAt: "3시간 전",
-    price: "240,000원",
-    description: `사용한지 2년 됐습니다.\n케이스랑 펜슬, 키보드도 같이 드립니다.\n본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을 구성한 대비의 화면입니다.`,
-    user: {
-      name: "유정우",
-      region: "대림동",
-      avatar: "https://via.placeholder.com/48x48.png?text=U",
-    },
-    status: "판매중",
-  };
+export default function Post() {
+  const params = useParams()
+  const postId = typeof params?.id === "string" ? Number(params.id) : undefined
+  const [post, setPost] = useState<PostResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const [postContent, setPostContent] = useState(`사용한지 2년 됐습니다. 
-    케이스랑 펜슬, 키보드도 같이 드립니다. 
-    본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을
-    구성한 대비의 화면입니다. 수정, 삭제 버튼은 고정 위치에 있으며
-    전체 스크롤이 올라와도 언제나 하단에 고정되어 위치합니다.
-    아래의 내용도 투명하게 보입니다.
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalType, setModalType] = useState<"edit" | "delete" | null>(null)
 
-    이것은 추가적인 내용입니다.
-    엔터 키를 여러 번 눌러 줄 바꿈을 해보세요.
-    그리고 띄어쓰기도 그대로 유지됩니다.
-    
-    텍스트가 길어지면 스크롤이 나타나게 됩니다.
-    길이를 길게 표현합니다`);
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"edit" | "delete" | null>(null);
-
-  const [resultModalOpen, setResultModalOpen] = useState(false);
-  const [resultMessage, setResultMessage] = useState("");
+  const [resultModalOpen, setResultModalOpen] = useState(false)
+  const [resultMessage, setResultMessage] = useState("")
 
   // 카드 너비에 맞춰 버튼바 중앙정렬
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [cardWidth, setCardWidth] = useState<number | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [cardWidth, setCardWidth] = useState<number | null>(null)
+
   useEffect(() => {
     function updateWidth() {
       if (cardRef.current) {
-        setCardWidth(cardRef.current.offsetWidth);
+        setCardWidth(cardRef.current.offsetWidth)
       }
     }
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
+    updateWidth()
+    window.addEventListener("resize", updateWidth)
+    return () => window.removeEventListener("resize", updateWidth)
+  }, [])
+
+  useEffect(() => {
+    const getPost = async () => {
+      if (!postId) {
+        console.warn("postId가 없습니다. 요청을 수행할 수 없습니다.")
+        return null
+      }
+      try {
+        const response = await getPostById(postId)
+        if (response) {
+          setPost(response)
+          console.log(response)
+        } else {
+          setError("게시물을 찾을 수 없습니다.")
+        }
+      } catch (error) {
+        console.error("게시물 로딩 중 오류 발생:", error)
+        setError("게시물을 불러오는 데 실패했습니다.")
+      }
+    }
+    getPost()
+  }, [postId])
 
   const openModal = (type: "edit" | "delete") => {
-    setModalType(type);
-    setModalOpen(true);
-  };
+    setModalType(type)
+    setModalOpen(true)
+  }
 
   const closeModal = () => {
-    setModalOpen(false);
-    setModalType(null);
-  };
+    setModalOpen(false)
+    setModalType(null)
+  }
 
   const handleConfirm = () => {
     // 실제 수정/삭제 처리
     if (modalType === "edit") {
-      setResultMessage("수정이 완료되었습니다.");
+      setResultMessage("수정이 완료되었습니다.")
     } else if (modalType === "delete") {
-      setResultMessage("삭제가 완료되었습니다.");
+      setResultMessage("삭제가 완료되었습니다.")
     }
 
-    closeModal();
-    setResultModalOpen(true);
-  };
+    closeModal()
+    setResultModalOpen(true)
+  }
 
   const closeResultModal = () => {
-    setResultModalOpen(false);
-  };
+    setResultModalOpen(false)
+  }
 
   return (
-    <div>
-      <div className="w-full h-screen flex-col min-h-screen">
-        <div className="mx-auto w-full lg:w-[1024px] flex flex-col">
-          <PostHeader2 />
-          <div className="flex flex-grow p-4 md:p-6 lg:p-8">
-            <div className="w-full lg:w-1/2 mb-6 lg:mb-0">
-              <div className="text-sm text-gray900 mb-2 font-bold">
-                <span>홈 &gt;&nbsp;</span>
-                <span>제품 목록 &gt;&nbsp;</span>
-                <span>{post?.title}</span>
-              </div>
-              <div className="w-4/5 h-auto m-5 rounded-lg overflow-hidden shadow-md">
     <>
       <MainHeader />
       {/* 카드/내용 영역만 스크롤, 전체는 overflow-hidden */}
@@ -116,13 +106,13 @@ export default function Post({ params }: PostPageProps) {
           </Link>
           <span className="px-1">&gt;</span>
           <Link
-            href={`/posts?category=${encodeURIComponent(post.category)}`}
+            href={`/posts?category=${post?.productCategory}`}
             className="hover:underline hover:text-[#e53935] transition"
           >
-            {post.category}
+            {post?.productCategory}
           </Link>
           <span className="px-1">&gt;</span>
-          <span className="text-gray-800 font-bold">{post.title}</span>
+          <span className="text-gray-800 font-bold">{post?.title}</span>
         </div>
         <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl px-12 py-10 flex flex-col gap-8">
           {/* 상단: 사진+설명 */}
@@ -142,36 +132,36 @@ export default function Post({ params }: PostPageProps) {
               {/* 설명 위 정보 */}
               <div className="w-full max-w-md mx-auto mb-4">
                 <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
-                  {post.title}
-                  {post.status === "예약" && (
+                  {post?.title}
+                  {post?.postStatus === "BOOKED" && (
                     <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
                       예약
                     </span>
                   )}
-                  {post.status === "판매중" && (
+                  {post?.postStatus === "SELLING" && (
                     <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold">
                       판매중
                     </span>
                   )}
-                  {post.status === "판매완료" && (
+                  {post?.postStatus === "END" && (
                     <span className="px-3 py-1 rounded-full bg-gray-200 text-gray-600 text-xs font-semibold">
                       판매완료
                     </span>
                   )}
                 </h2>
                 <div className="text-gray-500 text-base mb-1">
-                  {post.category} · {post.updatedAt}
+                  {post?.productCategory} · {post?.updatedAt}
                 </div>
-                <div className="text-xl font-bold mb-4">{post.price}</div>
+                <div className="text-xl font-bold mb-4">{post?.price}</div>
               </div>
               <div
                 className="w-full p-2 border border-gray-100 rounded-md whitespace-pre-wrap overflow-y-auto 
               text-sm md:text-base lg:text-lm"
-              >
-                {post?.content}
+              ></div>
+
               {/* 설명 박스 (사진과 같은 크기, 내부 스크롤) */}
               <div className="w-full max-w-md h-90 bg-gray-200 rounded-xl p-5 text-gray-700 text-base whitespace-pre-line overflow-y-auto mx-auto hide-scrollbar">
-                {postContent}
+                {post?.content}
               </div>
             </div>
           </div>
@@ -181,15 +171,15 @@ export default function Post({ params }: PostPageProps) {
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
                 <Image
-                  src={post.user.avatar}
+                  src="https://via.placeholder.com/48x48.png?text=U"
                   alt="프로필"
                   width={48}
                   height={48}
                 />
               </div>
               <div>
-                <div className="font-bold text-lg">{post.user.name}</div>
-                <div className="text-gray-500 text-sm">{post.user.region}</div>
+                <div className="font-bold text-lg">{post?.userName}</div>
+                <div className="text-gray-500 text-sm">구로동</div>
               </div>
             </div>
             {/* 버튼 그룹 (오른쪽 하단, 같은 라인) */}
@@ -205,5 +195,5 @@ export default function Post({ params }: PostPageProps) {
         </div>
       </div>
     </>
-  );
+  )
 }

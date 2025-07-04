@@ -26,8 +26,8 @@ export default function VerifyResultCard({
       <p className={`text-lg font-bold mb-2 ${messageClass}`}>{message}</p>
       {buttonText && onButtonClick && (
         <button
-          className={`mt-4 px-6 py-2 ${buttonColorClass} text-white rounded-md font-semibold`}
-          onClick={() => onButtonClick}
+          className={`mt-4 px-6 py-2 ${buttonColorClass} text-white rounded-md font-semibold cursor-pointer`}
+          onClick={onButtonClick}
         >
           {buttonText}
         </button>

@@ -1,5 +1,5 @@
 import { DropdownProps } from "@/utils/type/type";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface DropDownPropsWithClass extends DropdownProps {
   className?: string;
@@ -16,8 +16,23 @@ export default function DropDown({
     setIsOpen(!isOpen);
   };
 
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [isOpen]);
+
   return (
-    <div className={`relative inline-block text-left w-48 z-50 ${className}`}>
+    <div
+      ref={ref}
+      className={`relative inline-block text-left w-48 z-50 ${className}`}
+    >
       <div>
         <button
           type="button"

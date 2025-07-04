@@ -1,13 +1,28 @@
-"use client"
-import PostHeader2 from "@/components/header/PostHeader2"
-import { useState } from "react"
-import { PostPageProps } from "@/utils/type"
-import Image from "next/image"
-import productImage from "../../../public/제품이미지.png"
+"use client";
+import MainHeader from "@/components/header/MainHeader";
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import productImage from "../../../public/제품이미지.png";
+import { PostPageProps } from "@/utils/type/type";
 
 export default function Post({ params }: PostPageProps) {
-  const [postContent, setPostContent] = useState(`
-    사용한지 2년 됐습니다. 
+  // 더미 데이터
+  const post = {
+    title: "아이패드 9세대 64GB",
+    category: "디지털 기기",
+    updatedAt: "3시간 전",
+    price: "240,000원",
+    description: `사용한지 2년 됐습니다.\n케이스랑 펜슬, 키보드도 같이 드립니다.\n본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을 구성한 대비의 화면입니다.`,
+    user: {
+      name: "유정우",
+      region: "대림동",
+      avatar: "https://via.placeholder.com/48x48.png?text=U",
+    },
+    status: "판매중",
+  };
+
+  const [postContent, setPostContent] = useState(`사용한지 2년 됐습니다. 
     케이스랑 펜슬, 키보드도 같이 드립니다. 
     본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을
     구성한 대비의 화면입니다. 수정, 삭제 버튼은 고정 위치에 있으며
@@ -19,162 +34,159 @@ export default function Post({ params }: PostPageProps) {
     그리고 띄어쓰기도 그대로 유지됩니다.
     
     텍스트가 길어지면 스크롤이 나타나게 됩니다.
-    길이를 길게 표현합니다`)
+    길이를 길게 표현합니다`);
 
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalType, setModalType] = useState<"edit" | "delete" | null>(null)
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"edit" | "delete" | null>(null);
 
-  const [resultModalOpen, setResultModalOpen] = useState(false)
-  const [resultMessage, setResultMessage] = useState("")
+  const [resultModalOpen, setResultModalOpen] = useState(false);
+  const [resultMessage, setResultMessage] = useState("");
+
+  // 카드 너비에 맞춰 버튼바 중앙정렬
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [cardWidth, setCardWidth] = useState<number | null>(null);
+  useEffect(() => {
+    function updateWidth() {
+      if (cardRef.current) {
+        setCardWidth(cardRef.current.offsetWidth);
+      }
+    }
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   const openModal = (type: "edit" | "delete") => {
-    setModalType(type)
-    setModalOpen(true)
-  }
+    setModalType(type);
+    setModalOpen(true);
+  };
 
   const closeModal = () => {
-    setModalOpen(false)
-    setModalType(null)
-  }
+    setModalOpen(false);
+    setModalType(null);
+  };
 
   const handleConfirm = () => {
     // 실제 수정/삭제 처리
     if (modalType === "edit") {
-      setResultMessage("수정이 완료되었습니다.")
+      setResultMessage("수정이 완료되었습니다.");
     } else if (modalType === "delete") {
-      setResultMessage("삭제가 완료되었습니다.")
+      setResultMessage("삭제가 완료되었습니다.");
     }
 
-    closeModal()
-    setResultModalOpen(true)
-  }
+    closeModal();
+    setResultModalOpen(true);
+  };
 
   const closeResultModal = () => {
-    setResultModalOpen(false)
-  }
+    setResultModalOpen(false);
+  };
 
   return (
-    <div>
-      <div className="w-full h-screen flex-col min-h-screen">
-        <div className="mx-auto w-full lg:w-[1024px] flex flex-col">
-          <PostHeader2 />
-          <div className="flex flex-grow p-4 md:p-6 lg:p-8">
-            <div className="w-full lg:w-1/2 mb-6 lg:mb-0">
-              <div className="text-sm text-gray900 mb-2 font-bold">
-                <span>홈 &gt;&nbsp;</span>
-                <span>제품 목록 &gt;&nbsp;</span>
-                <span>아이패드 9세대 64GB</span>
-              </div>
-              <div className="w-4/5 h-auto m-5 rounded-lg overflow-hidden shadow-md">
+    <>
+      <MainHeader />
+      {/* 카드/내용 영역만 스크롤, 전체는 overflow-hidden */}
+      <div className="fixed inset-0 pt-[80px] overflow-y-auto hide-scrollbar flex flex-col items-center justify-center min-h-screen">
+        {/* 네비게이션 뎁스(Breadcrumbs) - 카드 외부(카드 위, 배경 위) */}
+        <div className="w-full max-w-5xl flex justify-start mb-6 text-sm text-gray-500 items-center gap-0 pl-0">
+          <Link
+            href="/"
+            className="hover:underline hover:text-[#e53935] transition"
+          >
+            홈
+          </Link>
+          <span className="px-1">&gt;</span>
+          <Link
+            href="/posts"
+            className="hover:underline hover:text-[#e53935] transition"
+          >
+            중고거래
+          </Link>
+          <span className="px-1">&gt;</span>
+          <Link
+            href={`/posts?category=${encodeURIComponent(post.category)}`}
+            className="hover:underline hover:text-[#e53935] transition"
+          >
+            {post.category}
+          </Link>
+          <span className="px-1">&gt;</span>
+          <span className="text-gray-800 font-bold">{post.title}</span>
+        </div>
+        <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl px-12 py-10 flex flex-col gap-8">
+          {/* 상단: 사진+설명 */}
+          <div className="flex flex-row gap-10 w-full">
+            {/* 사진 */}
+            <div className="flex-1 flex flex-col items-center justify-start">
+              <div className="w-full max-w-md bg-gray-300 rounded-xl flex items-center justify-center h-full">
                 <Image
-                  className="w-full h-full object-cover"
                   src={productImage}
-                  alt="Product Image"
+                  alt="제품 이미지"
+                  className="object-cover w-full h-full rounded-xl"
                 />
               </div>
             </div>
-            <div className="w-full lg:w-1/2">
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                아이패드 9세대 64GB
-              </h1>
-              <div className="flex justify-between items-center my-2">
-                <p className="text-gray-600 text-1xl md:text-2xl">
-                  디지털 기기
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-1xl md:text-2xl m-2">
-                    끌올
-                  </span>
-                  <button className="bg-indigo-700 text-white py-2 px-5 m-2 text-sm lg:text-lg xl:text-xl rounded-2xl">
-                    설정
-                  </button>
+            {/* 설명+정보 */}
+            <div className="flex-1 flex flex-col justify-start">
+              {/* 설명 위 정보 */}
+              <div className="w-full max-w-md mx-auto mb-4">
+                <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+                  {post.title}
+                  {post.status === "예약" && (
+                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                      예약
+                    </span>
+                  )}
+                  {post.status === "판매중" && (
+                    <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold">
+                      판매중
+                    </span>
+                  )}
+                  {post.status === "판매완료" && (
+                    <span className="px-3 py-1 rounded-full bg-gray-200 text-gray-600 text-xs font-semibold">
+                      판매완료
+                    </span>
+                  )}
+                </h2>
+                <div className="text-gray-500 text-base mb-1">
+                  {post.category} · {post.updatedAt}
                 </div>
+                <div className="text-xl font-bold mb-4">{post.price}</div>
               </div>
-              <div className="flex items-baseline mb-6">
-                <span className="text-2xl md:text-3xl font-bold mr-2">
-                  240,000 원
-                </span>
-                <span className="text-sm text-gray-500">2025-06-26 12:20</span>
-              </div>
-              <div className="flex space-x-4 mb-8 justify-between">
-                <div className="flex justify-center items-center">
-                  <button className="bg-gray-200 text-gray-900 py-2 px-4 text-sm lg:text-lg xl:text-xl rounded-2xl">
-                    판매중
-                  </button>
-                  <button className="bg-indigo-700 text-white py-2 px-5 mx-2 text-sm lg:text-lg xl:text-xl rounded-2xl">
-                    설정
-                  </button>
-                </div>
-                <button className="bg-yellow-400 text-gray-900 py-2 px-10 text-sm lg:text-lg xl:text-xl rounded-2xl font-semibold">
-                  채팅하기
-                </button>
-              </div>
-              <div
-                className="w-full p-2 border border-gray-100 rounded-md whitespace-pre-wrap overflow-y-auto 
-              text-sm md:text-base lg:text-lm"
-              >
+              {/* 설명 박스 (사진과 같은 크기, 내부 스크롤) */}
+              <div className="w-full max-w-md h-90 bg-gray-200 rounded-xl p-5 text-gray-700 text-base whitespace-pre-line overflow-y-auto mx-auto hide-scrollbar">
                 {postContent}
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="fixed bottom-0 left-0 w-full z-[99]">
-        <div className="bg-pink-500/10 p-4 shadow-lg flex items-center justify-end ">
-          <div className="w-full max-w-lg flex space-x-4">
-            <button
-              onClick={() => openModal("edit")}
-              className="flex-1 py-3 text-indigo-900 font-bold text-lg  rounded-md hover:bg-white/50 transition-colors"
-            >
-              수정
-            </button>
-            <button
-              onClick={() => openModal("delete")}
-              className="flex-1 py-3 text-indigo-900 font-bold text-lg  rounded-md hover:bg-white/50 transition-colors"
-            >
-              삭제
-            </button>
-            {modalOpen && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
-                <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-xl">
-                  <h2 className="text-xl font-bold mb-4">
-                    {modalType === "edit"
-                      ? "수정하시겠습니까?"
-                      : "정말 삭제할까요?"}
-                  </h2>
-                  <div className="flex justify-end space-x-4">
-                    <button
-                      onClick={closeModal}
-                      className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                    >
-                      취소
-                    </button>
-                    <button
-                      onClick={handleConfirm}
-                      className="px-4 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)]"
-                    >
-                      확인
-                    </button>
-                  </div>
-                </div>
+          {/* 하단: 사용자+버튼 */}
+          <div className="flex flex-row items-center justify-between gap-6 mt-4 w-full">
+            {/* 사용자 정보 */}
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
+                <Image
+                  src={post.user.avatar}
+                  alt="프로필"
+                  width={48}
+                  height={48}
+                />
               </div>
-            )}
-            {resultModalOpen && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[110]">
-                <div className="bg-white rounded-lg p-5 w-[90%] max-w-sm shadow-xl text-center">
-                  <h2 className="text-lg font-medium mb-4">{resultMessage}</h2>
-                  <button
-                    onClick={closeResultModal}
-                    className="mt-2 px-5 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)] transition-colors"
-                  >
-                    닫기
-                  </button>
-                </div>
+              <div>
+                <div className="font-bold text-lg">{post.user.name}</div>
+                <div className="text-gray-500 text-sm">{post.user.region}</div>
               </div>
-            )}
+            </div>
+            {/* 버튼 그룹 (오른쪽 하단, 같은 라인) */}
+            <div className="flex gap-4 justify-end">
+              <button className="px-6 py-2 rounded-full bg-[#ffe066] text-[#222] font-bold text-base shadow hover:bg-[#ffd600] transition">
+                채팅
+              </button>
+              <button className="px-6 py-2 rounded-full bg-[#ff4fcf] text-white font-bold text-base shadow hover:bg-[#e040fb] transition">
+                찜하기
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </>
+  );
 }

@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-[#ffecd2] via-[#fcb69f] to-[#ff8177] min-h-screen`}
       >
         <AuthInitializer>{children}</AuthInitializer>
       </body>

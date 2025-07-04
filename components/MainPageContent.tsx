@@ -6,6 +6,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import LogoutButton from "@/components/button/LogoutButton";
+import LoginButton from "./button/LoginButton";
+import RegisterButton from "./button/RegisterButton";
+import MainHeader from "@/components/header/MainHeader";
 
 export default function MainPageContent() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -39,75 +42,60 @@ export default function MainPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-700 flex flex-col items-center">
-      {/* 상단 헤더 */}
-      <header className="w-full flex justify-between items-center px-8 py-6">
-        <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="logo" width={40} height={40} />
-          <span className="text-2xl font-bold text-white">토마토</span>
-        </div>
-        <div>
-          {!isLoggedIn ? (
-            <>
-              <button
-                className="mr-4 px-4 py-2 bg-white text-black rounded font-semibold hover:bg-gray-200 hover:scale-105 transition duration-200 cursor-pointer"
-                onClick={() => router.push("/login")}
-              >
-                로그인
-              </button>
-              <button
-                className="px-4 py-2 bg-red-600 text-white rounded font-semibold hover:bg-red-700 hover:scale-105 transition duration-200 cursor-pointer"
-                onClick={() => router.push("/register")}
-              >
-                회원가입
-              </button>
-            </>
-          ) : (
-            <LogoutButton />
-          )}
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-[#ffecd2] via-[#fcb69f] to-[#ff8177] flex flex-col items-center relative overflow-x-hidden">
+      <MainHeader />
 
       {/* 메인 콘텐츠 */}
-      <main className="flex-1 flex flex-col items-center justify-center text-center">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-          토마토에 오신 것을 환영합니다!
-        </h1>
-
+      <main className="flex-1 flex flex-col items-center justify-center text-center w-full pt-40 pb-16 px-4">
+        <div className="flex flex-col items-center mb-6">
+          <span className="text-6xl md:text-7xl mb-2 animate-bounce">🍅</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-[#e53935] mb-4 drop-shadow-lg tracking-tight">
+            토마토와 함께하는 중고 물품 거래
+          </h1>
+        </div>
+        <p className="text-xl md:text-2xl text-gray-800 mb-10 font-medium drop-shadow text-center max-w-xl">
+          신선한 중고 거래,{" "}
+          <span className="text-[#e53935] font-bold">토마토마켓</span>에서
+          <br />
+          믿을 수 있는 이웃과 따뜻하게 거래하세요!
+        </p>
         {!isLoggedIn ? (
           <>
-            <p className="text-lg text-gray-200 mb-10">
-              로그인 없이 둘러볼 수도 있고, 회원가입 후 더 많은 기능을 이용할 수
-              있습니다.
-            </p>
             <button
-              className="px-8 py-4 bg-white text-black text-lg font-semibold rounded shadow hover:bg-gray-100 hover:scale-105 transition duration-200 cursor-pointer"
+              className="px-10 py-4 bg-[#e53935] text-white text-xl font-bold rounded-full shadow-lg hover:bg-[#d32f2f] hover:scale-105 transition-all duration-200 cursor-pointer mb-4"
               onClick={() => router.push("/posts")}
             >
-              둘러보기(게스트)
+              중고 물품 둘러보기
             </button>
+            <div className="flex gap-3 mt-2">
+              <LoginButton className="text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all" />
+              <RegisterButton className="text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all" />
+            </div>
           </>
         ) : (
           <div className="flex flex-col items-center">
-            <div className="text-2xl text-white font-semibold mb-2">
+            <div className="text-2xl md:text-3xl text-[#e53935] font-bold mb-3 drop-shadow">
               {user?.email}님, 환영합니다!
             </div>
-            <div className="text-gray-300 mb-6">
-              오늘도 토마토와 함께 즐거운 하루 보내세요 🍅
+            <div className="text-lg text-gray-700 mb-8 font-medium">
+              오늘도 토마토마켓에서 좋은 거래 하세요 🍅
             </div>
             <button
-              className="px-8 py-3 bg-red-500 text-white rounded font-semibold hover:bg-red-600 transition mb-4"
+              className="px-10 py-4 bg-[#e53935] text-white text-xl font-bold rounded-full shadow-lg hover:bg-[#d32f2f] hover:scale-105 transition-all duration-200 mb-4"
               onClick={() => router.push("/posts")}
             >
-              게시글 목록 보기
+              중고 물품 목록 보기
             </button>
-            {/* <div className="mt-4 text-xs text-gray-400">
-              accessToken: {accessToken?.slice(0, 10)}...
-            </div> */}
           </div>
         )}
       </main>
-      {isLoggedIn && <RefreshTestButton />}
+      {isLoggedIn && (
+        <div className="fixed bottom-8 right-8 z-30">
+          <RefreshTestButton />
+        </div>
+      )}
+      {/* 헤더 공간 확보용 더미 */}
+      <div className="h-24 w-full" />
     </div>
   );
 }

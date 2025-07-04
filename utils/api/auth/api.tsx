@@ -71,10 +71,13 @@ export const register = async (register: register): Promise<void> => {
 };
 
 export const refreshToken = async () => {
-  const res = await api.put(`${AUTH_API_PATH}/refresh`, {}, {
-    withCredentials: true
-  });
+  const res = await api.put(`${AUTH_API_PATH}/refresh`);
   console.log(res);
-  
+
   return res;
+};
+
+export const logout = async () => {
+  const res = await api.delete(`${AUTH_API_PATH}/logout`);
+  console.log(res);
 };

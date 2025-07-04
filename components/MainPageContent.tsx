@@ -5,17 +5,16 @@ import { useAuthStore } from "@/store/useAuthStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import LogoutButton from "@/components/button/LogoutButton";
 
 export default function MainPageContent() {
-  const {
-    isLoggedIn,
-    user,
-    logout,
-    accessToken,
-    isInitialized,
-    setInitialized,
-    login,
-  } = useAuthStore();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const setInitialized = useAuthStore((state) => state.setInitialized);
+  const login = useAuthStore((state) => state.login);
   const router = useRouter();
 
   useEffect(() => {
@@ -64,12 +63,7 @@ export default function MainPageContent() {
               </button>
             </>
           ) : (
-            <button
-              className="px-4 py-2 bg-gray-200 text-black rounded font-semibold hover:bg-gray-300 hover:scale-105 transition duration-200 cursor-pointer"
-              onClick={logout}
-            >
-              로그아웃
-            </button>
+            <LogoutButton />
           )}
         </div>
       </header>

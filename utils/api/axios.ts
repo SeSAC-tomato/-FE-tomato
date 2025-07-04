@@ -36,7 +36,7 @@ api.interceptors.response.use(
         const user = useAuthStore.getState().user;
         if (user) {
           useAuthStore.getState().login(user, newAccessToken);
-          originalRequest.headers["Authorization"] = newAccessToken;
+          originalRequest.headers["authorization"] = newAccessToken;
           return api(originalRequest);
         } else {
           useAuthStore.getState().logout();

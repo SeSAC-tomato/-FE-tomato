@@ -11,17 +11,30 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const setAuth = useAuthStore((state) => state.login);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setLoading(true);
+    setErrorMsg("");
     try {
       const accessToken = await loginApi(email, password);
       setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
       router.push("/");
     } catch (err: any) {
-      alert(err.message || "로그인 실패");
+      let msg =
+        err?.error?.message ||
+        err?.message ||
+        "로그인에 실패했습니다. 다시 시도해 주세요.";
+      if (
+        msg.includes("Request failed") ||
+        msg.includes("404") ||
+        msg.includes("500")
+      ) {
+        msg = "아이디 또는 비밀번호가 올바르지 않습니다.";
+      }
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
@@ -66,6 +79,12 @@ export default function LoginForm() {
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-[#e53935]"
             />
           </div>
+          {/* 에러 메시지 */}
+          {errorMsg && (
+            <div className="w-full text-red-500 text-sm mb-3 text-center">
+              {errorMsg}
+            </div>
+          )}
           {/* 로그인 버튼 */}
           <button
             type="submit"

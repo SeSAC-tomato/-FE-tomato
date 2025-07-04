@@ -1,35 +1,34 @@
-"use client"
-import Filter from "@/components/filter/Filter"
-import PostHeader from "@/components/header/PostHeader"
-import PageList from "@/components/PageList/PageList"
-import PostsList from "@/components/PostList/PostsList"
-import { useState } from "react"
+"use client";
+import PostHeader from "@/components/header/PostHeader";
+import PageList from "@/components/PageList/PageList";
+import PostsList from "@/components/PostList/PostsList";
+import mockPosts from "@/utils/mock/mockPosts";
+import { useState, useEffect } from "react";
 
 export default function Page() {
-  const [isLiked, setIsLiked] = useState<boolean>(false)
-  const [totalPage, setTotalPage] = useState<number>(100)
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const handleLike = () => {
-    setIsLiked(!isLiked)
-  }
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 16;
+  const totalPage = Math.ceil(mockPosts.length / pageSize);
+
   const onPageListHandle = (page: number) => {
-    setCurrentPage(page)
-  }
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
   return (
-    <>
-      <div className="relative w-full h-screen flex-col min-h-screen">
-        <div className="mx-auto w-full lg:w-[1024px] flex flex-col">
-          <PostHeader />
-          <Filter />
-          <PostsList />
-          <PageList
-            totalPage={totalPage}
-            currentPage={currentPage}
-            onPageListHandle={onPageListHandle}
-          />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#ffecd2] via-[#fcb69f] to-[#ff8177]">
+      <PostHeader />
+      <div className="mx-auto w-full max-w-4xl flex flex-col">
+        <PostsList page={currentPage} pageSize={pageSize} />
+        <PageList
+          totalPage={totalPage}
+          currentPage={currentPage}
+          onPageListHandle={onPageListHandle}
+        />
       </div>
-    </>
-  )
+    </div>
+  );
 }

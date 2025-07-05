@@ -4,7 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import productImage from "../../../public/제품이미지.png";
-import { PostPageProps } from "@/utils/type/type";
+import {PostPageProps} from "@/utils/type/type";
+import {axiosGet} from "@/utils/api/chat/chatApi";
+import {ChatCommonResponse, ChatRoomRequest, ChatRoomResponse, PostResponse} from "@/utils/type/chat/chat";
+import ChatModal from "@/components/chat/ChatModal";
 
 export default function Post({ params }: PostPageProps) {
   // 더미 데이터
@@ -82,57 +85,114 @@ export default function Post({ params }: PostPageProps) {
     setResultModalOpen(false);
   };
 
-  return (
-    <>
-      <MainHeader>
-        {/* 카드/내용 영역만 스크롤, 전체는 overflow-hidden */}
-        <div className="fixed inset-0 pt-[80px] overflow-y-auto hide-scrollbar flex flex-col items-center justify-center min-h-screen">
-          {/* 네비게이션 뎁스(Breadcrumbs) - 카드 외부(카드 위, 배경 위) */}
-          <div className="w-full max-w-5xl flex justify-start mb-6 text-sm text-gray-500 items-center gap-0 pl-0">
-            <Link
-              href="/"
-              className="hover:underline hover:text-[#e53935] transition"
-            >
-              홈
-            </Link>
-            <span className="px-1">&gt;</span>
-            <Link
-              href="/posts"
-              className="hover:underline hover:text-[#e53935] transition"
-            >
-              중고거래
-            </Link>
-            <span className="px-1">&gt;</span>
-            <Link
-              href={`/posts?category=${encodeURIComponent(post.category)}`}
-              className="hover:underline hover:text-[#e53935] transition"
-            >
-              {post.category}
-            </Link>
-            <span className="px-1">&gt;</span>
-            <span className="text-gray-800 font-bold">{post.title}</span>
-          </div>
-          <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl px-12 py-10 flex flex-col gap-8">
-            {/* 상단: 사진+설명 */}
-            <div className="flex flex-row gap-10 w-full">
-              {/* 사진 */}
-              <div className="flex-1 flex flex-col items-center justify-start">
-                <div className="w-full max-w-md bg-gray-300 rounded-xl flex items-center justify-center h-full">
-                  <Image
-                    src={productImage}
-                    alt="제품 이미지"
-                    className="object-cover w-full h-full rounded-xl"
-                  />
-                </div>
-              </div>
-              {/* 설명+정보 */}
-              <div className="flex-1 flex flex-col justify-start">
-                {/* 설명 위 정보 */}
-                <div className="w-full max-w-md mx-auto mb-4">
-                  <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
-                    {post.title}
-                    {post.status === "예약" && (
-                      <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+
+    //// chat 관련
+
+    // 테스트용
+    const post2: PostResponse = {
+        id: 22,
+        title: '아이패드 9세대 64GB',
+        price: 240000,
+        content:
+            '사용한지 2년 됐습니다.\n케이스랑 펜슬, 키보드도 같이 드립니다.\n본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을 구성한 대비의 화면입니다.',
+        postStatus: 'SELLING',
+        productCategory: 'KIDS',
+        createdAt: 'string',
+        updatedAt: 'string',
+        userId: 2,
+        nickname: 'test1',
+        images: ['cd5722b8-f544-4f59-b346-ff8b04c6a035.png'],
+    };
+
+    const [modalInfo, setModalInfo] = useState<{
+        roomId: number;
+        targetUserId: number;
+        targetUserNickname: string;
+    }>();
+    const openChatModal = async () => {
+        const data = await axiosGet<
+            ChatCommonResponse<ChatRoomResponse>,
+            ChatRoomRequest
+        >('/chat/room', {targetUserId: post2.userId});
+
+        // userId 정보가 있어야함!
+
+        const {roomId, targetUserId, targetUserNickname} = data.data
+
+
+        setModalInfo({roomId, targetUserId, targetUserNickname});
+    };
+    const closeChatModal = () => {
+        setModalInfo(undefined);
+    };
+
+    // chat
+
+
+    return (
+        <>
+            {modalInfo && (
+                <ChatModal
+                    onClose={closeChatModal}
+                    roomId={modalInfo.roomId}
+                    nickname={modalInfo.targetUserNickname}
+                    key={modalInfo.roomId}
+                />
+            )}
+
+            <MainHeader>
+                {/* 카드/내용 영역만 스크롤, 전체는 overflow-hidden */}
+                <div
+                    className="fixed inset-0 pt-[80px] overflow-y-auto hide-scrollbar flex flex-col items-center justify-center min-h-screen">
+                    {/* 네비게이션 뎁스(Breadcrumbs) - 카드 외부(카드 위, 배경 위) */}
+                    <div
+                        className="w-full max-w-5xl flex justify-start mb-6 text-sm text-gray-500 items-center gap-0 pl-0">
+                        <Link
+                            href="/"
+                            className="hover:underline hover:text-[#e53935] transition"
+                        >
+                            홈
+                        </Link>
+                        <span className="px-1">&gt;</span>
+                        <Link
+                            href="/posts"
+                            className="hover:underline hover:text-[#e53935] transition"
+                        >
+                            중고거래
+                        </Link>
+                        <span className="px-1">&gt;</span>
+                        <Link
+                            href={`/posts?category=${encodeURIComponent(post.category)}`}
+                            className="hover:underline hover:text-[#e53935] transition"
+                        >
+                            {post.category}
+                        </Link>
+                        <span className="px-1">&gt;</span>
+                        <span className="text-gray-800 font-bold">{post.title}</span>
+                    </div>
+                    <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl px-12 py-10 flex flex-col gap-8">
+                        {/* 상단: 사진+설명 */}
+                        <div className="flex flex-row gap-10 w-full">
+                            {/* 사진 */}
+                            <div className="flex-1 flex flex-col items-center justify-start">
+                                <div
+                                    className="w-full max-w-md bg-gray-300 rounded-xl flex items-center justify-center h-full">
+                                    <Image
+                                        src={productImage}
+                                        alt="제품 이미지"
+                                        className="object-cover w-full h-full rounded-xl"
+                                    />
+                                </div>
+                            </div>
+                            {/* 설명+정보 */}
+                            <div className="flex-1 flex flex-col justify-start">
+                                {/* 설명 위 정보 */}
+                                <div className="w-full max-w-md mx-auto mb-4">
+                                    <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+                                        {post.title}
+                                        {post.status === "예약" && (
+                                            <span
+                                                className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
                         예약
                       </span>
                     )}

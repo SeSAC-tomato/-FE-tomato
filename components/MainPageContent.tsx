@@ -20,6 +20,32 @@ export default function MainPageContent() {
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
 
+
+  // Test 용
+  const setTestUser = useAuthStore((state) => state.setTestUser);
+  // const testUser = useAuthStore((state) => state.testUser);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isInitialized && isLoggedIn) {
+        const data = await axiosGet('/tes/login/userInfo');
+        const { email, userId, nickname } = data as {
+          email: string;
+          userId: number;
+          nickname: string;
+        };
+
+        setTestUser({ email, userId, nickname });
+      }
+    };
+    fetchData();
+  }, [isInitialized, setTestUser, isLoggedIn]);
+
+  // Test end
+
+
+
+
   useEffect(() => {
     const token =
       typeof window !== "undefined"

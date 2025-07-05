@@ -5,6 +5,7 @@ import LogoutButton from "@/components/button/LogoutButton";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import React from "react";
+import MyPageButton from "@/components/button/MyPageButton";
 
 const MainHeader = ({ children }: { children?: React.ReactNode }) => {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -38,7 +39,10 @@ const MainHeader = ({ children }: { children?: React.ReactNode }) => {
               <RegisterButton className="text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all" />
             </>
           ) : (
-            <LogoutButton className="text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all" />
+            <>
+              <MyPageButton className="text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all" />
+              <LogoutButton className="text-base px-6 py-2 rounded-full shadow hover:scale-105 transition-all" />
+            </>
           )}
         </div>
       </header>

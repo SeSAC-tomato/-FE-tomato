@@ -1,6 +1,9 @@
 import { create } from "zustand";
 
 interface User {
+  id: number;
+  nickname: string;
+  address: string;
   email: string;
   // 필요하다면 추가 정보
 }

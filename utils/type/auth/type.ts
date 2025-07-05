@@ -14,6 +14,9 @@ export type Register = {
   passwordConfirm: string;
   nickname: string;
   address: string;
+  sido: string;
+  sigungu: string;
+  dong: string;
 };
 
 export enum VerifyType {

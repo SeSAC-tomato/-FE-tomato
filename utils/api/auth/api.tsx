@@ -1,5 +1,10 @@
 import api from "@/utils/api/axios";
-import { EmailCheckResponse, NicknameCheckResponse, Register, VerifyType } from "@/utils/type/auth/type";
+import {
+  EmailCheckResponse,
+  NicknameCheckResponse,
+  Register,
+  VerifyType,
+} from "@/utils/type/auth/type";
 const AUTH_API_PATH = "/auth";
 
 export const Login = async (
@@ -64,6 +69,9 @@ export const register = async (register: Register): Promise<void> => {
       passwordConfirm: register.passwordConfirm,
       nickname: register.nickname,
       address: register.address,
+      sido: register.sido,
+      sigungu: register.sigungu,
+      dong: register.dong,
     })
     .catch((e) => {
       throw new Error(e);
@@ -82,7 +90,11 @@ export const logout = async () => {
   console.log(res);
 };
 
-export const verify = async (email: string, token: string, type: VerifyType) => {
+export const verify = async (
+  email: string,
+  token: string,
+  type: VerifyType
+) => {
   return await api.post(`${AUTH_API_PATH}/verify`, {
     email,
     token,
@@ -90,7 +102,11 @@ export const verify = async (email: string, token: string, type: VerifyType) => 
   });
 };
 
-export const reverify = async (email: string, token: string, type: VerifyType) => {
+export const reverify = async (
+  email: string,
+  token: string,
+  type: VerifyType
+) => {
   return await api.post(`${AUTH_API_PATH}/reverify`, {
     email,
     token,

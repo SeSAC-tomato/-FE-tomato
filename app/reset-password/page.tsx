@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { passwordChanger } from "@/utils/api/auth/api";
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
@@ -16,6 +17,7 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isValid, setIsValid] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // 비밀번호 정규식 (회원가입과 동일)
   const passwordRegex =
@@ -86,39 +88,60 @@ export default function ResetPasswordPage() {
     }
 
     setLoading(true);
+    setIsSubmitted(true);
 
     try {
-      // TODO: 실제 API 호출 구현
-      // const res = await resetPassword(email, token, password);
+      const res = await passwordChanger(
+        email ?? "",
+        token ?? "",
+        "PASSWORD",
+        password,
+        passwordConfirm
+      );
 
-      // 임시로 성공 처리
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (res.status === 200) {
+        setSuccess("비밀번호가 성공적으로 변경되었습니다!");
+        setLoading(false);
 
-      setSuccess("비밀번호가 성공적으로 변경되었습니다!");
-      setLoading(false);
-
-      // 2초 후 로그인 페이지로 이동
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+        // 2초 후 로그인 페이지로 이동
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } else {
+        setError("비밀번호 변경에 실패했습니다. 다시 시도해 주세요.");
+        setLoading(false);
+        setIsSubmitted(false);
+      }
     } catch (error: any) {
       console.error("비밀번호 재설정 오류:", error);
 
       if (error.response) {
         const status = error.response.status;
+        const errorMessage = error.response.data?.error?.message;
+
         if (status === 400) {
-          setError("비밀번호 형식이 올바르지 않습니다.");
+          setError(errorMessage || "비밀번호 형식이 올바르지 않습니다.");
         } else if (status === 401) {
-          setError("토큰이 만료되었습니다. 다시 시도해 주세요.");
+          setError(
+            errorMessage || "토큰이 만료되었습니다. 다시 시도해 주세요."
+          );
         } else if (status === 404) {
-          setError("유효하지 않은 요청입니다.");
+          setError(errorMessage || "유효하지 않은 요청입니다.");
+        } else if (status === 409) {
+          setError(
+            errorMessage ||
+              "이미 사용된 비밀번호입니다. 다른 비밀번호를 입력해 주세요."
+          );
         } else {
-          setError("비밀번호 변경에 실패했습니다. 다시 시도해 주세요.");
+          setError(
+            errorMessage || "비밀번호 변경에 실패했습니다. 다시 시도해 주세요."
+          );
         }
       } else {
         setError("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해 주세요.");
       }
       setLoading(false);
+      setIsSubmitted(false);
     }
   };
 
@@ -154,7 +177,7 @@ export default function ResetPasswordPage() {
               value={password}
               onChange={handlePasswordChange}
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e53935] disabled:bg-gray-100 disabled:cursor-not-allowed"
-              disabled={loading}
+              disabled={loading || isSubmitted}
               required
             />
             {/* 비밀번호 조건별 체크 UI */}
@@ -186,7 +209,7 @@ export default function ResetPasswordPage() {
               onChange={(e) => setPasswordConfirm(e.target.value)}
               onBlur={handlePasswordCheckBlur}
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e53935] disabled:bg-gray-100 disabled:cursor-not-allowed"
-              disabled={loading}
+              disabled={loading || isSubmitted}
               required
             />
             {passwordConfirm.length > 0 && password !== passwordConfirm && (
@@ -210,9 +233,13 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             className="w-full bg-[#e53935] text-white py-3 rounded-md text-base font-semibold hover:bg-[#d32f2f] transition-colors mb-4 disabled:opacity-50 shadow-lg disabled:cursor-not-allowed"
-            disabled={loading || !isValid}
+            disabled={loading || !isValid || isSubmitted}
           >
-            {loading ? "비밀번호 변경 중..." : "비밀번호 변경"}
+            {loading
+              ? "비밀번호 변경 중..."
+              : isSubmitted
+              ? "변경 완료"
+              : "비밀번호 변경"}
           </button>
 
           <div className="w-full flex justify-center text-sm mt-2">

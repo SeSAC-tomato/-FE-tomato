@@ -82,6 +82,7 @@ export const logout = async () => {
   console.log(res);
 };
 
+
 export const verify = async (
   email: string,
   token: string,
@@ -111,5 +112,21 @@ export const passwordVerify = async (
 ) => {
   return await api.post(`${AUTH_API_PATH}/password`, {
     email
+  })
+}
+
+export const passwordChanger = async (
+  email: string,
+  token: string,
+  type: string,
+  password: string,
+  passwordConfirm: string
+) => {
+  return await api.put(`${AUTH_API_PATH}/password`, {
+    email,
+    token,
+    type,
+    password,
+    passwordConfirm
   })
 }

@@ -38,6 +38,10 @@ export default function PasswordVerifyPage() {
         if (res.status === 200) {
           setStatus("success");
           setMessage("비밀번호 재설정 토큰이 유효합니다!");
+          // 성공 시 자동으로 비밀번호 재설정 화면으로 이동
+          setTimeout(() => {
+            router.push(`/reset-password?token=${token}&email=${email}`);
+          }, 2000);
         } else {
           setMessage(res.data?.error?.message || "토큰 인증에 실패했습니다.");
           setErrorCode(res.data?.error?.code || "");
@@ -105,8 +109,6 @@ export default function PasswordVerifyPage() {
 
   const getButtonText = () => {
     switch (status) {
-      case "success":
-        return "비밀번호 재설정하기";
       case "expired":
         return "비밀번호 재설정 다시 요청";
       default:
@@ -116,9 +118,6 @@ export default function PasswordVerifyPage() {
 
   const handleButtonClick = () => {
     switch (status) {
-      case "success":
-        router.push(`/reset-password?token=${token}&email=${email}`);
-        break;
       case "expired":
         router.push("/forgot-password");
         break;
@@ -148,12 +147,10 @@ export default function PasswordVerifyPage() {
           {message}
         </p>
 
-        {status !== "loading" && (
+        {status !== "loading" && status !== "success" && (
           <button
             className={`mt-6 px-6 py-3 text-white rounded-md font-semibold text-base shadow transition ${
-              status === "success"
-                ? "bg-[#e53935] hover:bg-[#d32f2f]"
-                : status === "expired"
+              status === "expired"
                 ? "bg-yellow-500 hover:bg-yellow-600"
                 : "bg-gray-400 hover:bg-gray-500"
             }`}
@@ -161,6 +158,13 @@ export default function PasswordVerifyPage() {
           >
             {getButtonText()}
           </button>
+        )}
+
+        {/* 성공 시 안내 메시지 */}
+        {status === "success" && (
+          <p className="text-sm text-gray-600 mt-4 text-center">
+            비밀번호 재설정 화면으로 이동합니다...
+          </p>
         )}
 
         {/* 추가 안내 메시지 */}

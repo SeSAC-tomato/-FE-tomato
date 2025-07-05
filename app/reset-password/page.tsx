@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { passwordChanger } from "@/utils/api/auth/api";
+import { VerifyType } from "@/utils/type/auth/type";
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
@@ -94,7 +95,7 @@ export default function ResetPasswordPage() {
       const res = await passwordChanger(
         email ?? "",
         token ?? "",
-        "PASSWORD",
+        VerifyType.PASSWORD,
         password,
         passwordConfirm
       );

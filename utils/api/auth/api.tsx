@@ -1,5 +1,5 @@
 import api from "@/utils/api/axios";
-
+import { EmailCheckResponse, NicknameCheckResponse, Register, VerifyType } from "@/utils/type/auth/type";
 const AUTH_API_PATH = "/auth";
 
 export const Login = async (
@@ -56,7 +56,7 @@ export const checkNicknameDuplicate = async (
     });
 };
 
-export const register = async (register: register): Promise<void> => {
+export const register = async (register: Register): Promise<void> => {
   await api
     .post(`${AUTH_API_PATH}/register`, {
       email: register.email,
@@ -82,43 +82,32 @@ export const logout = async () => {
   console.log(res);
 };
 
-
-export const verify = async (
-  email: string,
-  token: string,
-  type: string
-) => {
-  return await api.post(`${AUTH_API_PATH}/verify`,{
+export const verify = async (email: string, token: string, type: VerifyType) => {
+  return await api.post(`${AUTH_API_PATH}/verify`, {
     email,
     token,
-    type
-  })
-}
+    type,
+  });
+};
 
-export const reverify = async (
-  email: string,
-  token: string,
-  type: string
-) => {
+export const reverify = async (email: string, token: string, type: VerifyType) => {
   return await api.post(`${AUTH_API_PATH}/reverify`, {
     email,
     token,
-    type
-  })
-}
+    type,
+  });
+};
 
-export const passwordVerify = async (
-  email: string
-) => {
+export const passwordVerify = async (email: string) => {
   return await api.post(`${AUTH_API_PATH}/password`, {
-    email
-  })
-}
+    email,
+  });
+};
 
 export const passwordChanger = async (
   email: string,
   token: string,
-  type: string,
+  type: VerifyType,
   password: string,
   passwordConfirm: string
 ) => {
@@ -127,6 +116,6 @@ export const passwordChanger = async (
     token,
     type,
     password,
-    passwordConfirm
-  })
-}
+    passwordConfirm,
+  });
+};

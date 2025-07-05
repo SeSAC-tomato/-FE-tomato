@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { verify } from "@/utils/api/auth/api";
+import { VerifyType } from "@/utils/type/auth/type";
 import VerifyResultCard from "@/components/verify/VerifyResultCard";
 
 export default function EmailVerifyPage() {
@@ -24,7 +25,7 @@ export default function EmailVerifyPage() {
     async function doVerify() {
       try {
         await new Promise((resolve) => setTimeout(resolve, 5000));
-        const res = await verify(email ?? "", token ?? "", "EMAIL");
+        const res = await verify(email ?? "", token ?? "", VerifyType.EMAIL);
         if (res.status == 200) {
           setStatus("success");
         } else {

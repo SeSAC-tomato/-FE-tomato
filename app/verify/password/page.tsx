@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { verify } from "@/utils/api/auth/api";
+import { VerifyType } from "@/utils/type/auth/type";
 import Image from "next/image";
 
 export default function PasswordVerifyPage() {
@@ -32,7 +33,7 @@ export default function PasswordVerifyPage() {
         // 실제 API 호출 시에는 로딩 시간을 줄일 수 있습니다
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        const res = await verify(email ?? "", token ?? "", "PASSWORD");
+        const res = await verify(email ?? "", token ?? "", VerifyType.PASSWORD);
 
         if (res.status === 200) {
           setStatus("success");

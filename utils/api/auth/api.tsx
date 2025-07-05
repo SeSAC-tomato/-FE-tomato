@@ -105,3 +105,11 @@ export const reverify = async (
     type
   })
 }
+
+export const passwordVerify = async (
+  email: string
+) => {
+  return await api.post(`${AUTH_API_PATH}/password`, {
+    email
+  })
+}

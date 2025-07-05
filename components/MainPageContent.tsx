@@ -9,6 +9,7 @@ import LogoutButton from "@/components/button/LogoutButton";
 import LoginButton from "./button/LoginButton";
 import RegisterButton from "./button/RegisterButton";
 import MainHeader from "@/components/header/MainHeader";
+import {axiosGet} from "@/utils/api/chat/chatApi";
 
 export default function MainPageContent() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);

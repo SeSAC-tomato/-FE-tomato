@@ -5,6 +5,7 @@ import MyPageMenu from "@/components/mypage/MyPageMenu";
 import MainHeader from "@/components/header/MainHeader";
 import { checkNicknameDuplicate } from "@/utils/api/auth/api";
 import api from "@/utils/api/axios";
+import { updateUserProfile } from "@/utils/api/user/api";
 
 // 카카오 window 타입 보강
 declare global {
@@ -119,15 +120,13 @@ export default function UserProfilePage() {
     if (!user) return;
     setLoading(true);
     try {
-      await api.put(`/user/${user.id}/profile`, {
-        nickname: isNicknameChanged ? nicknameCheckedValue : user.nickname,
-        address:
-          editField === null &&
-          addressTemp !== user.address &&
-          addressTemp !== ""
-            ? addressTemp
-            : user.address,
-      });
+      await updateUserProfile(
+        user.id,
+        isNicknameChanged ? nicknameCheckedValue : user.nickname,
+        editField === null && addressTemp !== user.address && addressTemp !== ""
+          ? addressTemp
+          : user.address
+      );
       alert("적용되었습니다!");
       // 적용 후 상태 초기화
       setEditField(null);

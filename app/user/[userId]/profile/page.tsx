@@ -129,7 +129,6 @@ export default function UserProfilePage() {
             : user.address,
       });
       alert("적용되었습니다!");
-      window.location.reload();
       // 적용 후 상태 초기화
       setEditField(null);
       setNicknameChecked(false);

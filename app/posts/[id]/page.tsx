@@ -34,8 +34,7 @@ export default function Post() {
   const [content, setContent] = useState<string>("")
   const [postStatus, setPostStatus] = useState<PostStatus>("SELLING") // 기본값은 "SELLING" 같은 enum 값 중 하나
   const [productCategory, setProductCategory] = useState<string>("")
-  const [updatedAt, setUpdatedAt] = useState<string>("")
-  const [email, setEmail] = useState<string>("")
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [nickname, setNickname] = useState<string>("")
 
   // 카드 너비에 맞춰 버튼바 중앙정렬
@@ -149,8 +148,8 @@ export default function Post() {
                 {/* 사진 */}
                 <div className="flex-1 flex flex-col items-center justify-start">
                   <div className="w-full max-w-md bg-gray-300 rounded-xl flex items-center justify-center h-full">
-                    <Image
-                      src={productImage}
+                    <img
+                      src={`https://picsum.photos/seed/item${postId}/400/400`}
                       alt="제품 이미지"
                       className="object-cover w-full h-full rounded-xl"
                     />
@@ -159,8 +158,8 @@ export default function Post() {
                     {/* 사용자 정보 */}
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
-                        <Image
-                          src="https://via.placeholder.com/48x48.png?text=U"
+                        <img
+                          src={`https://picsum.photos/seed/item${postId}/400/400`}
                           alt="프로필"
                           width={48}
                           height={48}
@@ -193,7 +192,7 @@ export default function Post() {
                     )}
                   </div>
                   <div className="text-gray-500 text-base mb-1">
-                    {productCategory} · {updatedAt.slice(0, 10)}
+                    {productCategory} · {updatedAt?.slice(0, 10)}
                   </div>
                   <div className="text-xl font-bold mb-4">{price}</div>
                 </div>

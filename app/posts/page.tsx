@@ -18,13 +18,14 @@ export default function Page() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const [searchKeyword, setSearchKeyword] = useState("")
-  const [productCategory, setProductCategory] =
-    useState<ProductCategory | null>(null)
-  const [region, setRegion] = useState<string | null>(null) // 사용안함
-  const [postStatus, setPostStatus] = useState(false)
-  const [minPrice, setMinPrice] = useState("")
-  const [maxPrice, setMaxPrice] = useState("")
+  const [searchKeyword, setSearchKeyword] = useState<string>("")
+  const [productCategory, setProductCategory] = useState<
+    ProductCategory | undefined
+  >(undefined)
+  const [selling, setSelling] = useState<boolean | undefined>(undefined)
+  const [minPrice, setMinPrice] = useState<string>("")
+  const [maxPrice, setMaxPrice] = useState<string>("")
+  const [region, setRegion] = useState<string>("")
 
   // API 호출 함수
   const getPostsData = useCallback(
@@ -33,9 +34,9 @@ export default function Page() {
       setError(null)
       try {
         const searchFilter: PostSearchFilter = {
-          keyword: searchKeyword || undefined,
+          searchKeyword: searchKeyword || undefined,
           productCategory: productCategory || undefined,
-          postStatus: postStatus || undefined,
+          selling: selling || undefined,
           minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
           maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
         }
@@ -63,7 +64,7 @@ export default function Page() {
         setLoading(false)
       }
     },
-    [searchKeyword, productCategory, postStatus, minPrice, maxPrice, pageSize]
+    [searchKeyword, productCategory, selling, minPrice, maxPrice, pageSize]
   )
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export default function Page() {
 
   useEffect(() => {
     setCurrentPage(0)
-  }, [searchKeyword, productCategory, postStatus, minPrice, maxPrice])
+  }, [searchKeyword, productCategory, selling, minPrice, maxPrice])
 
   const onPageListHandle = (page: number) => {
     setCurrentPage(page)
@@ -81,7 +82,20 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#ffecd2] via-[#fcb69f] to-[#ff8177]">
-      <PostHeader />
+      <PostHeader
+        searchKeyword={searchKeyword}
+        setSearchKeyword={setSearchKeyword}
+        productCategory={productCategory}
+        setProductCategory={setProductCategory}
+        selling={selling}
+        setSelling={setSelling}
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        region={region}
+        setRegion={setRegion}
+      />
       <div className="mx-auto w-full max-w-4xl flex flex-col">
         <PostsList posts={posts} loading={loading} error={error} />
         <PageList

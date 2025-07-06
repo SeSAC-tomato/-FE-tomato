@@ -9,10 +9,6 @@ interface PostsListProps {
 }
 
 export default function PostsList({ posts, loading, error }: PostsListProps) {
-  // const start = (page - 1) * pageSize;
-  // const end = start + pageSize;
-  // const items = mockPosts.slice(start, end);
-
   if (loading) {
     return (
       <div className="py-10 text-center text-gray-600 text-lg">

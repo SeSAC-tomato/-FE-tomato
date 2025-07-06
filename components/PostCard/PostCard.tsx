@@ -3,6 +3,8 @@ import { useState } from "react"
 import LikeButton from "../button/LikeButton"
 import { PostResponse } from "@/utils/domain/label"
 import Link from "next/link"
+import { formatDistanceToNow, parseISO } from "date-fns"
+import { ko } from "date-fns/locale"
 
 interface PostCardProps {
   post: PostResponse
@@ -22,11 +24,17 @@ export default function PostCard({ post }: PostCardProps) {
 
   const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked)
   const handleLike = () => setIsLiked((prev) => !prev)
-
+  const timeAgo = formatDistanceToNow(parseISO(updatedAt), {
+    addSuffix: true,
+    locale: ko,
+  })
   return (
     <>
-      <Link href={`/posts/${id}`} className="block hover:shadow-lg transition">
-        <div className="w-full h-full bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow border border-gray-200 flex flex-col p-3">
+      <div className="w-full h-full bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow border border-gray-200 flex flex-col p-3">
+        <Link
+          href={`/posts/${id}`}
+          className="block hover:shadow-lg transition"
+        >
           <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-300">
             <img
               src={imageUrl ?? `https://picsum.photos/seed/item${id}/400/400`}
@@ -40,18 +48,17 @@ export default function PostCard({ post }: PostCardProps) {
               <h3 className="text-lg font-semibold truncate max-w-[75%]">
                 {title}
               </h3>
-              <LikeButton isLiked={isLiked} handleLike={handleLike} />
             </div>
             <div className="text-[#e53935] font-extrabold text-xl">
               {price.toLocaleString()}원
             </div>
             <div className="text-gray-500 text-sm truncate">
-              {region ?? "구로동"} · {productCategory} ·{" "}
-              {updatedAt.slice(0, 10)}
+              {region ?? "구로동"} · {timeAgo}
             </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+        <LikeButton isLiked={isLiked} handleLike={handleLike} />
+      </div>
     </>
   )
 }

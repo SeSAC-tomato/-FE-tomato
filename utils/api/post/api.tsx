@@ -31,29 +31,29 @@ export const getPosts = async (
   filter?: PostSearchFilter
 ): Promise<CommonResponse<PostPageResponseData>> => {
   let endPoint = `post`
-  let query = `posts?page=${page}&size=${pageSize}`
+  let query = `?page=${page}&size=${pageSize}`
   const hasFilter =
     filter &&
-    ((filter.keyword !== undefined &&
-      filter.keyword !== null &&
-      filter.keyword !== "") ||
+    ((filter.searchKeyword !== undefined &&
+      filter.searchKeyword !== null &&
+      filter.searchKeyword !== "") ||
       (filter.productCategory !== undefined &&
         filter.productCategory !== null) ||
-      (filter.postStatus !== undefined && filter.postStatus !== null) ||
+      (filter.selling !== undefined && filter.selling !== null) ||
       (filter.minPrice !== undefined && filter.minPrice !== null) ||
       (filter.maxPrice !== undefined && filter.maxPrice !== null))
 
   if (hasFilter) {
-    endPoint = "/posts/search"
+    endPoint = "post/search"
 
-    if (filter.keyword) {
-      query += `&keyword=${encodeURIComponent(filter.keyword)}`
+    if (filter.searchKeyword) {
+      query += `&keyword=${encodeURIComponent(filter.searchKeyword)}`
     }
     if (filter.productCategory) {
       query += `&productCategory=${encodeURIComponent(filter.productCategory)}`
     }
-    if (filter.postStatus) {
-      query += `&selling=${encodeURIComponent(filter.postStatus)}`
+    if (filter.selling) {
+      query += `&selling=${encodeURIComponent(filter.selling)}`
     }
     if (filter.minPrice !== undefined && filter.minPrice !== null) {
       query += `&minPrice=${encodeURIComponent(filter.minPrice)}`
@@ -63,8 +63,10 @@ export const getPosts = async (
     }
   }
 
+  console.log(`${endPoint}${query}`)
   const response = await api.get<CommonResponse<PostPageResponseData>>(
     `${endPoint}?${query}`
   )
+  console.log(response)
   return response.data
 }

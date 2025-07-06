@@ -39,9 +39,24 @@ export type PostPageResponseData = {
 }
 
 export type PostSearchFilter = {
-  keyword?: string
+  searchKeyword?: string
   productCategory?: ProductCategory
-  postStatus?: boolean
+  selling?: boolean
+  region?: string
   minPrice?: number
   maxPrice?: number
 }
+
+export const categoryLabelMap: Record<string, ProductCategory> = {
+  "디지털 기기": "DIGITAL_DEVICE",
+  생활가전: "HOME_APPLIANCE",
+  "가구/인테리어": "FURNITURE",
+  "생활/주방": "KITCHEN",
+  유아동: "KIDS",
+}
+
+export const categoryEnumToLabelMap: Record<ProductCategory, string> =
+  Object.entries(categoryLabelMap).reduce((acc, [label, enumValue]) => {
+    acc[enumValue] = label
+    return acc
+  }, {} as Record<ProductCategory, string>)

@@ -3,8 +3,8 @@
 import PostHeader2 from "@/components/header/PostHeader2"
 import { useState } from "react"
 import { Plus } from "lucide-react"
-import axios from "axios"
 import { v4 as uuidv4 } from "uuid"
+import { createOrUpdatePost } from "@/utils/api/post/api"
 
 export default function newProduct() {
   //   const [imageUrls, setImageUrls] = useState<string[]>([])
@@ -13,7 +13,7 @@ export default function newProduct() {
 
   const [form, setForm] = useState({
     title: "",
-    category: "",
+    productCategory: "",
     price: "",
     content: "",
   })
@@ -25,12 +25,21 @@ export default function newProduct() {
     "생활/주방": "KITCHEN",
     유아동: "KIDS",
   } as const
+  type CategoryLabel = keyof typeof categoryMap
+  type CategoryValue = (typeof categoryMap)[CategoryLabel]
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const payload = {
+    title: form.title,
+    productCategory: form.productCategory,
+    price: Number(form.price),
+    content: form.content,
   }
 
   const handleImageSelect = () => {
@@ -43,16 +52,13 @@ export default function newProduct() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const payload = {
-      title: form.title,
-      category: form.category,
-      price: Number(form.price),
-      content: form.content,
+    try {
+      console.log(payload)
+      const response = await createOrUpdatePost(payload)
+    } catch (error) {
+      console.error("전송 실패", error)
+      alert("전송실패")
     }
-
-    const response = await axios.post("api/post")
-    console.log("전송할 데이터:", payload)
-    alert("등록 완료")
   }
 
   return (
@@ -77,26 +83,28 @@ export default function newProduct() {
               <div className="flex items-center gap-4">
                 <label className="w-24 font-semibold">카테고리</label>
                 <div className="flex flex-wrap gap-2">
-                  {Object.keys(categoryMap).map((label) => (
-                    <label
-                      key={uuidv4()}
-                      className={`px-3 py-1.5 rounded-full text-sm border cursor-pointer ${
-                        form.category === categoryMap[label]
-                          ? "bg-indigo-600 text-white border-indigo-600"
-                          : "bg-white text-gray-700 border-gray-300"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="category"
-                        value={label}
-                        onChange={handleInput}
-                        checked={form.category === label}
-                        className="hidden"
-                      />
-                      {label}
-                    </label>
-                  ))}
+                  {(Object.keys(categoryMap) as CategoryLabel[]).map(
+                    (label: CategoryLabel) => (
+                      <label
+                        key={uuidv4()}
+                        className={`px-3 py-1.5 rounded-full text-sm border cursor-pointer ${
+                          form.productCategory === categoryMap[label]
+                            ? "bg-indigo-600 text-white border-indigo-600"
+                            : "bg-white text-gray-700 border-gray-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="productCategory"
+                          value={categoryMap[label]}
+                          onChange={handleInput}
+                          checked={form.productCategory === categoryMap[label]}
+                          className="hidden"
+                        />
+                        {categoryMap[label]}
+                      </label>
+                    )
+                  )}
                 </div>
               </div>
 
@@ -158,11 +166,23 @@ export default function newProduct() {
                     </div>
                   ))}
 
+                  <label htmlFor="chat-file-upload">업로드</label>
+                  <input
+                    type="file"
+                    id="chat-file-upload"
+                    multiple
+                    accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
+                    style={{ display: "none" }}
+                    // onChange={handleFileChange}
+                  />
+
                   {/* 이미지 추가 버튼 */}
                   {imageUrls.length < 5 && (
                     <button
                       type="button"
-                      onClick={handleImageSelect}
+                      onClick={() => {
+                        document.getElementById("chat-file-upload")?.click()
+                      }}
                       className="w-24 h-24 border rounded flex items-center justify-center bg-gray-100 text-gray-400"
                     >
                       <Plus className="w-6 h-6" />

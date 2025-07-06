@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getCartItems } from "@/utils/api/user/api";
 import MainHeader from "@/components/header/MainHeader";
 import MyPageMenu from "@/components/mypage/MyPageMenu";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -10,9 +10,7 @@ export default function CartPage({ params }: { params: { userId: string } }) {
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
-    axios
-      .get(`/api/v1/user/${params.userId}/cart`)
-      .then((res) => setItems(res.data));
+    getCartItems(Number(params.userId)).then((res) => setItems(res.data));
   }, [params.userId]);
 
   if (!user) return null;

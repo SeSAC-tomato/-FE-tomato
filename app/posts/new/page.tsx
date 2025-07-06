@@ -43,7 +43,6 @@ export default function newProduct() {
   }
 
   const handleImageSelect = () => {
-    // 실제 업로드는 나중에 구현
     const dummyUrl = `/placeholder-${imageUrls.length + 1}.png`
     if (imageUrls.length >= 5) return alert("최대 5장까지 등록 가능합니다.")
     setImageUrls([...imageUrls, dummyUrl])
@@ -58,6 +57,22 @@ export default function newProduct() {
     } catch (error) {
       console.error("전송 실패", error)
       alert("전송실패")
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+
+    const max = 5 - imageUrls.length
+    const fileArray = Array.from(files).slice(0, max)
+
+    const newImageUrls = fileArray.map((file) => URL.createObjectURL(file))
+
+    setImageUrls((prev) => [...prev, ...newImageUrls])
+
+    if (mainImageIndex === null && newImageUrls.length > 0) {
+      setMainImageIndex(0)
     }
   }
 
@@ -173,7 +188,7 @@ export default function newProduct() {
                     multiple
                     accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
                     style={{ display: "none" }}
-                    // onChange={handleFileChange}
+                    onChange={handleFileChange}
                   />
 
                   {/* 이미지 추가 버튼 */}

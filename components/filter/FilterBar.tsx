@@ -1,18 +1,18 @@
-import DropDown from "@/components/dropdown/dropDown";
-import React from "react";
+import DropDown from "@/components/dropdown/dropDown"
+import React from "react"
 
 interface FilterBarProps {
-  category: string | null;
-  setCategory: (v: string | null) => void;
-  region: string | null;
-  setRegion: (v: string | null) => void;
-  onlyAvailable: boolean;
-  setOnlyAvailable: (v: boolean) => void;
-  minPrice: string;
-  setMinPrice: (v: string) => void;
-  maxPrice: string;
-  setMaxPrice: (v: string) => void;
-  className?: string;
+  category: string | null
+  setCategory: (v: string | null) => void
+  region: string | null
+  setRegion: (v: string | null) => void
+  onlyAvailable: boolean
+  setOnlyAvailable: (v: boolean) => void
+  minPrice: string
+  setMinPrice: (v: string) => void
+  maxPrice: string
+  setMaxPrice: (v: string) => void
+  className?: string
 }
 
 const categories = [
@@ -21,8 +21,8 @@ const categories = [
   "가구/인테리어",
   "생활/주방",
   "유아동",
-];
-const regions = ["문래동", "구로동", "대림동", "가산동"];
+]
+const regions = ["문래동", "구로동", "대림동", "가산동"]
 
 const FilterBar: React.FC<FilterBarProps> = ({
   category,
@@ -83,6 +83,6 @@ const FilterBar: React.FC<FilterBarProps> = ({
       />
     </div>
   </div>
-);
+)
 
-export default FilterBar;
+export default FilterBar

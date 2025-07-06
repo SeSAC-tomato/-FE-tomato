@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import api from "@/utils/api/axios";
+import { getMyPosts } from "@/utils/api/user/api";
 
 export default function MyPostsPage({
   params,
@@ -9,18 +9,18 @@ export default function MyPostsPage({
 }) {
   const [posts, setPosts] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //     axios.get(`/api/v1/user/${params.userId}/posts/myPosts`).then(res => setPosts(res.data))
-  // }, [params.userId])
+  useEffect(() => {
+    getMyPosts(Number(params.userId)).then((res) => setPosts(res.data));
+  }, [params.userId]);
 
   return (
     <div>
       <h1>내 게시물</h1>
-      {/* {posts.map((post, idx) => (
-                <div key={idx}>
-                    <p>{post.title}</p>
-                </div>
-            ))} */}
+      {posts.map((post, idx) => (
+        <div key={idx}>
+          <p>{post.title}</p>
+        </div>
+      ))}
     </div>
   );
 }

@@ -98,6 +98,10 @@ export default function LoginForm() {
             <a
               href="#"
               className="text-[#e53935] underline hover:text-[#b71c1c]"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/forgot-password");
+              }}
             >
               비밀번호를 잊어버리셨나요?
             </a>

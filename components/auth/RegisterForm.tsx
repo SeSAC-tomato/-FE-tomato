@@ -27,6 +27,9 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [address, setAddress] = useState("");
+  const [sido, setSido] = useState("");
+  const [sigungu, setSigungu] = useState("");
+  const [dong, setDong] = useState("");
 
   // 중복 검사 모달 관련 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,6 +41,7 @@ export default function RegisterForm() {
 
   const [passwordError, setPasswordError] = useState("");
   const [passwordCheckError, setPasswordCheckError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -61,6 +65,9 @@ export default function RegisterForm() {
     new window.daum.Postcode({
       oncomplete: function (data: any) {
         setAddress(data.address);
+        setSido(data.sido);
+        setSigungu(data.sigungu);
+        setDong(data.bname);
       },
     }).open();
   };
@@ -174,6 +181,11 @@ export default function RegisterForm() {
   // 회원가입 폼 제출
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       await register({
         email,
@@ -181,11 +193,17 @@ export default function RegisterForm() {
         passwordConfirm: passwordCheck,
         nickname,
         address,
+        sido,
+        sigungu,
+        dong,
       });
-      alert("회원가입이 완료되었습니다! 마지막 단계인 이메일 인증을 진행해 주세요!");
+      alert(
+        "회원가입이 완료되었습니다! 마지막 단계인 이메일 인증을 진행해 주세요!"
+      );
       router.push("/");
     } catch (err: any) {
       alert(err.message || "회원가입에 실패했습니다.");
+      setIsSubmitting(false);
     }
   };
 
@@ -221,7 +239,7 @@ export default function RegisterForm() {
                     ? " bg-gray-200 text-gray-400 cursor-not-allowed"
                     : " bg-gray-100")
                 }
-                disabled={emailValify}
+                disabled={emailValify || isSubmitting}
                 ref={emailInputRef}
               />
             </div>
@@ -234,7 +252,7 @@ export default function RegisterForm() {
                   : "bg-black text-white")
               }
               onClick={handleCheckEmail}
-              disabled={emailValify}
+              disabled={emailValify || isSubmitting}
             >
               {emailValify ? "검사 완료" : "중복 검사"}
             </button>
@@ -254,7 +272,7 @@ export default function RegisterForm() {
                     ? " bg-gray-200 text-gray-400 cursor-not-allowed"
                     : " bg-gray-100")
                 }
-                disabled={nicknameValify}
+                disabled={nicknameValify || isSubmitting}
               />
             </div>
             <button
@@ -266,7 +284,7 @@ export default function RegisterForm() {
                   : "bg-black text-white")
               }
               onClick={handleCheckNickname}
-              disabled={nicknameValify}
+              disabled={nicknameValify || isSubmitting}
             >
               {nicknameValify ? "검사 완료" : "중복 검사"}
             </button>
@@ -279,7 +297,8 @@ export default function RegisterForm() {
               placeholder="비밀번호를 입력해 주세요"
               value={password}
               onChange={handlePasswordChange}
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-gray-200 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             />
             {/* 비밀번호 조건별 체크 UI */}
             <div className="mt-2 space-y-1 text-xs">
@@ -309,7 +328,8 @@ export default function RegisterForm() {
               value={passwordCheck}
               onChange={(e) => setPasswordCheck(e.target.value)}
               onBlur={handlePasswordCheckBlur}
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-gray-200 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             />
             {passwordCheckError && (
               <p className="text-red-500 text-xs mt-1">{passwordCheckError}</p>
@@ -324,14 +344,16 @@ export default function RegisterForm() {
                 placeholder="주소 검색"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-base bg-gray-100 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-gray-200 disabled:cursor-not-allowed"
                 readOnly
+                disabled={isSubmitting}
               />
             </div>
             <button
               type="button"
-              className="ml-2 mt-6 px-4 py-2 bg-black text-white rounded-md font-semibold"
+              className="ml-2 mt-6 px-4 py-2 bg-black text-white rounded-md font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
               onClick={handleSearchAddress}
+              disabled={isSubmitting}
             >
               주소 검색
             </button>
@@ -341,13 +363,13 @@ export default function RegisterForm() {
             type="submit"
             className={
               "w-full py-3 rounded-md text-base font-semibold transition-colors " +
-              (isFormValid
+              (isFormValid && !isSubmitting
                 ? "bg-black text-white hover:bg-neutral-800 cursor-pointer"
                 : "bg-gray-300 text-gray-400 cursor-not-allowed")
             }
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
           >
-            회원가입
+            {isSubmitting ? "회원가입 중..." : "회원가입"}
           </button>
         </form>
       </div>

@@ -53,10 +53,18 @@ export const categoryLabelMap: Record<string, ProductCategory> = {
   "가구/인테리어": "FURNITURE",
   "생활/주방": "KITCHEN",
   유아동: "KIDS",
-}
+} as const
 
 export const categoryEnumToLabelMap: Record<ProductCategory, string> =
   Object.entries(categoryLabelMap).reduce((acc, [label, enumValue]) => {
     acc[enumValue] = label
     return acc
   }, {} as Record<ProductCategory, string>)
+
+export type LikeResponse = {
+  id: number
+  postId: number
+  userId: number
+  isLiked: boolean
+  createdAt: string
+}

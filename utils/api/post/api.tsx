@@ -1,5 +1,6 @@
 import { PostCreatePayload } from "@/utils/type/post/type"
 import {
+  LikeResponse,
   PostPageResponseData,
   PostResponse,
   PostSearchFilter,
@@ -68,5 +69,28 @@ export const getPosts = async (
     `${endPoint}?${query}`
   )
   console.log(response)
+  return response.data
+}
+
+export const deletePost = async (
+  postId: Number | undefined
+): Promise<CommonResponse<void>> => {
+  const response = await api.delete<CommonResponse<void>>(`/post/${postId}`)
+  return response.data
+}
+
+export const updatePost = async (
+  postId: Number | undefined,
+  payload: any
+): Promise<PostResponse | null> => {
+  const response = await api.put(`post/${postId}`, payload)
+  return response.data
+}
+
+export const setFavorite = async (
+  postId: Number | undefined
+): Promise<LikeResponse | null> => {
+  const response = await api.get(`/post/${postId}/cart`)
+  console.log(response.data)
   return response.data
 }

@@ -1,6 +1,6 @@
 // import mockPosts from "@/utils/mock/mockPosts"
 import { PostResponse } from "@/utils/domain/label"
-import PostCard from "../PostCard/PostCard"
+import PostCard from "./PostCard"
 
 interface PostsListProps {
   posts: PostResponse[]

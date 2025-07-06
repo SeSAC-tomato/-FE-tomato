@@ -5,6 +5,7 @@ import { PostResponse } from "@/utils/domain/label"
 import Link from "next/link"
 import { formatDistanceToNow, parseISO } from "date-fns"
 import { ko } from "date-fns/locale"
+import { setFavorite } from "@/utils/api/post/api"
 
 interface PostCardProps {
   post: PostResponse
@@ -23,7 +24,14 @@ export default function PostCard({ post }: PostCardProps) {
   } = post
 
   const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked)
-  const handleLike = () => setIsLiked((prev) => !prev)
+  const handleLike = async () => {
+    try {
+      const response = await setFavorite(id)
+      if (response) setIsLiked((prev) => !prev)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const timeAgo = formatDistanceToNow(parseISO(updatedAt), {
     addSuffix: true,
     locale: ko,

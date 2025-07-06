@@ -1,20 +1,20 @@
 "use client"
 import MainHeader from "@/components/header/MainHeader"
 import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
 import Link from "next/link"
-import productImage from "../../../public/제품이미지.png"
 import { useParams } from "next/navigation"
 import {
   PostResponse,
   PostStatus,
   postStatusLabelMap,
 } from "@/utils/domain/label"
-import { getPostById } from "@/utils/api/post/api"
+import { deletePost, getPostById, setFavorite } from "@/utils/api/post/api"
 import LikeButton from "@/components/button/LikeButton"
 import DropDown from "@/components/dropdown/dropDown"
+import { useRouter } from "next/navigation"
 
 export default function Post() {
+  const router = useRouter()
   const params = useParams()
   const postId = typeof params?.id === "string" ? Number(params.id) : undefined
   const [post, setPost] = useState<PostResponse | null>(null)
@@ -107,8 +107,38 @@ export default function Post() {
     setResultModalOpen(false)
   }
 
-  const handleLike = () => {
-    setIsLiked((prev) => !prev)
+  const handleLike = async () => {
+    try {
+      const response = await setFavorite(postId)
+      if (response) setIsLiked((prev) => !prev)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleEditOrDelete = async () => {
+    if (modalType === "edit") {
+      if (postId) {
+        router.push(`/posts/${postId}/edit`)
+        return
+      }
+      return
+    }
+
+    if (modalType === "delete") {
+      try {
+        if (!postId) return
+        await deletePost(postId)
+        setResultMessage("삭제가 완료되었습니다.")
+        router.push("/posts")
+      } catch (error) {
+        setResultMessage("삭제에 실패했습니다.")
+      }
+      closeModal()
+      setResultModalOpen(true)
+    }
+
+    closeModal()
   }
 
   return (
@@ -201,13 +231,69 @@ export default function Post() {
                     채팅
                   </button>
                 </div>
-                {/* 설명 박스 (사진과 같은 크기, 내부 스크롤) */}
                 <div className="w-full max-w-md h-90 bg-gray-200 rounded-xl p-5 text-gray-700 text-base whitespace-pre-line overflow-y-auto mx-auto hide-scrollbar">
                   {content}
                 </div>
               </div>
             </div>
-            {/* 하단: 사용자+버튼 */}
+            <div className="fixed bottom-0 left-0 w-full z-[99]">
+              <div className="bg-orange-500/20 p-1 shadow-lg flex items-center justify-end ">
+                <div className="w-full max-w-lg flex space-x-4">
+                  <button
+                    onClick={() => openModal("edit")}
+                    className="flex-1 py-3 text-indigo-900 font-bold text-2xl  rounded-md hover:hover:text-3xl transition-colors"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={() => openModal("delete")}
+                    className="flex-1 py-3 text-indigo-900 font-bold text-2xl  rounded-md hover:text-3xl transition-colors"
+                  >
+                    삭제
+                  </button>
+                  {modalOpen && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+                      <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-xl">
+                        <h2 className="text-xl font-bold mb-4">
+                          {modalType === "edit"
+                            ? "수정하시겠습니까?"
+                            : "정말로 삭제하시겠습니까?"}
+                        </h2>
+                        <div className="flex justify-end space-x-4">
+                          <button
+                            onClick={closeModal}
+                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                          >
+                            취소
+                          </button>
+                          <button
+                            onClick={handleEditOrDelete}
+                            className="px-4 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)]"
+                          >
+                            확인
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {resultModalOpen && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[110]">
+                      <div className="bg-white rounded-lg p-5 w-[90%] max-w-sm shadow-xl text-center">
+                        <h2 className="text-lg font-medium mb-4">
+                          {resultMessage}
+                        </h2>
+                        <button
+                          onClick={closeResultModal}
+                          className="mt-2 px-5 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)] transition-colors"
+                        >
+                          닫기
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </MainHeader>

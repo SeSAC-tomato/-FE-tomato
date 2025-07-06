@@ -1,7 +1,6 @@
 "use client"
 import PostHeader from "@/components/header/PostHeader"
-import PageList from "@/components/PageList/PageList"
-import PostsList from "@/components/PostList/PostsList"
+
 import { useState, useEffect, useCallback } from "react"
 import {
   PostResponse,
@@ -9,6 +8,10 @@ import {
   ProductCategory,
 } from "@/utils/domain/label"
 import { getPosts } from "@/utils/api/post/api"
+import Link from "next/link"
+import AddIcon from "@/components/icons/AddIcon"
+import PostsList from "@/components/post/PostsList"
+import PageList from "@/components/post/PageList"
 
 export default function Page() {
   const pageSize = 12
@@ -104,6 +107,18 @@ export default function Page() {
           onPageListHandle={onPageListHandle}
         />
       </div>
+      <Link href="posts/new" passHref>
+        <button
+          className="fixed bottom-6 right-6
+                     bg-orange-600 hover:bg-orange-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                     text-white p-4 rounded-full shadow-lg text-lg font-bold transition-all duration-200 ease-in-out transform hover:scale-105
+                     flex items-center justify-center
+                     z-50"
+        >
+          <AddIcon />
+          <span className="ml-2 hidden sm:inline">글쓰기</span>{" "}
+        </button>
+      </Link>
     </div>
   )
 }

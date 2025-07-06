@@ -5,12 +5,22 @@ import { useState } from "react"
 import { Plus } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
 import { createOrUpdatePost } from "@/utils/api/post/api"
+import MainHeader from "@/components/header/MainHeader"
+import { categoryLabelMap } from "@/utils/domain/label"
+import { useRouter } from "next/navigation"
+import CheckModal from "@/components/modals/CheckModal"
 
 export default function newProduct() {
+  const router = useRouter()
   //   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [imageUrls, setImageUrls] = useState<string[]>([]) // 이미지 URL만 관리
   const [mainImageIndex, setMainImageIndex] = useState<number | null>(null)
-
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState("") // string 타입 유지
+  const [modalCanUse, setModalCanUse] = useState(false) // '사용' 버튼 활성화 여부
+  const [modalOnUseAction, setModalOnUseAction] = useState<(() => void) | null>(
+    null
+  ) // '사용' 버튼 클릭 시 실행될 함수
   const [form, setForm] = useState({
     title: "",
     productCategory: "",
@@ -18,15 +28,8 @@ export default function newProduct() {
     content: "",
   })
 
-  const categoryMap = {
-    "디지털 기기": "DIGITAL_DEVICE",
-    생활가전: "HOME_APPLIANCE",
-    "가구/인테리어": "FURNITURE",
-    "생활/주방": "KITCHEN",
-    유아동: "KIDS",
-  } as const
-  type CategoryLabel = keyof typeof categoryMap
-  type CategoryValue = (typeof categoryMap)[CategoryLabel]
+  type CategoryLabel = keyof typeof categoryLabelMap
+  type CategoryValue = (typeof categoryLabelMap)[CategoryLabel]
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,9 +57,25 @@ export default function newProduct() {
     try {
       console.log(payload)
       const response = await createOrUpdatePost(payload)
+      setModalMessage(
+        "게시글이 성공적으로 등록되었습니다!\n메인 화면으로 이동하시겠습니까?"
+      )
+      setModalCanUse(true)
+      setModalOnUseAction(() => () => {
+        setModalOpen(false)
+        router.push(`/posts`)
+      })
+      setModalOpen(true) // 모달 열기
     } catch (error) {
       console.error("전송 실패", error)
       alert("전송실패")
+      console.error("전송 실패", error)
+      // alert("전송실패") // ★★★ 이 alert는 모달과 중복되므로 제거 ★★★
+      // --- 실패 시 모달 띄우기 ---
+      setModalMessage("게시글 전송에 실패했습니다. 다시 시도해주세요.")
+      setModalCanUse(false)
+      setModalOnUseAction(null)
+      setModalOpen(true)
     }
   }
 
@@ -75,12 +94,15 @@ export default function newProduct() {
       setMainImageIndex(0)
     }
   }
+  const handleModalClose = () => {
+    setModalOpen(false) // 모달 닫기
+  }
 
   return (
     <div>
       <div className="w-full h-screen flex-col min-h-screen">
         <div className="mx-auto w-full lg:w-[1024px] flex flex-col">
-          <PostHeader2 />
+          <MainHeader />
           <div className="max-w-2xl mx-auto px-4 py-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex items-center gap-4">
@@ -98,12 +120,12 @@ export default function newProduct() {
               <div className="flex items-center gap-4">
                 <label className="w-24 font-semibold">카테고리</label>
                 <div className="flex flex-wrap gap-2">
-                  {(Object.keys(categoryMap) as CategoryLabel[]).map(
+                  {(Object.keys(categoryLabelMap) as CategoryLabel[]).map(
                     (label: CategoryLabel) => (
                       <label
                         key={uuidv4()}
                         className={`px-3 py-1.5 rounded-full text-sm border cursor-pointer ${
-                          form.productCategory === categoryMap[label]
+                          form.productCategory === categoryLabelMap[label]
                             ? "bg-indigo-600 text-white border-indigo-600"
                             : "bg-white text-gray-700 border-gray-300"
                         }`}
@@ -111,12 +133,15 @@ export default function newProduct() {
                         <input
                           type="radio"
                           name="productCategory"
-                          value={categoryMap[label]}
+                          value={categoryLabelMap[label]}
                           onChange={handleInput}
-                          checked={form.productCategory === categoryMap[label]}
+                          checked={
+                            form.productCategory === categoryLabelMap[label]
+                          }
                           className="hidden"
                         />
-                        {categoryMap[label]}
+                        {label}{" "}
+                        {/* 사용자에게 보이는 텍스트는 label (예: "디지털 기기") */}
                       </label>
                     )
                   )}
@@ -209,7 +234,7 @@ export default function newProduct() {
               {/* 저장 버튼 */}
               <button
                 type="submit"
-                className="w-full py-3 bg-indigo-900 text-white text-lg font-semibold rounded-lg hover:bg-indigo-800 transition-colors"
+                className="w-full my-3 py-3 bg-green-800 text-white text-lg font-semibold rounded-lg hover:bg-green-900 transition-colors"
               >
                 저장
               </button>
@@ -217,6 +242,15 @@ export default function newProduct() {
           </div>
         </div>
       </div>
+      {/* ★★★ CheckModal 렌더링 추가 확인 ★★★ */}
+      <CheckModal
+        open={modalOpen}
+        message={modalMessage}
+        canUse={modalCanUse}
+        onUse={modalOnUseAction || handleModalClose} // '사용' 버튼 클릭 시 실행할 액션
+        onClose={handleModalClose} // '닫기' 버튼 클릭 시 실행할 액션
+      />
+      {/* ★★★ CheckModal 렌더링 끝 ★★★ */}
     </div>
   )
 }

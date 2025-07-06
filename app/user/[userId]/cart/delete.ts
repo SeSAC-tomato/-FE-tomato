@@ -1,6 +1,6 @@
-'use client'
-import axios from 'axios'
+"use client";
+import { removeFromCart as removeFromCartApi } from "@/utils/api/user/api";
 
 export async function removeFromCart(userId: number, postId: number) {
-    return axios.delete(`/api/v1/user/${userId}/cart/${postId}`)
+  return removeFromCartApi(userId, postId);
 }

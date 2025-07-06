@@ -12,7 +12,7 @@ export type LikeButtonProps = {
 
 export type PageListProps = {
   currentPage: number
-  totalPage: number
+  totalPages: number
   onPageListHandle: (page: number) => void
 }
 

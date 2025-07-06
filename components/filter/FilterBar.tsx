@@ -6,8 +6,8 @@ interface FilterBarProps {
   setCategory: (v: string | null) => void
   region: string | null
   setRegion: (v: string | null) => void
-  onlyAvailable: boolean
-  setOnlyAvailable: (v: boolean) => void
+  postStatus: boolean
+  setPostStatus: (v: boolean) => void
   minPrice: string
   setMinPrice: (v: string) => void
   maxPrice: string
@@ -29,8 +29,8 @@ const FilterBar: React.FC<FilterBarProps> = ({
   setCategory,
   region,
   setRegion,
-  onlyAvailable,
-  setOnlyAvailable,
+  postStatus,
+  setPostStatus,
   minPrice,
   setMinPrice,
   maxPrice,
@@ -56,11 +56,11 @@ const FilterBar: React.FC<FilterBarProps> = ({
     </div>
     <button
       className={`px-4 py-2 rounded-md font-semibold transition h-12 min-w-[110px] shadow-none border-none focus:outline-none ${
-        onlyAvailable
+        postStatus
           ? "bg-[#e53935] text-white"
           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
       }`}
-      onClick={() => setOnlyAvailable(!onlyAvailable)}
+      onClick={() => setPostStatus(!postStatus)}
       type="button"
     >
       거래가능만

@@ -167,9 +167,7 @@ export default function Post() {
                         />
                       </div>
                       <div>
-                        <div className="font-bold text-lg">
-                          {nickname},{email}
-                        </div>
+                        <div className="font-bold text-lg">{nickname}</div>
                         <div className="text-gray-500 text-sm">구로동</div>
                       </div>
                       <LikeButton isLiked={isLiked} handleLike={handleLike} />
@@ -195,7 +193,7 @@ export default function Post() {
                     )}
                   </div>
                   <div className="text-gray-500 text-base mb-1">
-                    {productCategory} · {updatedAt}
+                    {productCategory} · {updatedAt.slice(0, 10)}
                   </div>
                   <div className="text-xl font-bold mb-4">{price}</div>
                 </div>

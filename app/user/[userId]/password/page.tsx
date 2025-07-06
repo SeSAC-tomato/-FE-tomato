@@ -3,6 +3,7 @@ import { useState } from "react";
 import api from "@/utils/api/axios";
 import MainHeader from "@/components/header/MainHeader";
 import MyPageMenu from "@/components/mypage/MyPageMenu";
+import { changeUserPassword } from "@/utils/api/user/api";
 
 export default function PasswordChangePage({
   params,
@@ -60,11 +61,12 @@ export default function PasswordChangePage({
 
   const handleChange = async () => {
     try {
-      await api.put(`/user/${params.userId}/password`, {
-        currentPassword: oldPassword,
-        newPassword: newPassword,
-        confirmPassword: newPasswordCheck,
-      });
+      await changeUserPassword(
+        Number(params.userId),
+        oldPassword,
+        newPassword,
+        newPasswordCheck
+      );
       alert("비밀번호가 변경되었습니다");
     } catch (e) {
       alert("비밀번호 변경에 실패했습니다");

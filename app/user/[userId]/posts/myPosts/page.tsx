@@ -6,7 +6,7 @@ import { Post, PostsResponse } from "@/utils/type/mypage/type";
 import { useAuthStore } from "@/store/useAuthStore";
 import MainHeader from "@/components/header/MainHeader";
 import MyPageMenu from "@/components/mypage/MyPageMenu";
-import PageList from "@/components/PageList/PageList";
+import PageList from "@/components/post/PageList";
 
 interface Params {
   userId: string;

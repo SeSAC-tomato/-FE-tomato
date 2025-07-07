@@ -2,8 +2,8 @@ export const websocketEndPoint = 'http://localhost:8080/websocket'
 
 export const backEndPoint = 'http://localhost:8080'
 
-export const getWebsocketSubRoom = (roomId: number) => `/ws/sub/room/${roomId}/`
-export const getWebsocketPubRoom = (roomId: number) => `/ws/pub/room/${roomId}/`
+export const getWebsocketSubRoom = (roomId: number) => `/ws/sub/room/${roomId}`
+export const getWebsocketPubRoom = (roomId: number) => `/ws/pub/room/${roomId}`
 
 export  const getChatRoomsUrl = () => `/chat`
 

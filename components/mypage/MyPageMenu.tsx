@@ -1,8 +1,18 @@
 import Link from "next/link";
 
-export default function MyPageMenu({ userId }: { userId: number }) {
+export default function MyPageMenu({
+  userId,
+  className,
+}: {
+  userId: number;
+  className?: string;
+}) {
   return (
-    <nav className="flex flex-col gap-4 p-4 border rounded-lg min-w-[180px]">
+    <nav
+      className={`flex flex-col gap-4 p-4 border rounded-lg min-w-[180px] h-fit ${
+        className || ""
+      }`}
+    >
       <Link
         href={`/user/${userId}/profile`}
         className="flex items-center gap-2"

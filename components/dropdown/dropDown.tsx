@@ -1,15 +1,16 @@
-import { DropdownProps } from "@/utils/type/type"
+import { DropdownProps } from "@/utils/type/post/type"
 import { useState, useRef, useEffect } from "react"
 
 interface DropDownPropsWithClass extends DropdownProps {
   className?: string
+  initialSelected?: string
 }
 
 export default function DropDown({
-  buttonText,
   items,
+  buttonText,
   onSelect,
-  className = "",
+  className,
 }: DropDownPropsWithClass) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const toggleDropDown = () => {
@@ -17,6 +18,7 @@ export default function DropDown({
   }
 
   const ref = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!isOpen) return
     const handleClick = (e: MouseEvent) => {

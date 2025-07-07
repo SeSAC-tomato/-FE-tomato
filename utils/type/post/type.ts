@@ -1,3 +1,5 @@
+import { ProductCategory } from "@/utils/domain/label"
+
 export type ButtonProps = {
   children: React.ReactNode
   disabled?: boolean
@@ -12,7 +14,7 @@ export type LikeButtonProps = {
 
 export type PageListProps = {
   currentPage: number
-  totalPage: number
+  totalPages: number
   onPageListHandle: (page: number) => void
 }
 
@@ -35,29 +37,17 @@ export type PostCreatePayload = {
   content: string
 }
 
-export type PostStatus = "SELLING" | "BOOKED" | "END"
-
-export const postStatusLabelMap: Record<PostStatus, string> = {
-  SELLING: "판매중",
-  BOOKED: "예약중",
-  END: "거래완료",
-}
-
-export type PostResponse = {
-  id: number
-  title: string
-  price: number
-  content: string
-  postStatus: PostStatus
-  productCategory:
-    | "DIGITAL_DEVICE"
-    | "HOME_APPLIANCE"
-    | "FURNITURE"
-    | "KITCHEN"
-    | "KIDS"
-  createdAt: string
-  updatedAt: string
-  email: string
-  userId: number
-  nickname: string
+export type PostHeadersProps = {
+  searchKeyword?: string
+  setSearchKeyword?: (v: string) => void
+  productCategory?: ProductCategory | undefined
+  setProductCategory?: (v: ProductCategory | undefined) => void
+  selling?: boolean | undefined
+  setSelling?: (v: boolean | undefined) => void
+  minPrice?: string | undefined
+  setMinPrice?: (v: string) => void
+  maxPrice?: string | undefined
+  setMaxPrice?: (v: string) => void
+  region?: string
+  setRegion?: (v: string) => void
 }

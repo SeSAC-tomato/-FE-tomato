@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
 interface CheckModalProps {
-  open: boolean;
-  message: string;
-  canUse: boolean;
-  onUse: () => void;
-  onClose: () => void;
+  open: boolean
+  message: string
+  canUse: boolean
+  onUse: () => void
+  onClose: () => void
 }
 
 export default function CheckModal({
@@ -15,25 +15,25 @@ export default function CheckModal({
   onUse,
   onClose,
 }: CheckModalProps) {
-  if (!open) return null;
+  if (!open) return null
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
-      <div className="bg-white rounded-lg p-8 flex flex-col items-center min-w-[260px]">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-8 flex flex-col items-center min-w-[400px]">
         <p className="mb-4 text-center text-base">{message}</p>
         <div className="flex gap-2">
           {canUse && (
             <button
-              className="px-4 py-2 bg-black text-white rounded"
+              className="px-4 py-2 bg-indigo-700/70 text-white rounded"
               onClick={onUse}
             >
-              사용
+              확인
             </button>
           )}
           <button className="px-4 py-2 bg-gray-300 rounded" onClick={onClose}>
-            닫기
+            취소
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

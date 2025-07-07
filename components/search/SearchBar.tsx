@@ -1,10 +1,10 @@
-import SearchIcon from "@/components/icons/SearchIcon";
-import React from "react";
+import SearchIcon from "@/components/icons/SearchIcon"
+import React from "react"
 
 interface SearchBarProps {
-  value: string;
-  onChange: (v: string) => void;
-  className?: string;
+  value?: string
+  onChange?: (v: string) => void
+  className?: string
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -15,8 +15,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   <div className={`flex items-center w-full relative ${className}`}>
     <input
       type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
+      value={value ?? ""}
+      onChange={(e) => onChange?.(e.target.value)}
       placeholder="검색어를 입력하세요"
       className="w-full h-12 pl-12 pr-4 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#e53935] focus:outline-none text-base"
     />
@@ -24,6 +24,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <SearchIcon />
     </span>
   </div>
-);
+)
 
-export default SearchBar;
+export default SearchBar

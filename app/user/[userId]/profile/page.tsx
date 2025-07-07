@@ -147,9 +147,7 @@ export default function UserProfilePage() {
     <>
       <MainHeader />
       <div className="w-full flex justify-center mt-12">
-        <span className="px-6 py-2 rounded-full bg-gray-200 text-black text-lg font-semibold shadow">
-          내 정보
-        </span>
+        <h1 className="text-2xl font-bold text-center my-8">내 정보</h1>
       </div>
       <div className="flex w-full max-w-4xl mx-auto mt-8">
         <MyPageMenu userId={user.id} />

@@ -55,6 +55,10 @@ export const categoryLabelMap: Record<string, ProductCategory> = {
   유아동: "KIDS",
 } as const
 
+export const categoryMap = Object.fromEntries(
+  Object.entries(categoryLabelMap).map(([label, value]) => [value, label])
+) as Record<ProductCategory, string>
+
 export const categoryEnumToLabelMap: Record<ProductCategory, string> =
   Object.entries(categoryLabelMap).reduce((acc, [label, enumValue]) => {
     acc[enumValue] = label

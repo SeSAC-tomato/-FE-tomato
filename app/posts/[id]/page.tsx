@@ -4,6 +4,9 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import {
+  categoryEnumToLabelMap,
+  categoryLabelMap,
+  categoryMap,
   PostResponse,
   PostStatus,
   postStatusLabelMap,
@@ -12,6 +15,8 @@ import { deletePost, getPostById, setFavorite } from "@/utils/api/post/api"
 import LikeButton from "@/components/button/LikeButton"
 import DropDown from "@/components/dropdown/dropDown"
 import { useRouter } from "next/navigation"
+import PostStatusChangeButton from "@/components/button/PostStatusChangeButton"
+import PostPullButton from "@/components/button/PostPullButton"
 
 export default function Post() {
   const router = useRouter()
@@ -108,13 +113,15 @@ export default function Post() {
   }
 
   const handleLike = async () => {
-    try {
-      const response = await setFavorite(postId)
-      if (response) setIsLiked((prev) => !prev)
-    } catch (error) {
-      console.log(error)
-    }
+    setIsLiked((prev) => !prev) //차후에 이부분 수정
+    // try {
+    //   const response = await setFavorite(postId)
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }
+
+  const HandleStatuschange = () => {}
 
   const handleEditOrDelete = async () => {
     if (modalType === "edit") {
@@ -140,7 +147,7 @@ export default function Post() {
 
     closeModal()
   }
-
+  const handlePostPull = () => {}
   return (
     <>
       <MainHeader>
@@ -209,27 +216,45 @@ export default function Post() {
               <div className="flex-1 flex flex-col justify-start">
                 {/* 설명 위 정보 */}
                 <div className="w-full max-w-md mx-auto mb-4">
-                  <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+                  <h2 className="text-2xl my-3 font-bold mr-2 flex items-center gap-2">
                     {post?.title}
                   </h2>
-                  <div>
+                  <div className="flex justify-between mr-10">
+                    <div className="text-gray-700 text-lg">
+                      {post?.productCategory &&
+                        categoryMap[post.productCategory]}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="text-gray-700 text-lg mx-2">끌올</div>
+                      <PostPullButton onClick={handlePostPull} />
+                    </div>
+                  </div>
+                  <div className="flex justify-between mr-10 mt-3">
+                    <div className="text-xl font-bold ">{price} 원</div>
+                    <div className="text-gray-500 text-base ">
+                      게시일 : {updatedAt?.slice(0, 16).replace("T", " ")}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between items-center mb-3">
+                  <div className="flex justify-between items-center">
                     {post?.postStatus && (
-                      <span
-                        className={`px-3 py-1 rounded-full text-xl font-semibold`}
-                      >
-                        {postStatusLabelMap[post.postStatus]}
-                      </span>
+                      <div className="flex flex-row gap-2">
+                        <div className="flex items-center rounded-full text-xl font-semibold">
+                          {postStatusLabelMap[post.postStatus]}
+                        </div>
+                        <PostStatusChangeButton
+                          postStatus={postStatus}
+                          onClick={HandleStatuschange}
+                        />
+                      </div>
                     )}
                   </div>
-                  <div className="text-gray-500 text-base mb-1">
-                    {productCategory} · {updatedAt?.slice(0, 10)}
+                  <div className="flex gap-4 justify-end mr-10">
+                    <button className="px-6 py-3 rounded-2xl bg-[#ffe066] text-[#222] font-bold text-base shadow hover:bg-[#ffd600] transition">
+                      채팅하기
+                    </button>
                   </div>
-                  <div className="text-xl font-bold mb-4">{price}</div>
-                </div>
-                <div className="flex gap-4 justify-end">
-                  <button className="px-6 py-2 rounded-full bg-[#ffe066] text-[#222] font-bold text-base shadow hover:bg-[#ffd600] transition">
-                    채팅
-                  </button>
                 </div>
                 <div className="w-full max-w-md h-90 bg-gray-200 rounded-xl p-5 text-gray-700 text-base whitespace-pre-line overflow-y-auto mx-auto hide-scrollbar">
                   {content}

@@ -25,12 +25,13 @@ export default function PostCard({ post }: PostCardProps) {
 
   const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked)
   const handleLike = async () => {
-    try {
-      const response = await setFavorite(id)
-      if (response) setIsLiked((prev) => !prev)
-    } catch (error) {
-      console.log(error)
-    }
+    setIsLiked((prev) => !prev) //이 부분 차후 수정처리 필요함
+    // try {
+    //   const response = await setFavorite(id)
+
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }
   const timeAgo = formatDistanceToNow(parseISO(updatedAt), {
     addSuffix: true,

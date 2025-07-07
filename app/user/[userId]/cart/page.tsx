@@ -3,7 +3,7 @@ import { useEffect, useState, use } from "react";
 import { getCartItems } from "@/utils/api/user/api";
 import MainHeader from "@/components/header/MainHeader";
 import MyPageMenu from "@/components/mypage/MyPageMenu";
-import PageList from "@/components/PageList/PageList";
+import PageList from "@/components/post/PageList";
 import { useAuthStore } from "@/store/useAuthStore";
 import { CartPost, CartResponse } from "@/utils/type/mypage/type";
 import CartPostCard from "@/components/PostCard/CartPostCard";

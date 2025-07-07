@@ -5,6 +5,7 @@ import {
   Register,
   VerifyType,
 } from "@/utils/type/auth/type";
+import { CommonResponse } from "@/utils/type/common/type";
 const AUTH_API_PATH = "/auth";
 
 export const Login = async (

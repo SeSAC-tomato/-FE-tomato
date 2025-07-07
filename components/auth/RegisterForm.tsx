@@ -8,8 +8,8 @@ import {
   checkNicknameDuplicate,
   register,
 } from "@/utils/api/auth/api";
-import CheckModal from "../modals/CheckModal";
 import { useRouter } from "next/navigation";
+import RegisterModal from "../modals/RegisterModal";
 
 type ModalType = "email" | "nickname" | null;
 
@@ -374,7 +374,7 @@ export default function RegisterForm() {
         </form>
       </div>
       {/* 중복 검사 모달 */}
-      <CheckModal
+      <RegisterModal
         open={isModalOpen}
         message={modalMessage}
         canUse={canUse}

@@ -36,15 +36,15 @@ const ChatMessageInput = ({roomId, stompClientRef, userId}: Props) => {
         setSelectBoxActive(false);
     };
 
-    const sendMessage = (chatType: ChatType, targetId?: number) => {
+    const sendMessage = (chatType: ChatType, isDone?: boolean, targetId?: number) => {
         let messageObject;
         console.log(targetId);
 
-        if (chatType == ChatType.EVENT_BOOK && targetId) {
-            messageObject = createMsgForBook(chatType, roomId, targetId);
+        if (chatType == ChatType.EVENT_BOOK && targetId && isDone != undefined) {
+            messageObject = createMsgForBook(chatType, roomId, targetId, isDone);
         }
-        if (chatType == ChatType.EVENT_END && targetId) {
-            messageObject = createMsgForEnd(chatType, roomId, targetId);
+        if (chatType == ChatType.EVENT_END && targetId && isDone != undefined) {
+            messageObject = createMsgForEnd(chatType, roomId, targetId, isDone);
         }
         if (chatType == ChatType.EVENT_CANCEL && targetId) {
             messageObject = createMsgForCancel(chatType, roomId, targetId);
@@ -143,9 +143,8 @@ const ChatMessageInput = ({roomId, stompClientRef, userId}: Props) => {
                 />
             )}
             {selectBoxActive && (
-                <ChatSelectBox sendMessage={(chatType: ChatType, targetId?: number) => {
-                    sendMessage(chatType,targetId);
-                }} roomId={roomId} changeMode={changeMode} userId={userId}/>
+                <ChatSelectBox sendMessage={sendMessage}
+                               roomId={roomId} changeMode={changeMode} userId={userId}/>
             )}
             <div
                 className="bg-white border-t border-[#eef1f5] p-2.5 px-[15px] flex items-end gap-2.5 rounded-b-xl shadow-input-bottom flex-shrink-0">

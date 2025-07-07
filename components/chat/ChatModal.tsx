@@ -30,31 +30,6 @@ const ChatModal = ({roomId, nickname, onClose, userId}: Props) => {
         onClose();
     };
 
-    // const sendBookEvent = () => {
-    //   let messageObject = undefined;
-
-    //   messageObject = createMsgForBook(
-    //     ChatType.EVENT_BOOK,
-    //     roomId,
-    //     targetPostId!,
-    //     '예약 하고싶어요!'
-    //   );
-
-    //   if (messageObject) {
-    //     try {
-    //       stompClientRef.current!.publish({
-    //         destination: `/ws/pub/room/${roomId}`,
-    //         body: JSON.stringify(messageObject),
-    //       });
-    //       console.log('✅ publish 이후 코드 실행됨');
-    //       setIsBookSended(true);
-    //     } catch (e) {
-    //       console.error('❌ publish 오류:', e);
-    //     }
-    //     console.log('🔽 publish 함수 끝');
-    //   }
-    // };
-
     useEffect(() => {
         const connectToWebSocket = (token: string, email: string) => {
             const headers = {
@@ -126,14 +101,14 @@ const ChatModal = ({roomId, nickname, onClose, userId}: Props) => {
 
                 <div className="w-full flex items-center justify-between px-5 py-2">
                     <div className="flex items-center">
-                        <ChatBubbleIcon color="#222222" className="mr-2.5" />
+                        <ChatBubbleIcon color="#222222" className="mr-2.5"/>
                         <span className="text-2xl font-bold">{nickname}</span>
                     </div>
                     <div
                         onClick={closeModal}
                         className="p-2 rounded-full cursor-pointer hover:bg-gray-200 transition-colors duration-200 ease-in-out text-gray-600 hover:text-gray-800"
                     >
-                        <XIcon color="#222222" />
+                        <XIcon color="#222222"/>
                     </div>
                 </div>
                 <hr className="w-full mt-5 border-[#D9D9D9]"/>

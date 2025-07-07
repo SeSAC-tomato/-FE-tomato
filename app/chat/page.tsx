@@ -13,6 +13,7 @@ import {
 } from '@/utils/type/chat/chat';
 import {useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';
+import MainHeader from "@/components/header/MainHeader";
 
 const ChatPage = () => {
     const router = useRouter();
@@ -59,43 +60,41 @@ const ChatPage = () => {
     }, []);
 
     return (
-        <div className="w-[80%] mx-auto">
-            {modalInfo != undefined ? (
-                <ChatModal
-                    userId={rooms!.find(room => room.roomId == modalInfo)!.userId}
-                    onClose={closeModal}
-                    roomId={modalInfo}
-                    nickname={
-                        rooms!.find((room) => room.roomId == modalInfo)!.userNickname
-                    }
-                    key={modalInfo}
-                />
-            ) : (
-                ''
-            )}
-            <div className="pt-10 flex items-center">
-                <div className="pr-2.5 pl-5">
-                    <ChatBubbleIcon color="#222222"/>
+        <>
+            <MainHeader/>
+            <div className="w-[80%] mx-auto">
+                {modalInfo != undefined ? (
+                    <ChatModal
+                        userId={rooms!.find(room => room.roomId == modalInfo)!.userId}
+                        onClose={closeModal}
+                        roomId={modalInfo}
+                        nickname={
+                            rooms!.find((room) => room.roomId == modalInfo)!.userNickname
+                        }
+                        key={modalInfo}
+                    />
+                ) : (
+                    ''
+                )}
+                <div className="pt-10 flex items-center">
+                    <div className="pr-2.5 pl-5">
+                        <ChatBubbleIcon color="#222222"/>
+                    </div>
+                    <span className="text-2xl font-bold">채팅</span>
                 </div>
-                <span className="text-2xl font-bold">채팅</span>
+                <hr className="w-full mt-5 border-[#D9D9D9]"/>
+                {rooms && rooms.length == 0 && <div>아직 채팅이 없어요.</div>}
+                {rooms?.map((room, index) => (
+                    <Room
+                        openModal={() => openModal(room.roomId)}
+                        key={room.roomId}
+                        room={room}
+                        isLast={rooms.length == index + 1}
+                    />
+                ))}
+
             </div>
-            <hr className="w-full mt-5 border-[#D9D9D9]"/>
-            {rooms && rooms.length == 0 && <div>아직 채팅이 없어요.</div>}
-            {rooms?.map((room, index) => (
-                <Room
-                    openModal={() => openModal(room.roomId)}
-                    key={room.roomId}
-                    room={room}
-                    isLast={rooms.length == index + 1}
-                />
-            ))}
-            <button
-                className="px-8 py-3 bg-red-500 text-white rounded font-semibold hover:bg-red-600 transition mb-4"
-                onClick={() => router.push('/')}
-            >
-                홈으로
-            </button>
-        </div>
+        </>
     );
 };
 

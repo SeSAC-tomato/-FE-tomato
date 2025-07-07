@@ -9,10 +9,10 @@ type Props = {
     closeModal: () => void;
     userId: number;
     roomProgressInfo: ChatRoomInfoResponse
-    sendMessage: (chatType: ChatType, targetId?: number | undefined) => void;
+    sendMessage: (chatType: ChatType, isDone?: boolean, targetId?: number) => void;
 };
 
-const ChatProgressModal = ({closeModal, userId, roomProgressInfo,sendMessage}: Props) => {
+const ChatProgressModal = ({closeModal, userId, roomProgressInfo, sendMessage}: Props) => {
 
     return ReactDOM.createPortal(
         <div
@@ -36,15 +36,13 @@ const ChatProgressModal = ({closeModal, userId, roomProgressInfo,sendMessage}: P
                     </div>
                 </div>
                 <hr className="w-full mt-5 border-[#D9D9D9]"/>
-                {/* 여기부터 붙여넣으세요 */}
                 <div className="flex-grow flex flex-col overflow-y-auto">
-                    {/* 1. 거래 상품 정보 */}
                     <div className="p-5">
                         <div className="flex items-center space-x-4">
                             <div
                                 className="h-full w-24 flex-shrink-0 border-0 rounded-md p-2 flex items-center justify-center bg-gray-100">
                                 <img
-                                    src={roomProgressInfo.targetPost.images?.[0] || '/placeholder-image.png'}
+                                    src={roomProgressInfo.targetPost.images?.[0] || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYgQrX3JiyR8wWYWKvTnjgxRgxxtRIw0RJtw&s'}
                                     alt={roomProgressInfo.targetPost.title}
                                     className="w-20 h-20 rounded-lg object-contain border border-gray-200"
                                 />
@@ -109,10 +107,10 @@ const ChatProgressModal = ({closeModal, userId, roomProgressInfo,sendMessage}: P
                         // isDone 추가해야함
                         userId={userId}
                         chatRoomInfo={roomProgressInfo}
-                        onAccept={() => sendMessage(ChatType.EVENT_BOOK,roomProgressInfo.targetPost.id)}
-                        onCancelRequest={() => sendMessage(ChatType.EVENT_CANCEL,roomProgressInfo.targetPost.id)}
-                        onEndRequest={() => sendMessage(ChatType.EVENT_END,roomProgressInfo.targetPost.id)}
-                        onConfirmEnd={() => sendMessage(ChatType.EVENT_END,roomProgressInfo.targetPost.id)}
+                        onAccept={() => sendMessage(ChatType.EVENT_BOOK, true, roomProgressInfo.targetPost.id)}
+                        onCancelRequest={() => sendMessage(ChatType.EVENT_CANCEL, undefined, roomProgressInfo.targetPost.id)}
+                        onEndRequest={() => sendMessage(ChatType.EVENT_END, false, roomProgressInfo.targetPost.id)}
+                        onConfirmEnd={() => sendMessage(ChatType.EVENT_END, true, roomProgressInfo.targetPost.id)}
                     />
 
                 </div>
@@ -186,10 +184,16 @@ const ActionArea = ({
                 return (
                     <>
                         <p className="text-center text-gray-600 mb-3">예약이 확정되었습니다. 거래는 잘 하셨나요?</p>
-                        <button onClick={onEndRequest}
-                                className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                            거래 완료 요청하기
-                        </button>
+                        <div className="flex space-x-3">
+                            <button onClick={onEndRequest}
+                                    className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                거래 완료 요청하기
+                            </button>
+                            <button onClick={onCancelRequest}
+                                    className="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                                취소하기
+                            </button>
+                        </div>
                     </>
                 );
             case 'END_REQUEST':

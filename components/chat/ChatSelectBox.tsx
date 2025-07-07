@@ -6,7 +6,13 @@ import CompletedIcon from '../icons/chat/CompletedIcon';
 import ScheduleIcon from '../icons/chat/ScheduleIcon';
 import {useEffect, useState} from "react";
 import {axiosGet} from "@/utils/api/chat/chatApi";
-import {ChatCommonResponse, ChatRoomInfoResponse, ChatUserSellingResponse} from "@/utils/type/chat/chat";
+import {
+    ChatCommonResponse,
+    ChatPostStatus,
+    ChatProductCategory,
+    ChatRoomInfoResponse,
+    ChatUserSellingResponse
+} from "@/utils/type/chat/chat";
 import ChatSellingInfoModal from "@/components/chat/ChatSellingInfoModal";
 import ChatProgressModal from "@/components/chat/ChatProgressModal";
 
@@ -14,7 +20,7 @@ type Props = {
     changeMode: (chatType: ChatType) => void;
     roomId: number;
     userId: number;
-    sendMessage: (chatType: ChatType, targetId?: number) => void;
+    sendMessage: (chatType: ChatType, isDone?: boolean, targetId?: number) => void;
 };
 
 const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
@@ -34,8 +40,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             title: "아이패드 프로 5세대 판매합니다",
             price: 950000,
             content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-            postStatus: "SELLING",
-            productCategory: "DIGITAL_DEVICE",
+            postStatus: ChatPostStatus.SELLING,
+            productCategory: ChatProductCategory.DIGITAL_DEVICE,
             createdAt: "2025-07-05T15:30:00Z",
             updatedAt: "2025-07-05T15:45:00Z",
             userId: 123,
@@ -48,8 +54,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             title: "아이패드 프로 5세대 판매합니다",
             price: 950000,
             content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-            postStatus: "SELLING",
-            productCategory: "DIGITAL_DEVICE",
+            postStatus: ChatPostStatus.SELLING,
+            productCategory: ChatProductCategory.DIGITAL_DEVICE,
             createdAt: "2025-07-05T15:30:00Z",
             updatedAt: "2025-07-05T15:45:00Z",
             userId: 123,
@@ -62,8 +68,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             title: "아이패드 프로 5세대 판매합니다",
             price: 950000,
             content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-            postStatus: "SELLING",
-            productCategory: "DIGITAL_DEVICE",
+            postStatus: ChatPostStatus.SELLING,
+            productCategory: ChatProductCategory.DIGITAL_DEVICE,
             createdAt: "2025-07-05T15:30:00Z",
             updatedAt: "2025-07-05T15:45:00Z",
             userId: 123,
@@ -76,8 +82,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             title: "아이패드 프로 5세대 판매합니다",
             price: 950000,
             content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-            postStatus: "SELLING",
-            productCategory: "DIGITAL_DEVICE",
+            postStatus: ChatPostStatus.SELLING,
+            productCategory: ChatProductCategory.DIGITAL_DEVICE,
             createdAt: "2025-07-05T15:30:00Z",
             updatedAt: "2025-07-05T15:45:00Z",
             userId: 123,
@@ -90,8 +96,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             title: "아이패드 프로 5세대 판매합니다",
             price: 950000,
             content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-            postStatus: "SELLING",
-            productCategory: "DIGITAL_DEVICE",
+            postStatus: ChatPostStatus.SELLING,
+            productCategory: ChatProductCategory.DIGITAL_DEVICE,
             createdAt: "2025-07-05T15:30:00Z",
             updatedAt: "2025-07-05T15:45:00Z",
             userId: 123,
@@ -104,8 +110,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             title: "아이패드 프로 5세대 판매합니다",
             price: 950000,
             content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-            postStatus: "SELLING",
-            productCategory: "DIGITAL_DEVICE",
+            postStatus: ChatPostStatus.SELLING,
+            productCategory: ChatProductCategory.DIGITAL_DEVICE,
             createdAt: "2025-07-05T15:30:00Z",
             updatedAt: "2025-07-05T15:45:00Z",
             userId: 123,
@@ -119,8 +125,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
                 title: "아이패드 프로 5세대 판매합니다",
                 price: 950000,
                 content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-                postStatus: "SELLING",
-                productCategory: "DIGITAL_DEVICE",
+                postStatus: ChatPostStatus.SELLING,
+                productCategory: ChatProductCategory.DIGITAL_DEVICE,
                 createdAt: "2025-07-05T15:30:00Z",
                 updatedAt: "2025-07-05T15:45:00Z",
                 userId: 123,
@@ -134,8 +140,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
                 title: "아이패드 프로 5세대 판매합니다",
                 price: 950000,
                 content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-                postStatus: "SELLING",
-                productCategory: "DIGITAL_DEVICE",
+                postStatus: ChatPostStatus.SELLING,
+                productCategory: ChatProductCategory.DIGITAL_DEVICE,
                 createdAt: "2025-07-05T15:30:00Z",
                 updatedAt: "2025-07-05T15:45:00Z",
                 userId: 123,
@@ -149,8 +155,8 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
                 title: "아이패드 프로 5세대 판매합니다",
                 price: 950000,
                 content: "구매 후 거의 사용하지 않아 상태가 매우 좋습니다. 구성품 모두 포함되어 있습니다.",
-                postStatus: "SELLING",
-                productCategory: "DIGITAL_DEVICE",
+                postStatus: ChatPostStatus.SELLING,
+                productCategory: ChatProductCategory.DIGITAL_DEVICE,
                 createdAt: "2025-07-05T15:30:00Z",
                 updatedAt: "2025-07-05T15:45:00Z",
                 userId: 123,
@@ -187,10 +193,10 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             content: '2024년 5월에 구매했고, 실사용이 적어 상태가 매우 좋습니다. 모든 구성품과 박스 그대로 보관 중입니다. 직거래 선호합니다.',
 
             // 게시물 상태 (ChatPostStatus 타입에 따름)
-            postStatus: 'SELLING', // '판매중' 에서 '예약중'으로 변경된 상태
+            postStatus: ChatPostStatus.SELLING, // '판매중' 에서 '예약중'으로 변경된 상태
 
             // 상품 카테고리
-            productCategory: 'HOME_APPLIANCE',
+            productCategory: ChatProductCategory.DIGITAL_DEVICE,
 
             // 생성 및 수정 시각 (ISO 8601 형식)
             createdAt: '2025-07-01T14:20:10Z',
@@ -213,10 +219,12 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
     useEffect(() => {
         // setSellingInfo(dummySellingInfo);
         // controlModal("progress")
-        setRoomProgressInfo(dummyRoomProgressInfo)
+        // setRoomProgressInfo(dummyRoomProgressInfo)
         const fetchSellingList = async () => {
             const data = await axiosGet<ChatCommonResponse<ChatUserSellingResponse>>(`/chat/user/${userId}`)
 
+
+            console.log(data)
             if (data.data.posts.length > 0) {
                 setSellingInfo(data.data);
             }
@@ -225,10 +233,21 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
 
 
         const fetchRoomInfo = async () => {
+
+            console.log("room progress")
+            console.log("room progress")
+            console.log("room progress")
+
             const data = await axiosGet<ChatCommonResponse<ChatRoomInfoResponse>>(`/chat/room/${roomId}`)
             if (data.data.roomId) {
                 setRoomProgressInfo(data.data);
             }
+
+            console.log(data)
+            console.log(data)
+            console.log(data)
+
+
         }
 
         const main = async () => {
@@ -241,9 +260,10 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
 
     return (<>
             {modalInfo?.modal == "progress" && roomProgressInfo &&
-                <ChatProgressModal userId={userId} roomProgressInfo={roomProgressInfo} sendMessage={sendMessage} closeModal={() => controlModal(undefined)}/>}
+                <ChatProgressModal userId={userId} roomProgressInfo={roomProgressInfo} sendMessage={sendMessage}
+                                   closeModal={() => controlModal(undefined)}/>}
             {sellingInfo && modalInfo?.modal == "book" && <ChatSellingInfoModal
-                bookClick={(targetId: number) => sendMessage(ChatType.EVENT_BOOK, targetId)}
+                bookClick={(targetId: number) => sendMessage(ChatType.EVENT_BOOK, false, targetId)}
                 closeModal={() => controlModal(undefined)}
                 sellingInfo={sellingInfo}/>}
             <div className="relative">

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Login as loginApi } from "@/utils/api/auth/api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import api from "@/utils/api/axios";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -19,8 +20,17 @@ export default function LoginForm() {
     setLoading(true);
     setErrorMsg("");
     try {
+      // 1. 로그인 API 호출 (토큰 발급)
       const accessToken = await loginApi(email, password);
-      setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
+
+      // 2. user/me로 유저 정보 받아 zustand에 저장
+      const userRes = await api.get("/user/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const user = userRes.data.data;
+      setAuth(user, accessToken); // user 전체 정보와 토큰을 zustand에 저장
+
+      // 3. 메인 페이지로 이동
       router.push("/");
     } catch (err: any) {
       let msg =

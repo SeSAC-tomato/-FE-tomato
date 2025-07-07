@@ -4,8 +4,15 @@ export const removeFromCart = (userId: number, postId: number) => {
   return api.delete(`/user/${userId}/cart/${postId}`);
 };
 
-export const getCartItems = (userId: number) => {
-  return api.get(`/user/${userId}/cart`);
+export const getCartItems = (
+  userId: number,
+  page = 0,
+  size = 12,
+  likeSort = "LIKE_CREATED_AT"
+) => {
+  return api.get(
+    `/user/${userId}/cart?currentPage=${page}&size=${size}&likeSort=${likeSort}`
+  );
 };
 
 export const getMyPosts = (userId: number) => {

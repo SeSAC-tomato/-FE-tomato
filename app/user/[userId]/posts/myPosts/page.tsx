@@ -38,13 +38,7 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
           return;
         }
 
-        const response = await getMyPosts(
-          Number(userId),
-          sellingPage - 1,
-          12,
-          endPage - 1,
-          12
-        );
+        const response = await getMyPosts(Number(userId));
         const responseData = response.data || response;
         const postsData: PostsResponse = responseData.data || responseData;
         setPostsData(postsData);
@@ -61,14 +55,14 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
       }
     };
     fetchPosts();
-  }, [userId, user, accessToken, sellingPage, endPage]);
+  }, [userId, user, accessToken]);
 
   if (loading) {
     return (
       <>
         <MainHeader />
         <div className="flex w-full max-w-7xl mx-auto mt-8">
-          <MyPageMenu userId={Number(userId)} className="self-start h-fit" />
+          <MyPageMenu userId={Number(userId)} />
           <div className="flex-1 flex flex-col items-center justify-center">
             <h1 className="text-2xl font-bold mb-6">내 게시물</h1>
             <div className="text-center text-gray-500">로딩 중...</div>
@@ -83,7 +77,7 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
       <>
         <MainHeader />
         <div className="flex w-full max-w-7xl mx-auto mt-8">
-          <MyPageMenu userId={Number(userId)} className="self-start h-fit" />
+          <MyPageMenu userId={Number(userId)} />
           <div className="flex-1 flex flex-col items-center justify-center">
             <h1 className="text-2xl font-bold mb-6">내 게시물</h1>
             <div className="text-center text-red-500">{error}</div>
@@ -104,9 +98,31 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
     <>
       <MainHeader />
       <div className="flex w-full max-w-7xl mx-auto mt-8">
-        <MyPageMenu userId={Number(userId)} className="self-start h-fit" />
+        <MyPageMenu userId={Number(userId)} />
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-6">판매/구매내역</h1>
+          <h1 className="text-2xl font-bold text-center my-8">판매/구매내역</h1>
+          <div className="flex gap-2 mb-6">
+            <button
+              className={`px-4 py-2 rounded-t-lg font-bold border-b-2 ${
+                tab === "selling"
+                  ? "border-black bg-white"
+                  : "border-transparent bg-gray-100"
+              }`}
+              onClick={() => setTab("selling")}
+            >
+              판매중 ({postsData.totalSellingPosts})
+            </button>
+            <button
+              className={`px-4 py-2 rounded-t-lg font-bold border-b-2 ${
+                tab === "end"
+                  ? "border-black bg-white"
+                  : "border-transparent bg-gray-100"
+              }`}
+              onClick={() => setTab("end")}
+            >
+              거래완료 ({postsData.totalEndPosts})
+            </button>
+          </div>
           <div className="grid grid-cols-4 gap-6">
             {(tab === "selling" ? sellingPosts : endPosts).length === 0 ? (
               <div className="col-span-4 text-center text-gray-500">
@@ -124,13 +140,13 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
           {tab === "selling" ? (
             <PageList
               currentPage={sellingPage}
-              totalPage={sellingTotalPages}
+              totalPages={sellingTotalPages}
               onPageListHandle={setSellingPage}
             />
           ) : (
             <PageList
               currentPage={endPage}
-              totalPage={endTotalPages}
+              totalPages={endTotalPages}
               onPageListHandle={setEndPage}
             />
           )}

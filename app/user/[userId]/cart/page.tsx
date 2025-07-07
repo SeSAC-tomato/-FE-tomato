@@ -19,7 +19,7 @@ export default function CartPage({
   const [page, setPage] = useState(1);
   const user = useAuthStore((state) => state.user);
   const [likeSort, setLikeSort] = useState<
-    "LIKE_CREATED_AT" | "POST_CREATED_AT" | "PRICE" | "POPULARITY"
+    "LIKE_CREATED_AT" | "POST_UPDATED_AT" | "PRICE" | "POPULARITY"
   >("LIKE_CREATED_AT");
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function CartPage({
       <div className="flex w-full max-w-7xl mx-auto mt-8">
         <MyPageMenu userId={user.id} className="self-start h-fit" />
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-6">관심목록</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center">관심목록</h1>
           <div className="flex justify-end mb-4">
             <select
               value={likeSort}
@@ -50,7 +50,7 @@ export default function CartPage({
               className="px-3 py-2 border rounded"
             >
               <option value="LIKE_CREATED_AT">찜한순</option>
-              <option value="POST_CREATED_AT">최신순</option>
+              <option value="POST_UPDATED_AT">최신순</option>
               <option value="PRICE">가격순</option>
               <option value="POPULARITY">인기순</option>
             </select>
@@ -85,7 +85,7 @@ export default function CartPage({
           </div>
           <PageList
             currentPage={cartData.currentPage + 1}
-            totalPage={cartData.totalPages}
+            totalPages={cartData.totalPages}
             onPageListHandle={setPage}
           />
         </div>

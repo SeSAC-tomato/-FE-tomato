@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Post } from "@/utils/type/mypage/type";
+import Link from "next/link";
 
 interface MyPostCardProps {
   post: Post;
@@ -31,7 +32,7 @@ export default function MyPostCard({ post }: MyPostCardProps) {
   };
 
   return (
-    <>
+    <Link href={`/posts/${post.postId}`}>
       <div className="w-[235px] h-[333px] mx-[6px] my-2 flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow flex flex-col justify-start p-2">
         <div className="w-[210px] h-[216px] ml-1 border border-red-400">
           {post.img ? (
@@ -55,6 +56,6 @@ export default function MyPostCard({ post }: MyPostCardProps) {
           <div>{formatDate(post.createdAt)}</div>
         </div>
       </div>
-    </>
+    </Link>
   );
 }

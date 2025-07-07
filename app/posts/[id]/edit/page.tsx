@@ -209,7 +209,6 @@ export default function newProduct() {
                 </div>
               </div>
 
-              {/* 내용 */}
               <div className="flex items-center gap-4">
                 <label className="w-24 font-semibold">내용</label>
                 <textarea
@@ -260,19 +259,6 @@ export default function newProduct() {
                     style={{ display: "none" }}
                     onChange={handleFileChange}
                   />
-
-                  {/* 이미지 추가 버튼 */}
-                  {imageUrls.length < 5 && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        document.getElementById("chat-file-upload")?.click()
-                      }}
-                      className="w-24 h-24 border rounded flex items-center justify-center bg-gray-100 text-gray-400"
-                    >
-                      <Plus className="w-6 h-6" />
-                    </button>
-                  )}
                 </div>
               </div>
 

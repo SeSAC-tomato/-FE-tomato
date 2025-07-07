@@ -43,6 +43,7 @@ export default function Page() {
           minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
           maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
         }
+        console.log(page, pageSize, searchFilter)
         const responseData = await getPosts(page, pageSize, searchFilter)
         if (responseData.success && responseData.data) {
           const { posts, totalPages } = responseData.data
@@ -76,12 +77,8 @@ export default function Page() {
   }, [currentPage, getPostsData])
 
   useEffect(() => {
-    setCurrentPage(0)
+    // setCurrentPage(0)
   }, [searchKeyword, productCategory, selling, minPrice, maxPrice])
-
-  const onPageListHandle = (page: number) => {
-    setCurrentPage(page)
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#ffecd2] via-[#fcb69f] to-[#ff8177]">
@@ -104,7 +101,7 @@ export default function Page() {
         <PageList
           totalPages={totalPages}
           currentPage={currentPage}
-          onPageListHandle={onPageListHandle}
+          setCurrentPage={setCurrentPage}
         />
       </div>
       <Link href="posts/new" passHref>

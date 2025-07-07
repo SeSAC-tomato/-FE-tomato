@@ -4,19 +4,18 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import {
-  categoryEnumToLabelMap,
-  categoryLabelMap,
   categoryMap,
+  ImageDisplayInfo,
   PostResponse,
   PostStatus,
   postStatusLabelMap,
 } from "@/utils/domain/label"
 import { deletePost, getPostById, setFavorite } from "@/utils/api/post/api"
 import LikeButton from "@/components/button/LikeButton"
-import DropDown from "@/components/dropdown/dropDown"
 import { useRouter } from "next/navigation"
 import PostStatusChangeButton from "@/components/button/PostStatusChangeButton"
 import PostPullButton from "@/components/button/PostPullButton"
+import { useAuthStore } from "../../../store/useAuthStore"
 
 export default function Post() {
   const router = useRouter()
@@ -37,15 +36,16 @@ export default function Post() {
   const [title, setTitle] = useState<string>("")
   const [price, setPrice] = useState<number>(0)
   const [content, setContent] = useState<string>("")
+  const [images, setImages] = useState<ImageDisplayInfo[]>([])
   const [postStatus, setPostStatus] = useState<PostStatus>("SELLING") // 기본값은 "SELLING" 같은 enum 값 중 하나
   const [productCategory, setProductCategory] = useState<string>("")
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [nickname, setNickname] = useState<string>("")
-
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   // 카드 너비에 맞춰 버튼바 중앙정렬
   const cardRef = useRef<HTMLDivElement>(null)
   const [cardWidth, setCardWidth] = useState<number | null>(null)
-
+  const BASE_URL = "http://localhost:8080"
   useEffect(() => {
     function updateWidth() {
       if (cardRef.current) {
@@ -74,6 +74,7 @@ export default function Post() {
           setProductCategory(response.productCategory)
           setUpdatedAt(response.updatedAt)
           setNickname(response.nickname)
+          setImages(response.images || [])
           console.log(response)
         } else {
           setError("게시물을 찾을 수 없습니다.")
@@ -113,6 +114,7 @@ export default function Post() {
   }
 
   const handleLike = async () => {
+    if (!isLoggedIn) return
     setIsLiked((prev) => !prev) //차후에 이부분 수정
     // try {
     //   const response = await setFavorite(postId)
@@ -184,12 +186,28 @@ export default function Post() {
                 </div>
                 {/* 사진 */}
                 <div className="flex-1 flex flex-col items-center justify-start">
-                  <div className="w-full max-w-md bg-gray-300 rounded-xl flex items-center justify-center h-full">
-                    <img
-                      src={`https://picsum.photos/seed/item${postId}/400/400`}
-                      alt="제품 이미지"
-                      className="object-cover w-full h-full rounded-xl"
-                    />
+                  <div className="w-full max-w-md bg-gray-300 rounded-xl h-full">
+                    {images && images.length > 0 ? (
+                      images
+                        .filter(
+                          (item: ImageDisplayInfo) => item.mainImage === true
+                        )
+                        .map((item: ImageDisplayInfo) => (
+                          <div key={item.id}>
+                            <img
+                              src={`${BASE_URL}/api/v1/post/images/${item.savedName}`}
+                              alt="제품 이미지"
+                              className="object-cover w-full h-full rounded-xl"
+                            />
+                          </div>
+                        ))
+                    ) : (
+                      <img
+                        src={`https://picsum.photos/seed/item${postId}/400/400`}
+                        alt="제품 이미지"
+                        className="object-cover w-full h-full rounded-xl"
+                      />
+                    )}
                   </div>
                   <div className="flex flex-row items-center justify-between gap-6 mt-4 w-full">
                     {/* 사용자 정보 */}
@@ -224,10 +242,12 @@ export default function Post() {
                       {post?.productCategory &&
                         categoryMap[post.productCategory]}
                     </div>
-                    <div className="flex justify-between items-center">
-                      <div className="text-gray-700 text-lg mx-2">끌올</div>
-                      <PostPullButton onClick={handlePostPull} />
-                    </div>
+                    {isLoggedIn && (
+                      <div className="flex justify-between items-center">
+                        <div className="text-gray-700 text-lg mx-2">끌올</div>
+                        <PostPullButton onClick={handlePostPull} />
+                      </div>
+                    )}
                   </div>
                   <div className="flex justify-between mr-10 mt-3">
                     <div className="text-xl font-bold ">{price} 원</div>
@@ -243,82 +263,88 @@ export default function Post() {
                         <div className="flex items-center rounded-full text-xl font-semibold">
                           {postStatusLabelMap[post.postStatus]}
                         </div>
-                        <PostStatusChangeButton
-                          postStatus={postStatus}
-                          onClick={HandleStatuschange}
-                        />
+                        {isLoggedIn && (
+                          <PostStatusChangeButton
+                            postStatus={postStatus}
+                            onClick={HandleStatuschange}
+                          />
+                        )}
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-4 justify-end mr-10">
-                    <button className="px-6 py-3 rounded-2xl bg-[#ffe066] text-[#222] font-bold text-base shadow hover:bg-[#ffd600] transition">
-                      채팅하기
-                    </button>
-                  </div>
+                  {isLoggedIn && (
+                    <div className="flex gap-4 justify-end mr-10">
+                      <button className="px-6 py-3 rounded-2xl bg-[#ffe066] text-[#222] font-bold text-base shadow hover:bg-[#ffd600] transition">
+                        채팅하기
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="w-full max-w-md h-90 bg-gray-200 rounded-xl p-5 text-gray-700 text-base whitespace-pre-line overflow-y-auto mx-auto hide-scrollbar">
                   {content}
                 </div>
               </div>
             </div>
-            <div className="fixed bottom-0 left-0 w-full z-[99]">
-              <div className="bg-orange-500/20 p-1 shadow-lg flex items-center justify-end ">
-                <div className="w-full max-w-lg flex space-x-4">
-                  <button
-                    onClick={() => openModal("edit")}
-                    className="flex-1 py-3 text-indigo-900 font-bold text-2xl  rounded-md hover:hover:text-3xl transition-colors"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() => openModal("delete")}
-                    className="flex-1 py-3 text-indigo-900 font-bold text-2xl  rounded-md hover:text-3xl transition-colors"
-                  >
-                    삭제
-                  </button>
-                  {modalOpen && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
-                      <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-xl">
-                        <h2 className="text-xl font-bold mb-4">
-                          {modalType === "edit"
-                            ? "수정하시겠습니까?"
-                            : "정말로 삭제하시겠습니까?"}
-                        </h2>
-                        <div className="flex justify-end space-x-4">
+            {isLoggedIn && (
+              <div className="fixed bottom-0 left-0 w-full z-[99]">
+                <div className="bg-orange-500/20 p-1 shadow-lg flex items-center justify-end ">
+                  <div className="w-full max-w-lg flex space-x-4">
+                    <button
+                      onClick={() => openModal("edit")}
+                      className="flex-1 py-3 text-indigo-900 font-bold text-2xl  rounded-md hover:hover:text-3xl transition-colors"
+                    >
+                      수정
+                    </button>
+                    <button
+                      onClick={() => openModal("delete")}
+                      className="flex-1 py-3 text-indigo-900 font-bold text-2xl  rounded-md hover:text-3xl transition-colors"
+                    >
+                      삭제
+                    </button>
+                    {modalOpen && (
+                      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+                        <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-xl">
+                          <h2 className="text-xl font-bold mb-4">
+                            {modalType === "edit"
+                              ? "수정하시겠습니까?"
+                              : "정말로 삭제하시겠습니까?"}
+                          </h2>
+                          <div className="flex justify-end space-x-4">
+                            <button
+                              onClick={closeModal}
+                              className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                            >
+                              취소
+                            </button>
+                            <button
+                              onClick={handleEditOrDelete}
+                              className="px-4 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)]"
+                            >
+                              확인
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {resultModalOpen && (
+                      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[110]">
+                        <div className="bg-white rounded-lg p-5 w-[90%] max-w-sm shadow-xl text-center">
+                          <h2 className="text-lg font-medium mb-4">
+                            {resultMessage}
+                          </h2>
                           <button
-                            onClick={closeModal}
-                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                            onClick={closeResultModal}
+                            className="mt-2 px-5 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)] transition-colors"
                           >
-                            취소
-                          </button>
-                          <button
-                            onClick={handleEditOrDelete}
-                            className="px-4 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)]"
-                          >
-                            확인
+                            닫기
                           </button>
                         </div>
                       </div>
-                    </div>
-                  )}
-                  {resultModalOpen && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[110]">
-                      <div className="bg-white rounded-lg p-5 w-[90%] max-w-sm shadow-xl text-center">
-                        <h2 className="text-lg font-medium mb-4">
-                          {resultMessage}
-                        </h2>
-                        <button
-                          onClick={closeResultModal}
-                          className="mt-2 px-5 py-2 bg-[#223029] text-white rounded hover:bg-[rgba(123,130,105,1)] transition-colors"
-                        >
-                          닫기
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </MainHeader>

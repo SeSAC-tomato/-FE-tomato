@@ -15,7 +15,7 @@ export type LikeButtonProps = {
 export type PageListProps = {
   currentPage: number
   totalPages: number
-  onPageListHandle: (page: number) => void
+  setCurrentPage: (page: number) => void
 }
 
 export type DropdownProps = {
@@ -28,13 +28,6 @@ export type PostPageProps = {
   params: {
     id: string
   }
-}
-
-export type PostCreatePayload = {
-  title: string
-  productCategory: string
-  price: number
-  content: string
 }
 
 export type PostHeadersProps = {

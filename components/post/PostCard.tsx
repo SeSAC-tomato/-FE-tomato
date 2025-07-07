@@ -1,14 +1,18 @@
 "use client"
 import { useState } from "react"
 import LikeButton from "../button/LikeButton"
-import { PostResponse } from "@/utils/domain/label"
+import {
+  ImageDisplayInfo,
+  PostResponse,
+  PostResponseWithImage,
+} from "@/utils/domain/label"
 import Link from "next/link"
 import { formatDistanceToNow, parseISO } from "date-fns"
 import { ko } from "date-fns/locale"
 import { setFavorite } from "@/utils/api/post/api"
 
 interface PostCardProps {
-  post: PostResponse
+  post: PostResponseWithImage
 }
 
 export default function PostCard({ post }: PostCardProps) {
@@ -19,11 +23,13 @@ export default function PostCard({ post }: PostCardProps) {
     region,
     productCategory,
     updatedAt,
-    imageUrl,
+    mainImage,
     isLiked: initialIsLiked = false,
   } = post
 
   const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked)
+  const BASE_URL = "http://localhost:8080"
+
   const handleLike = async () => {
     setIsLiked((prev) => !prev) //이 부분 차후 수정처리 필요함
     // try {
@@ -45,12 +51,22 @@ export default function PostCard({ post }: PostCardProps) {
           className="block hover:shadow-lg transition"
         >
           <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-300">
-            <img
-              src={imageUrl ?? `https://picsum.photos/seed/item${id}/400/400`}
-              alt={title}
-              className="object-cover w-full h-full"
-              loading="lazy"
-            />
+            {mainImage ? (
+              <div key={mainImage.id}>
+                <img
+                  src={`${BASE_URL}/api/v1/post/images/${mainImage.savedName}`}
+                  alt="제품 이미지"
+                  className="object-cover w-full h-full rounded-xl"
+                />
+              </div>
+            ) : (
+              <img
+                src={`https://picsum.photos/seed/item${id}/400/400`}
+                alt={title}
+                className="object-cover w-full h-full"
+                loading="lazy"
+              />
+            )}
           </div>
           <div className="flex flex-col mt-3 gap-1 flex-1">
             <div className="flex items-center justify-between">

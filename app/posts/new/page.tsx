@@ -11,7 +11,8 @@ import { fileToBase64 } from "@/utils/domain/file"
 
 export default function NewProduct() {
   const router = useRouter()
-  const [imageInfos, setImageInfos] = useState<ImageInfo[]>([])
+  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [imageInfo, setImageInfo] = useState<ImageInfo[]>([])
   const [mainImageIndex, setMainImageIndex] = useState<number | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState("") // string 타입 유지
@@ -51,10 +52,10 @@ export default function NewProduct() {
         productCategory: form.productCategory,
         price: Number(form.price),
         content: form.content,
-        ImageInfo: imageInfos.map((info, idx) => ({
-          base64Data: info.savedFileName,
-          originalFileName: info.originalFileName,
-          mainImageIndex: mainImageIndex === idx,
+        imageInfo: imageInfo.map((info, idx) => ({
+          savedName: info.savedName,
+          originalName: info.originalName,
+          mainImage: mainImageIndex === idx,
         })),
       }
       console.log("전송페이로드", completedPayload)
@@ -89,16 +90,22 @@ export default function NewProduct() {
     const files = e.target.files
     if (!files || files.length === 0) return
 
-    const maxSize = 5 - imageInfos.length
+    const maxSize = 5 - imageInfo.length
     const fileArray = Array.from(files).slice(0, maxSize)
+
+    const newImageUrls = fileArray.map((file) => URL.createObjectURL(file))
+    setImageUrls((prev) => [...prev, ...newImageUrls])
+
+    if (mainImageIndex === null) setMainImageIndex(0)
 
     for (const file of fileArray) {
       try {
-        const base64 = await fileToBase64(file)
-        const savedFileName = await uploadBase64ImageAPI(base64)
-        setImageInfos((prev) => [
+        const saved = await fileToBase64(file)
+        const savedName = await uploadBase64ImageAPI(saved)
+        console.log(savedName)
+        setImageInfo((prev) => [
           ...prev,
-          { savedFileName: savedFileName, originalFileName: file.name },
+          { savedName: savedName, originalName: file.name },
         ])
         if (mainImageIndex == null) setMainImageIndex(0)
       } catch (error) {
@@ -188,12 +195,8 @@ export default function NewProduct() {
                   사진 등록 (최대 5장)
                 </label>
                 <div className="flex gap-3 flex-wrap">
-                  <label
-                    htmlFor="chat-file-upload"
-                    className="inline-flex items-center justify-center w-24 h-24 cursor-pointer border-2 border-dashed border-black rounded-md text-gray-600 hover:border-indigo-600 hover:text-indigo-600 transition-colors select-none"
-                  >
-                    업로드 +
-                  </label>
+                  <label htmlFor="chat-file-upload">업로드 +</label>
+                  {/* 사진 인풋 */}
                   <input
                     type="file"
                     id="chat-file-upload"
@@ -202,6 +205,28 @@ export default function NewProduct() {
                     style={{ display: "none" }}
                     onChange={handleFileChange}
                   />
+                  {imageUrls.map((url, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => setMainImageIndex(idx)}
+                      className={`relative w-24 h-24 border rounded overflow-hidden cursor-pointer ${
+                        mainImageIndex === idx
+                          ? "ring-4 ring-indigo-600"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <img
+                        src={url}
+                        alt={`image-${idx}`}
+                        className="w-full h-full object-cover"
+                      />
+                      {mainImageIndex === idx && (
+                        <div className="absolute top-1 left-1 bg-indigo-600 text-white text-xs px-2 py-0.5 rounded">
+                          대표
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
               <button

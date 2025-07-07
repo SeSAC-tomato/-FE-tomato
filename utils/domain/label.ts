@@ -20,7 +20,7 @@ export type PostResponse = {
   content: string
   postStatus: PostStatus
   productCategory: ProductCategory
-  imageUrl?: string
+  images?: ImageDisplayInfo[]
   isLiked?: boolean
   region?: string
   createdAt: string
@@ -30,12 +30,42 @@ export type PostResponse = {
   nickname: string
 }
 
+export type PostResponseWithImage = {
+  id: number
+  title: string
+  price: number
+  content: string
+  postStatus: PostStatus
+  productCategory: ProductCategory
+  mainImage: NewImageDisplayInfo[]
+  isLiked?: boolean
+  region?: string
+  createdAt: string
+  updatedAt: string
+  email: string
+  userId: number
+  nickname: string
+}
+
+export type ImageDisplayInfo = {
+  id: number
+  savedName: string
+  origialnalName?: string
+  mainImage: boolean
+  url: string
+}
+
+export type NewImageDisplayInfo = {
+  id: number
+  savedName: string
+}
+
 export type PostPageResponseData = {
   page: number
   size: number
   totalCount: number
   totalPages: number
-  posts: PostResponse[]
+  posts: PostResponseWithImage[]
 }
 
 export type PostSearchFilter = {
@@ -73,7 +103,22 @@ export type LikeResponse = {
   createdAt: string
 }
 
+export type ImageCreatePayload = {
+  // PostCreatePayload와 혼동되지 않도록 이름 변경 제안
+  savedName: string
+  originalName: string
+  mainImage: boolean // 백엔드 DTO의 Boolean mainImage에 맞춰 boolean 타입으로
+}
+
+export type PostCreatePayload = {
+  title: string
+  productCategory: string
+  price: number
+  content: string
+  imageInfo: ImageCreatePayload[]
+}
+
 export type ImageInfo = {
-  savedFileName: string // 서버에 저장된 파일명 (또는 URL)
-  originalFileName: string // 사용자가 업로드한 파일의 원본 이름 (프론트에서 관리)
+  savedName: string // 서버에 저장된 파일명 (또는 URL)
+  originalName: string // 사용자가 업로드한 파일의 원본 이름 (프론트에서 관리)
 }

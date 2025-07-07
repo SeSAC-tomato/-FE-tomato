@@ -1,6 +1,6 @@
-import { PostCreatePayload } from "@/utils/type/post/type"
 import {
   LikeResponse,
+  PostCreatePayload,
   PostPageResponseData,
   PostResponse,
   PostSearchFilter,
@@ -29,7 +29,7 @@ export const getPostById = async (
 
 export const getPosts = async (
   page: number,
-  pageSize: number,
+  pageSize?: number,
   filter?: PostSearchFilter
 ): Promise<CommonResponse<PostPageResponseData>> => {
   let endPoint = `post`
@@ -67,9 +67,9 @@ export const getPosts = async (
 
   console.log(`${endPoint}${query}`)
   const response = await api.get<CommonResponse<PostPageResponseData>>(
-    `${endPoint}?${query}`
+    `${endPoint}${query}`
   )
-  console.log(response)
+  console.log(response.data)
   return response.data
 }
 
@@ -107,8 +107,8 @@ export const uploadBase64ImageAPI = async (base64: string): Promise<string> => {
         },
       }
     )
-    console.log(response.data.result)
-    return response.data.result
+    console.log(response.data.data)
+    return response.data.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError

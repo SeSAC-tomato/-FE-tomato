@@ -179,12 +179,24 @@ export default function Post() {
         targetUserNickname: string;
     }>();
     const openChatModal = async () => {
+
+        if (!testuser) {
+            alert("로그인 한 이용자만 채팅 할 수 있습니다");
+            return
+        }
+
         const data = await axiosGet<
             ChatCommonResponse<ChatRoomResponse>,
             ChatRoomRequest
         >('/chat/room', {targetUserId: post?.userId ? post.userId : post2.userId});
 
         // userId 정보가 있어야함!
+
+        if (data.data.targetUserId == testuser.userId) {
+            alert("본인과는 채팅 할 수 없습니다");
+            return
+        }
+
 
         const {roomId, targetUserId, targetUserNickname} = data.data
 

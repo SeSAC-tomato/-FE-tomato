@@ -9,6 +9,7 @@ import LogoutButton from "@/components/button/LogoutButton";
 import LoginButton from "./button/LoginButton";
 import RegisterButton from "./button/RegisterButton";
 import MainHeader from "@/components/header/MainHeader";
+import {axiosGet} from "@/utils/api/chat/chatApi";
 
 export default function MainPageContent() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -19,6 +20,32 @@ export default function MainPageContent() {
   const setInitialized = useAuthStore((state) => state.setInitialized);
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
+
+
+  // Test 용
+  const setTestUser = useAuthStore((state) => state.setTestUser);
+  // const testUser = useAuthStore((state) => state.testUser);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isInitialized && isLoggedIn) {
+        const data = await axiosGet('/tes/login/userInfo');
+        const { email, userId, nickname } = data as {
+          email: string;
+          userId: number;
+          nickname: string;
+        };
+
+        setTestUser({ email, userId, nickname });
+      }
+    };
+    fetchData();
+  }, [isInitialized, setTestUser, isLoggedIn]);
+
+  // Test end
+
+
+
 
   useEffect(() => {
     const token =

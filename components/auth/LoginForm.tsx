@@ -23,18 +23,26 @@ export default function LoginForm() {
       setAuth({ email }, accessToken); // user 정보는 email만 임시로 저장
       router.push("/");
     } catch (err: any) {
-      let msg =
-        err?.error?.message ||
-        err?.message ||
-        "로그인에 실패했습니다. 다시 시도해 주세요.";
+      // TOMATO_AUTH_015: 이메일 인증 미완료 사용자
       if (
-        msg.includes("Request failed") ||
-        msg.includes("404") ||
-        msg.includes("500")
+        err?.error?.code === "TOMATO_AUTH_015" ||
+        err?.response?.data?.error?.code === "TOMATO_AUTH_015"
       ) {
-        msg = "아이디 또는 비밀번호가 올바르지 않습니다.";
+        setErrorMsg("이메일 인증을 완료해 주세요.");
+      } else {
+        let msg =
+          err?.error?.message ||
+          err?.message ||
+          "로그인에 실패했습니다. 다시 시도해 주세요.";
+        if (
+          msg.includes("Request failed") ||
+          msg.includes("404") ||
+          msg.includes("500")
+        ) {
+          msg = "아이디 또는 비밀번호가 올바르지 않습니다.";
+        }
+        setErrorMsg(msg);
       }
-      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }

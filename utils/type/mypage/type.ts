@@ -31,10 +31,9 @@ interface PostsResponse {
 
 export interface CartPost {
   postId: number;
-  id: number;
   title: string;
   price: number;
-  img: string;
+  img?: string;
   createdAt: string;
   updatedAt: string;
   postStatus: string;

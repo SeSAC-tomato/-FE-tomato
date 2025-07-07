@@ -15,6 +15,7 @@ import {
 } from "@/utils/type/chat/chat";
 import ChatSellingInfoModal from "@/components/chat/ChatSellingInfoModal";
 import ChatProgressModal from "@/components/chat/ChatProgressModal";
+import {getChatRoomInfoFromRoomUrl, getUserSellingListUrl} from "@/utils/chatUtils/constants";
 
 type Props = {
     changeMode: (chatType: ChatType) => void;
@@ -167,7 +168,6 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
             }
         ]
     }
-
     const dummyRoomProgressInfo: ChatRoomInfoResponse = {
         // 채팅방의 고유 ID
         roomId: 1,
@@ -217,12 +217,10 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
 
 
     useEffect(() => {
-        // setSellingInfo(dummySellingInfo);
-        // controlModal("progress")
-        // setRoomProgressInfo(dummyRoomProgressInfo)
         const fetchSellingList = async () => {
-            const data = await axiosGet<ChatCommonResponse<ChatUserSellingResponse>>(`/chat/user/${userId}`)
-
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            const data = await axiosGet<ChatCommonResponse<ChatUserSellingResponse>>(getUserSellingListUrl(userId))
 
             console.log(data)
             if (data.data.posts.length > 0) {
@@ -233,21 +231,12 @@ const ChatSelectBox = ({changeMode, roomId, userId, sendMessage}: Props) => {
 
 
         const fetchRoomInfo = async () => {
-
-            console.log("room progress")
-            console.log("room progress")
-            console.log("room progress")
-
-            const data = await axiosGet<ChatCommonResponse<ChatRoomInfoResponse>>(`/chat/room/${roomId}`)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            const data = await axiosGet<ChatCommonResponse<ChatRoomInfoResponse>>(getChatRoomInfoFromRoomUrl(roomId))
             if (data.data.roomId) {
                 setRoomProgressInfo(data.data);
             }
-
-            console.log(data)
-            console.log(data)
-            console.log(data)
-
-
         }
 
         const main = async () => {

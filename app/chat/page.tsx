@@ -11,21 +11,14 @@ import {
     ChatListPageResponse,
     ChatListSingleResponse,
 } from '@/utils/type/chat/chat';
-import {useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';
 import MainHeader from "@/components/header/MainHeader";
+import {getChatRoomsUrl} from "@/utils/chatUtils/constants";
 
 const ChatPage = () => {
-    const router = useRouter();
     const [rooms, setRooms] = useState<ChatListSingleResponse[]>();
-
     const [pageInfo, setPageInfo] = useState<ChatDefaultPageResponse>();
-
-    console.log(rooms);
-
     const [modalInfo, setModalInfo] = useState<number>();
-
-    // 목록 페이징 안되어있음
 
     const closeModal = () => {
         setRooms((prev) => {
@@ -34,7 +27,6 @@ const ChatPage = () => {
                     prev.find((room) => room.roomId == modalInfo)!.unreadCount = 0;
                 }
             }
-
             return prev;
         });
         setModalInfo(undefined);
@@ -44,19 +36,32 @@ const ChatPage = () => {
         setModalInfo(roomId);
     };
 
+    const fetchData = async (pageNumber: number) => {
+        const data = await axiosGet<
+            ChatCommonResponse<ChatListPageResponse>,
+            ChatDefaultPageRequest
+        >(getChatRoomsUrl(), {page: pageNumber, size: 15});
+
+        const {rooms, currentPage, size, totalElements, totalPages} = data.data;
+
+        setRooms(prev => prev ? [...prev, ...rooms] : rooms);
+        setPageInfo({currentPage, size, totalElements, totalPages});
+    };
+
+    const getMoreRooms = () => {
+        if (!pageInfo) return null;
+
+        if (pageInfo?.currentPage + 1 > pageInfo?.totalPages) {
+            fetchData(pageInfo?.currentPage + 1)
+        }
+    }
+
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await axiosGet<
-                ChatCommonResponse<ChatListPageResponse>,
-                ChatDefaultPageRequest
-            >('/chat', {page: 0, size: 15});
 
-            const {rooms, currentPage, size, totalElements, totalPages} = data.data;
-
-            setRooms(rooms);
-            setPageInfo({currentPage, size, totalElements, totalPages});
-        };
-        fetchData();
+        const main = async () => {
+            await fetchData(0);
+        }
+        main();
     }, []);
 
     return (
@@ -92,6 +97,14 @@ const ChatPage = () => {
                         isLast={rooms.length == index + 1}
                     />
                 ))}
+                {pageInfo &&
+                    pageInfo.currentPage + 1 > pageInfo.totalPages &&
+                    <div className="flex justify-center">
+                        <button
+                            className='px-4 py-2 bg-red-600 text-white rounded font-semibold hover:bg-red-700 hover:scale-105 transition duration-200 cursor-pointer'>
+                            더 많은 채팅 불러오기
+                        </button>
+                    </div>}
 
             </div>
         </>

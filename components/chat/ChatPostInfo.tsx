@@ -2,7 +2,7 @@
 import {ChatPostResponse} from "@/utils/type/chat/chat";
 
 type Props = {
-    post?:ChatPostResponse
+    post:ChatPostResponse
 };
 
 // post의 사진, 제목, 가격을 채팅 관련 컴포넌트에서 보여주기 위한 컴포넌트

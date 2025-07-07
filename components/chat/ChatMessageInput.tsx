@@ -16,6 +16,7 @@ import PlusIcon from '../icons/chat/PlusIcon';
 import SendIcon from '../icons/chat/SendIcon';
 import ChatImagePreview from './ChatImagePreview';
 import ChatSelectBox from './ChatSelectBox';
+import {getWebsocketPubRoom} from "@/utils/chatUtils/constants";
 
 type Props = {
     roomId: number;
@@ -38,7 +39,6 @@ const ChatMessageInput = ({roomId, stompClientRef, userId}: Props) => {
 
     const sendMessage = (chatType: ChatType, isDone?: boolean, targetId?: number) => {
         let messageObject;
-        console.log(targetId);
 
         if (chatType == ChatType.EVENT_BOOK && targetId && isDone != undefined) {
             messageObject = createMsgForBook(chatType, roomId, targetId, isDone);
@@ -82,7 +82,7 @@ const ChatMessageInput = ({roomId, stompClientRef, userId}: Props) => {
         console.log('🔽 publish 직전');
         try {
             stompClientRef.current!.publish({
-                destination: `/ws/pub/room/${roomId}`,
+                destination: getWebsocketPubRoom(roomId),
                 body: JSON.stringify(messageObject),
             });
             console.log('✅ publish 이후 코드 실행됨');
@@ -124,7 +124,6 @@ const ChatMessageInput = ({roomId, stompClientRef, userId}: Props) => {
 
     return (
         <>
-            {/* <ChatProgressModal /> */}
             <input
                 type="file"
                 id="chat-file-upload"

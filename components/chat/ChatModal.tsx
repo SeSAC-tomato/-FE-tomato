@@ -11,6 +11,11 @@ import ChatBubbleIcon from '../icons/chat/ChatBubbleIcon';
 import XIcon from '../icons/chat/XIcon';
 import ChatList from './ChatList';
 import ChatMessageInput from './ChatMessageInput';
+import {
+    getChatLastReadUrl,
+    getWebsocketSubRoom,
+    websocketEndPoint
+} from "@/utils/chatUtils/constants";
 
 type Props = {
     roomId: number;
@@ -38,7 +43,7 @@ const ChatModal = ({roomId, nickname, onClose, userId}: Props) => {
 
             const stompClient = new Client({
                 connectHeaders: headers,
-                webSocketFactory: () => new SockJS('http://localhost:8080/websocket'),
+                webSocketFactory: () => new SockJS(websocketEndPoint),
                 reconnectDelay: 5000,
                 debug: (str) => {
                     console.log('DEBUG', str);
@@ -46,10 +51,11 @@ const ChatModal = ({roomId, nickname, onClose, userId}: Props) => {
             });
 
             stompClient.onConnect = () => {
-                stompClient.subscribe(`/ws/sub/room/${roomId}`, (message) => {
+                stompClient.subscribe(getWebsocketSubRoom(roomId), (message) => {
                     const newChat = JSON.parse(message.body) as ChatResponse;
 
-                    axiosGet(`/chat/room/${roomId}/chat/${newChat.chatId}`);
+
+                    axiosGet(getChatLastReadUrl(roomId, newChat.chatId));
 
                     console.log('room Received: ', message);
 

@@ -35,22 +35,26 @@ export const createMsgForBook = (
   chatType: ChatType.EVENT_BOOK,
   roomId: number,
   targetId: number,
+  isDone: boolean,
 ): ChatRequest => {
   return {
     roomId,
     chatType,
     targetId,
+    isDone,
   };
 };
 export const createMsgForEnd = (
   chatType: ChatType.EVENT_END,
   roomId: number,
   targetId: number,
+  isDone: boolean,
 ): ChatRequest => {
   return {
     roomId,
     chatType,
     targetId,
+    isDone
   };
 };
 

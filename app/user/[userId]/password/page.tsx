@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, use } from "react";
 import api from "@/utils/api/axios";
 import MainHeader from "@/components/header/MainHeader";
 import MyPageMenu from "@/components/mypage/MyPageMenu";
@@ -8,8 +8,9 @@ import { changeUserPassword } from "@/utils/api/user/api";
 export default function PasswordChangePage({
   params,
 }: {
-  params: { userId: string };
+  params: Promise<{ userId: string }>;
 }) {
+  const { userId } = use(params);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordCheck, setNewPasswordCheck] = useState("");
@@ -62,12 +63,15 @@ export default function PasswordChangePage({
   const handleChange = async () => {
     try {
       await changeUserPassword(
-        Number(params.userId),
+        Number(userId),
         oldPassword,
         newPassword,
         newPasswordCheck
       );
       alert("비밀번호가 변경되었습니다");
+      setOldPassword("");
+      setNewPassword("");
+      setNewPasswordCheck("");
     } catch (e) {
       alert("비밀번호 변경에 실패했습니다");
     }
@@ -77,7 +81,7 @@ export default function PasswordChangePage({
     <>
       <MainHeader />
       <div className="flex w-full max-w-4xl mx-auto mt-8">
-        <MyPageMenu userId={Number(params.userId)} />
+        <MyPageMenu userId={Number(userId)} />
         <div className="flex-1 flex flex-col items-center justify-center">
           <h1 className="text-2xl font-bold mb-4">비밀번호 변경</h1>
           <input

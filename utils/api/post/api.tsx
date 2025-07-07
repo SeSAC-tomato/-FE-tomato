@@ -7,6 +7,7 @@ import {
 } from "@/utils/domain/label"
 import api from "../axios"
 import { CommonResponse } from "@/utils/type/common/type"
+import axios, { AxiosError } from "axios"
 
 export const createOrUpdatePost = async (
   payload: PostCreatePayload
@@ -93,4 +94,50 @@ export const setFavorite = async (
   const response = await api.get(`/post/${postId}/cart`)
   console.log(response.data)
   return response.data
+}
+
+export const uploadBase64ImageAPI = async (base64: string): Promise<string> => {
+  try {
+    const response = await api.post(
+      `/image/upload`,
+      { base64Image: base64 },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    console.log(response.data.result)
+    return response.data.result
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError
+
+      if (axiosError.response) {
+        const serverMessage = (axiosError.response.data as any)?.message
+        console.error(
+          "이미지 업로드 실패 (서버 응답):",
+          axiosError.response?.status,
+          serverMessage || "알 수 없는 서버 오류"
+        )
+        throw new Error(
+          serverMessage || "이미지 업로드 중 서버에서 오류가 발생했습니다."
+        )
+      } else if (axiosError.request) {
+        console.error("이미지 업로드 실패 (네트워크 오류):", axiosError.message)
+        throw new Error(
+          "네트워크 오류로 이미지 업로드에 실패했습니다. 인터넷 연결을 확인해주세요."
+        )
+      } else {
+        console.error(
+          "이미지 업로드 실패 (요청 설정 오류):",
+          axiosError.message
+        )
+        throw new Error("이미지 업로드 요청에 문제가 발생했습니다.")
+      }
+    } else {
+      console.error("이미지 업로드 실패 (알 수 없는 오류):", error)
+      throw new Error("예상치 못한 오류로 이미지 업로드에 실패했습니다.")
+    }
+  }
 }

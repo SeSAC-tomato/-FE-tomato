@@ -1,19 +1,17 @@
 "use client"
 
-import PostHeader2 from "@/components/header/PostHeader2"
 import { useState } from "react"
-import { Plus } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
-import { createOrUpdatePost } from "@/utils/api/post/api"
+import { createOrUpdatePost, uploadBase64ImageAPI } from "@/utils/api/post/api"
 import MainHeader from "@/components/header/MainHeader"
-import { categoryLabelMap } from "@/utils/domain/label"
+import { categoryLabelMap, ImageInfo } from "@/utils/domain/label"
 import { useRouter } from "next/navigation"
 import CheckModal from "@/components/modals/CheckModal"
+import { fileToBase64 } from "@/utils/domain/file"
 
-export default function newProduct() {
+export default function NewProduct() {
   const router = useRouter()
-  //   const [imageUrls, setImageUrls] = useState<string[]>([])
-  const [imageUrls, setImageUrls] = useState<string[]>([]) // 이미지 URL만 관리
+  const [imageInfos, setImageInfos] = useState<ImageInfo[]>([])
   const [mainImageIndex, setMainImageIndex] = useState<number | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState("") // string 타입 유지
@@ -45,18 +43,22 @@ export default function newProduct() {
     content: form.content,
   }
 
-  const handleImageSelect = () => {
-    const dummyUrl = `/placeholder-${imageUrls.length + 1}.png`
-    if (imageUrls.length >= 5) return alert("최대 5장까지 등록 가능합니다.")
-    setImageUrls([...imageUrls, dummyUrl])
-    if (mainImageIndex === null) setMainImageIndex(0)
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      console.log(payload)
-      const response = await createOrUpdatePost(payload)
+      const completedPayload = {
+        title: form.title,
+        productCategory: form.productCategory,
+        price: Number(form.price),
+        content: form.content,
+        ImageInfo: imageInfos.map((info, idx) => ({
+          base64Data: info.savedFileName,
+          originalFileName: info.originalFileName,
+          mainImageIndex: mainImageIndex === idx,
+        })),
+      }
+      console.log("전송페이로드", completedPayload)
+      const response = await createOrUpdatePost(completedPayload)
       setModalMessage(
         "게시글이 성공적으로 등록되었습니다!\n메인 화면으로 이동하시겠습니까?"
       )
@@ -79,23 +81,31 @@ export default function newProduct() {
     }
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
-
-    const max = 5 - imageUrls.length
-    const fileArray = Array.from(files).slice(0, max)
-
-    const newImageUrls = fileArray.map((file) => URL.createObjectURL(file))
-
-    setImageUrls((prev) => [...prev, ...newImageUrls])
-
-    if (mainImageIndex === null && newImageUrls.length > 0) {
-      setMainImageIndex(0)
-    }
-  }
   const handleModalClose = () => {
-    setModalOpen(false) // 모달 닫기
+    setModalOpen(false)
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    const maxSize = 5 - imageInfos.length
+    const fileArray = Array.from(files).slice(0, maxSize)
+
+    for (const file of fileArray) {
+      try {
+        const base64 = await fileToBase64(file)
+        const savedFileName = await uploadBase64ImageAPI(base64)
+        setImageInfos((prev) => [
+          ...prev,
+          { savedFileName: savedFileName, originalFileName: file.name },
+        ])
+        if (mainImageIndex == null) setMainImageIndex(0)
+      } catch (error) {
+        console.error("파일 업로드 실패:", error)
+        alert("이미지 업드로 실패")
+      }
+    }
   }
 
   return (
@@ -141,14 +151,11 @@ export default function newProduct() {
                           className="hidden"
                         />
                         {label}{" "}
-                        {/* 사용자에게 보이는 텍스트는 label (예: "디지털 기기") */}
                       </label>
                     )
                   )}
                 </div>
               </div>
-
-              {/* 가격 */}
               <div className="flex items-center gap-4">
                 <label className="w-24 font-semibold">가격</label>
                 <div className="flex items-center gap-2 flex-1">
@@ -164,7 +171,6 @@ export default function newProduct() {
                 </div>
               </div>
 
-              {/* 내용 */}
               <div className="flex items-center gap-4">
                 <label className="w-24 font-semibold">내용</label>
                 <textarea
@@ -177,36 +183,17 @@ export default function newProduct() {
                 />
               </div>
 
-              {/* 이미지 등록 + 대표 설정 */}
               <div>
                 <label className="block font-semibold mb-2">
                   사진 등록 (최대 5장)
                 </label>
                 <div className="flex gap-3 flex-wrap">
-                  {imageUrls.map((url, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => setMainImageIndex(idx)}
-                      className={`relative w-24 h-24 border rounded overflow-hidden cursor-pointer ${
-                        mainImageIndex === idx
-                          ? "ring-4 ring-indigo-600"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      <img
-                        src={url}
-                        alt={`image-${idx}`}
-                        className="w-full h-full object-cover"
-                      />
-                      {mainImageIndex === idx && (
-                        <div className="absolute top-1 left-1 bg-indigo-600 text-white text-xs px-2 py-0.5 rounded">
-                          대표
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  <label htmlFor="chat-file-upload">업로드</label>
+                  <label
+                    htmlFor="chat-file-upload"
+                    className="inline-flex items-center justify-center w-24 h-24 cursor-pointer border-2 border-dashed border-black rounded-md text-gray-600 hover:border-indigo-600 hover:text-indigo-600 transition-colors select-none"
+                  >
+                    업로드 +
+                  </label>
                   <input
                     type="file"
                     id="chat-file-upload"
@@ -215,23 +202,8 @@ export default function newProduct() {
                     style={{ display: "none" }}
                     onChange={handleFileChange}
                   />
-
-                  {/* 이미지 추가 버튼 */}
-                  {imageUrls.length < 5 && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        document.getElementById("chat-file-upload")?.click()
-                      }}
-                      className="w-24 h-24 border rounded flex items-center justify-center bg-gray-100 text-gray-400"
-                    >
-                      <Plus className="w-6 h-6" />
-                    </button>
-                  )}
                 </div>
               </div>
-
-              {/* 저장 버튼 */}
               <button
                 type="submit"
                 className="w-full my-3 py-3 bg-green-800 text-white text-lg font-semibold rounded-lg hover:bg-green-900 transition-colors"
@@ -242,15 +214,13 @@ export default function newProduct() {
           </div>
         </div>
       </div>
-      {/* ★★★ CheckModal 렌더링 추가 확인 ★★★ */}
       <CheckModal
         open={modalOpen}
         message={modalMessage}
         canUse={modalCanUse}
-        onUse={modalOnUseAction || handleModalClose} // '사용' 버튼 클릭 시 실행할 액션
-        onClose={handleModalClose} // '닫기' 버튼 클릭 시 실행할 액션
+        onUse={modalOnUseAction || handleModalClose}
+        onClose={handleModalClose}
       />
-      {/* ★★★ CheckModal 렌더링 끝 ★★★ */}
     </div>
   )
 }

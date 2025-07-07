@@ -72,3 +72,8 @@ export type LikeResponse = {
   isLiked: boolean
   createdAt: string
 }
+
+export type ImageInfo = {
+  savedFileName: string // 서버에 저장된 파일명 (또는 URL)
+  originalFileName: string // 사용자가 업로드한 파일의 원본 이름 (프론트에서 관리)
+}

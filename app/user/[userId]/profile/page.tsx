@@ -16,6 +16,7 @@ declare global {
 
 export default function UserProfilePage() {
   const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
   const [editField, setEditField] = useState<"nickname" | "address" | null>(
     null
   );
@@ -109,11 +110,8 @@ export default function UserProfilePage() {
     nicknameChecked &&
     nicknameCheckedValue !== "" &&
     nicknameCheckedValue !== user?.nickname;
-  const isAddressChanged =
-    editField === null && addressTemp !== user?.address && addressTemp !== "";
-  const canApply =
-    isNicknameChanged ||
-    (editField === null && addressTemp !== user?.address && addressTemp !== "");
+  const isAddressChanged = addressTemp !== user?.address && addressTemp !== "";
+  const canApply = isNicknameChanged || isAddressChanged;
 
   // 적용 버튼 클릭
   const handleApply = async () => {
@@ -123,10 +121,14 @@ export default function UserProfilePage() {
       await updateUserProfile(
         user.id,
         isNicknameChanged ? nicknameCheckedValue : user.nickname,
-        editField === null && addressTemp !== user.address && addressTemp !== ""
-          ? addressTemp
-          : user.address
+        addressTemp
       );
+      // zustand user 정보도 갱신
+      setUser({
+        ...user,
+        nickname: isNicknameChanged ? nicknameCheckedValue : user.nickname,
+        address: addressTemp,
+      });
       alert("적용되었습니다!");
       // 적용 후 상태 초기화
       setEditField(null);
@@ -239,19 +241,13 @@ export default function UserProfilePage() {
               ${
                 loading
                   ? "bg-gray-200 text-black"
-                  : loading ||
-                    (!isNicknameChanged && addressTemp === user.address) ||
-                    (isNicknameChanged && !nicknameChecked)
+                  : loading || !canApply
                   ? "bg-gray-300 text-gray-400 cursor-not-allowed"
                   : "bg-gray-200 text-black hover:bg-gray-300 cursor-pointer"
               }
             `}
             onClick={handleApply}
-            disabled={
-              loading ||
-              (!isNicknameChanged && addressTemp === user.address) ||
-              (isNicknameChanged && !nicknameChecked)
-            }
+            disabled={loading || !canApply}
           >
             {loading ? "적용 중..." : "적용"}
           </button>

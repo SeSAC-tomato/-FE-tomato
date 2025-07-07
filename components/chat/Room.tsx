@@ -17,7 +17,7 @@ function Room({ room, isLast, openModal }: Props) {
   return (
     <div
       onClick={openModal}
-      className={`flex items-center py-4 px-6 transition-all duration-200 ease-in-out cursor-pointer relative hover:bg-[#f9f9f9] hover:translate-y-[-1px] hover:shadow-md hover:z-10 ${
+      className={`flex items-center mt-4 py-4 px-6 transition-all duration-300 bg-transparent hover:bg-[rgb(252,182,159)] hover:bg-opacity-100 hover:shadow-md hover:scale-105 rounded-xl p-6 cursor-pointer  ${
         !isLast ? 'border-b border-[#f5f5f5]' : ''
       }`}
     >

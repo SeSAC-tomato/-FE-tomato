@@ -16,6 +16,7 @@ interface AuthState {
   login: (user: User, accessToken: string) => void;
   logout: () => void;
   setInitialized: () => void;
+  setUser: (user: User) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -26,4 +27,5 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: (user, accessToken) => set({ user, isLoggedIn: true, accessToken }),
   logout: () => set({ user: null, isLoggedIn: false, accessToken: null }),
   setInitialized: () => set({ isInitialized: true }),
+  setUser: (user) => set({ user }),
 }));

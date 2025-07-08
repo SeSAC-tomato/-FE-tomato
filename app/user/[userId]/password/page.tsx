@@ -81,7 +81,7 @@ export default function PasswordChangePage({
     <>
       <MainHeader />
       <div className="flex w-full max-w-4xl mx-auto mt-8">
-        <MyPageMenu userId={Number(userId)} />
+        <MyPageMenu userId={Number(userId)} className="self-start h-fit" />
         <div className="flex-1 flex flex-col items-center justify-center">
           <h1 className="text-2xl font-bold mb-4">비밀번호 변경</h1>
           <input

@@ -1,9 +1,9 @@
 // import mockPosts from "@/utils/mock/mockPosts"
-import { PostResponse } from "@/utils/domain/label"
+import { PostResponse, PostResponseWithImage } from "@/utils/domain/label"
 import PostCard from "./PostCard"
 
 interface PostsListProps {
-  posts: PostResponse[]
+  posts: PostResponseWithImage[]
   loading: boolean
   error: string | null
 }

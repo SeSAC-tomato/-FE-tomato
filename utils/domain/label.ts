@@ -22,7 +22,7 @@ export type PostResponse = {
   productCategory: ProductCategory
   images?: ImageDisplayInfo[]
   isLiked?: boolean
-  region?: string
+  region: string
   createdAt: string
   updatedAt: string
   email: string
@@ -37,7 +37,7 @@ export type PostResponseWithImage = {
   content: string
   postStatus: PostStatus
   productCategory: ProductCategory
-  mainImage: NewImageDisplayInfo[]
+  mainImage: NewImageDisplayInfo
   isLiked?: boolean
   region?: string
   createdAt: string
@@ -48,7 +48,7 @@ export type PostResponseWithImage = {
 }
 
 export type ImageDisplayInfo = {
-  id: number
+  id?: number
   savedName: string
   origialnalName?: string
   mainImage: boolean
@@ -58,6 +58,7 @@ export type ImageDisplayInfo = {
 export type NewImageDisplayInfo = {
   id: number
   savedName: string
+  mainImage?: boolean
 }
 
 export type PostPageResponseData = {

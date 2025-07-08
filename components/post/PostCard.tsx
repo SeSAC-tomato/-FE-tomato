@@ -52,11 +52,11 @@ export default function PostCard({ post }: PostCardProps) {
         >
           <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-300">
             {mainImage ? (
-              <div key={mainImage.id}>
+              <div key={mainImage.id} className="h-full rounded-lg">
                 <img
                   src={`${BASE_URL}/api/v1/post/images/${mainImage.savedName}`}
                   alt="제품 이미지"
-                  className="object-cover w-full h-full rounded-xl"
+                  className="object-cover w-full h-full"
                 />
               </div>
             ) : (

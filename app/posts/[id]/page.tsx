@@ -54,6 +54,7 @@ export default function Post() {
   const [content, setContent] = useState<string>("")
   const [images, setImages] = useState<ImageDisplayInfo[]>([])
   const [postStatus, setPostStatus] = useState<PostStatus>("SELLING") // 기본값은 "SELLING" 같은 enum 값 중 하나
+  const [region, setRegion] = useState<string>("")
   const [productCategory, setProductCategory] = useState<string>("")
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [nickname, setNickname] = useState<string>("")
@@ -91,6 +92,7 @@ export default function Post() {
           setUpdatedAt(response.updatedAt)
           setNickname(response.nickname)
           setImages(response.images || [])
+          setRegion(response.region)
           console.log(response)
         } else {
           setError("게시물을 찾을 수 없습니다.")
@@ -101,7 +103,7 @@ export default function Post() {
       }
     }
     getPost()
-  }, [postId, post])
+  }, [postId])
 
   const openModal = (type: "edit" | "delete") => {
     setModalType(type)
@@ -302,7 +304,9 @@ export default function Post() {
                       </div>
                       <div>
                         <div className="font-bold text-lg">{nickname}</div>
-                        <div className="text-gray-500 text-sm">구로동</div>
+                        <div className="text-gray-500 text-sm">
+                          {post?.region ?? "구로동"}
+                        </div>
                       </div>
                       <LikeButton isLiked={isLiked} handleLike={handleLike} />
                     </div>

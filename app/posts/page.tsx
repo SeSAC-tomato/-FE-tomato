@@ -4,6 +4,7 @@ import PostHeader from "@/components/header/PostHeader"
 import { useState, useEffect, useCallback } from "react"
 import {
   PostResponse,
+  PostResponseWithImage,
   PostSearchFilter,
   ProductCategory,
 } from "@/utils/domain/label"
@@ -16,7 +17,7 @@ import PageList from "@/components/post/PageList"
 export default function Page() {
   const pageSize = 12
   const [currentPage, setCurrentPage] = useState(0) // 0-based 페이지 번호
-  const [posts, setPosts] = useState<PostResponse[]>([])
+  const [posts, setPosts] = useState<PostResponseWithImage[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

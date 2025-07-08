@@ -4,6 +4,7 @@ import { CartPost } from "@/utils/type/mypage/type";
 import LikeButton from "../button/LikeButton";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { formatDate } from "@/utils/domain/label";
 
 interface CartPostCardProps {
   post: CartPost;
@@ -47,16 +48,4 @@ export default function CartPostCard({ post, onUnlike }: CartPostCardProps) {
       <LikeButton isLiked={true} handleLike={onUnlike || (() => {})} />
     </div>
   );
-}
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMinutes = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60)
-  );
-  if (diffInMinutes < 1) return "방금 전";
-  if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
-  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`;
-  return `${Math.floor(diffInMinutes / 1440)}일 전`;
 }

@@ -23,12 +23,8 @@ export default function LoginForm() {
       // 1. 로그인 API 호출 (토큰 발급)
       const accessToken = await loginApi(email, password);
 
-      // 2. user/me로 유저 정보 받아 zustand에 저장
-      const userRes = await api.get("/user/me", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      const user = userRes.data.data;
-      setAuth(user, accessToken); // user 전체 정보와 토큰을 zustand에 저장
+      // 2. user/me는 AuthInitializer에서만 호출
+      setAuth(null, accessToken); // user는 null, accessToken만 저장
 
       // 3. 메인 페이지로 이동
       router.push("/");

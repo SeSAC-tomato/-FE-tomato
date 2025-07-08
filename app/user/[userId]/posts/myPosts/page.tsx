@@ -62,7 +62,7 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
       <>
         <MainHeader />
         <div className="flex w-full max-w-7xl mx-auto mt-8">
-          <MyPageMenu userId={Number(userId)} />
+          <MyPageMenu userId={Number(userId)} className="self-start h-fit" />
           <div className="flex-1 flex flex-col items-center justify-center">
             <h1 className="text-2xl font-bold mb-6">내 게시물</h1>
             <div className="text-center text-gray-500">로딩 중...</div>
@@ -77,7 +77,7 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
       <>
         <MainHeader />
         <div className="flex w-full max-w-7xl mx-auto mt-8">
-          <MyPageMenu userId={Number(userId)} />
+          <MyPageMenu userId={Number(userId)} className="self-start h-fit" />
           <div className="flex-1 flex flex-col items-center justify-center">
             <h1 className="text-2xl font-bold mb-6">내 게시물</h1>
             <div className="text-center text-red-500">{error}</div>
@@ -98,7 +98,7 @@ export default function MyPostsPage({ params }: { params: Promise<Params> }) {
     <>
       <MainHeader />
       <div className="flex w-full max-w-7xl mx-auto mt-8">
-        <MyPageMenu userId={Number(userId)} />
+        <MyPageMenu userId={Number(userId)} className="self-start h-fit" />
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-center my-8">판매/구매내역</h1>
           <div className="flex gap-2 mb-6">

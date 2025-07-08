@@ -2,10 +2,13 @@ export const websocketEndPoint = 'http://localhost:8080/websocket'
 
 export const backEndPoint = 'http://localhost:8080'
 
-export const getWebsocketSubRoom = (roomId: number) => `/ws/sub/room/${roomId}`
-export const getWebsocketPubRoom = (roomId: number) => `/ws/pub/room/${roomId}`
+export const ChatCreateAndGetRoomUrl = "/chat/room"
 
 export  const getChatRoomsUrl = () => `/chat`
+
+export const getWebsocketSubRoom = (roomId: number) => `/ws/sub/room/${roomId}`
+
+export const getWebsocketPubRoom = (roomId: number) => `/ws/pub/room/${roomId}`
 
 export const getChatLastReadUrl = (roomId: number, chatId: number) => `/chat/room/${roomId}/chat/${chatId}`
 
@@ -15,7 +18,7 @@ export const getChatRoomInfoFromRoomUrl = (roomId: number) => `/chat/room/${room
 
 export const getUserSellingListUrl = (userId: number) => `/chat/user/${userId}`
 
-export const getChatImageUrl = (imageName: string) => `${backEndPoint}/api/v1/tes/images/${imageName}`
+export const getChatImageUrl = (imageName: string) => `${backEndPoint}/api/v1/tes/chat/images/${imageName}`
 
 // 수정
 export const getChatPostImageUrl = (imageName: string) => `${backEndPoint}/api/v1/tes/images/${imageName}`

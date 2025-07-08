@@ -19,6 +19,7 @@ import {
 } from "@/utils/type/chat/chat";
 import ChatModal from "@/components/chat/ChatModal";
 import {useAuthStore} from "@/store/useAuthStore";
+import {ChatCreateAndGetRoomUrl} from "@/utils/chatUtils/constants";
 
 export default function Post() {
 
@@ -188,7 +189,7 @@ export default function Post() {
         const data = await axiosGet<
             ChatCommonResponse<ChatRoomResponse>,
             ChatRoomRequest
-        >('/chat/room', {targetUserId: post?.userId ? post.userId : post2.userId});
+        >(ChatCreateAndGetRoomUrl, {targetUserId: post?.userId ? post.userId : post2.userId});
 
         // userId 정보가 있어야함!
 

@@ -101,6 +101,7 @@ const ChatPage = () => {
                     pageInfo.currentPage + 1 > pageInfo.totalPages &&
                     <div className="flex justify-center">
                         <button
+                            onClick={getMoreRooms}
                             className='px-4 py-2 bg-red-600 text-white rounded font-semibold hover:bg-red-700 hover:scale-105 transition duration-200 cursor-pointer'>
                             더 많은 채팅 불러오기
                         </button>

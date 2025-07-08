@@ -19,17 +19,18 @@ import {
 import LikeButton from "@/components/button/LikeButton"
 import PostStatusChangeButton from "@/components/button/PostStatusChangeButton"
 import PostPullButton from "@/components/button/PostPullButton"
-import { axiosGet } from "@/utils/api/chat/chatApi"
+import {axiosGet} from "@/utils/api/chat/chatApi";
 import {
-  ChatCommonResponse,
-  ChatPostResponse,
-  ChatPostStatus,
-  ChatProductCategory,
-  ChatRoomRequest,
-  ChatRoomResponse,
-} from "@/utils/type/chat/chat"
-import ChatModal from "@/components/chat/ChatModal"
-import { useAuthStore } from "@/store/useAuthStore"
+    ChatCommonResponse,
+    ChatPostResponse,
+    ChatPostStatus,
+    ChatProductCategory,
+    ChatRoomRequest,
+    ChatRoomResponse
+} from "@/utils/type/chat/chat";
+import ChatModal from "@/components/chat/ChatModal";
+import {useAuthStore} from "@/store/useAuthStore";
+import {ChatCreateAndGetRoomUrl} from "@/utils/chatUtils/constants";
 
 export default function Post() {
   const testuser = useAuthStore((state) => state.testUser)
@@ -139,7 +140,6 @@ export default function Post() {
     } catch (error) {
       console.log(error)
     }
-  }
 
   const HandleStatuschange = async () => {
     try {
@@ -182,57 +182,72 @@ export default function Post() {
   }
   //// chat 관련
 
-  // 테스트용
-  const post2: ChatPostResponse = {
-    id: 22,
-    title: "아이패드 9세대 64GB",
-    price: 240000,
-    content:
-      "사용한지 2년 됐습니다.\n케이스랑 펜슬, 키보드도 같이 드립니다.\n본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을 구성한 대비의 화면입니다.",
-    postStatus: ChatPostStatus.SELLING,
-    productCategory: ChatProductCategory.KIDS,
-    createdAt: "string",
-    updatedAt: "string",
-    userId: 2,
-    nickname: "test1",
-    images: ["cd5722b8-f544-4f59-b346-ff8b04c6a035.png"],
-  }
+    // 테스트용
+    const post2: ChatPostResponse = {
+        id: 22,
+        title: '아이패드 9세대 64GB',
+        price: 240000,
+        content:
+            '사용한지 2년 됐습니다.\n케이스랑 펜슬, 키보드도 같이 드립니다.\n본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을 구성한 대비의 화면입니다.',
+        postStatus: ChatPostStatus.SELLING,
+        productCategory: ChatProductCategory.KIDS,
+        createdAt: 'string',
+        updatedAt: 'string',
+        userId: 2,
+        nickname: 'test1',
+        images: ['cd5722b8-f544-4f59-b346-ff8b04c6a035.png'],
+    };
 
-  const [modalInfo, setModalInfo] = useState<{
-    roomId: number
-    targetUserId: number
-    targetUserNickname: string
-  }>()
-  const openChatModal = async () => {
-    const data = await axiosGet<
-      ChatCommonResponse<ChatRoomResponse>,
-      ChatRoomRequest
-    >("/chat/room", { targetUserId: post?.userId ? post.userId : post2.userId })
+    const [modalInfo, setModalInfo] = useState<{
+        roomId: number;
+        targetUserId: number;
+        targetUserNickname: string;
+    }>();
+    const openChatModal = async () => {
 
-    // userId 정보가 있어야함!
+        if (!testuser) {
+            alert("로그인 한 이용자만 채팅 할 수 있습니다");
+            return
+        }
 
-    const { roomId, targetUserId, targetUserNickname } = data.data
+        const data = await axiosGet<
+            ChatCommonResponse<ChatRoomResponse>,
+            ChatRoomRequest
+        >(ChatCreateAndGetRoomUrl, {targetUserId: post?.userId ? post.userId : post2.userId});
 
-    setModalInfo({ roomId, targetUserId, targetUserNickname })
-  }
-  const closeChatModal = () => {
-    setModalInfo(undefined)
-  }
+        // userId 정보가 있어야함!
 
-  // chat
+        if (data.data.targetUserId == testuser.userId) {
+            alert("본인과는 채팅 할 수 없습니다");
+            return
+        }
 
-  const handlePostPull = () => {}
-  return (
-    <>
-      {modalInfo && testuser && testuser.userId != modalInfo.targetUserId && (
-        <ChatModal
-          userId={modalInfo.targetUserId}
-          onClose={closeChatModal}
-          roomId={modalInfo.roomId}
-          nickname={modalInfo.targetUserNickname}
-          key={modalInfo.roomId}
-        />
-      )}
+
+        const {roomId, targetUserId, targetUserNickname} = data.data
+
+
+        setModalInfo({roomId, targetUserId, targetUserNickname});
+    };
+    const closeChatModal = () => {
+        setModalInfo(undefined);
+    };
+
+    // chat
+
+
+    const handlePostPull = () => {
+    }
+    return (
+        <>
+            {modalInfo && testuser && testuser.userId != modalInfo.targetUserId && (
+                <ChatModal
+                    userId={modalInfo.targetUserId}
+                    onClose={closeChatModal}
+                    roomId={modalInfo.roomId}
+                    nickname={modalInfo.targetUserNickname}
+                    key={modalInfo.roomId}
+                />
+            )}
 
       <MainHeader>
         {/* 카드/내용 영역만 스크롤, 전체는 overflow-hidden */}

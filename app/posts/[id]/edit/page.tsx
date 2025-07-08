@@ -1,8 +1,5 @@
 "use client"
-
-import PostHeader2 from "@/components/header/PostHeader2"
 import { useEffect, useState } from "react"
-import { Plus } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
 import {
   createOrUpdatePost,
@@ -13,6 +10,7 @@ import MainHeader from "@/components/header/MainHeader"
 import { categoryLabelMap, PostStatus } from "@/utils/domain/label"
 import { useParams, useRouter } from "next/navigation"
 import CheckModal from "@/components/modals/CheckModal"
+import { useAuthStore } from "@/store/useAuthStore"
 
 export default function newProduct() {
   const router = useRouter()
@@ -40,8 +38,13 @@ export default function newProduct() {
     price: "",
     content: "",
   })
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      alert("로그인 후 접근하실수 있습니다")
+      router.push(`/posts`)
+    }
     const getPost = async () => {
       if (!postId) {
         console.warn("postId가 없습니다. 요청을 수행할 수 없습니다.")
@@ -145,141 +148,145 @@ export default function newProduct() {
 
   return (
     <div>
-      <div className="w-full h-screen flex-col min-h-screen">
-        <div className="mx-auto w-full lg:w-[1024px] flex flex-col">
-          <MainHeader />
-          <div className="max-w-2xl mx-auto px-4 py-8">
-            <form onSubmit={handleUpdate} className="space-y-6">
-              <div className="flex items-center gap-4">
-                <label className="w-24 font-semibold">제목</label>
-                <input
-                  name="title"
-                  value={form.title}
-                  onChange={handleInput}
-                  className="flex-1 border rounded px-4 py-2 bg-gray-50"
-                  placeholder="예) 아이패드 9세대 64GB"
-                  required
-                />
-              </div>
+      {isLoggedIn && (
+        <>
+          <div className="w-full h-screen flex-col min-h-screen">
+            <div className="mx-auto w-full lg:w-[1024px] flex flex-col">
+              <MainHeader />
+              <div className="max-w-2xl mx-auto px-4 py-8">
+                <form onSubmit={handleUpdate} className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <label className="w-24 font-semibold">제목</label>
+                    <input
+                      name="title"
+                      value={form.title}
+                      onChange={handleInput}
+                      className="flex-1 border rounded px-4 py-2 bg-gray-50"
+                      placeholder="예) 아이패드 9세대 64GB"
+                      required
+                    />
+                  </div>
 
-              <div className="flex items-center gap-4">
-                <label className="w-24 font-semibold">카테고리</label>
-                <div className="flex flex-wrap gap-2">
-                  {(Object.keys(categoryLabelMap) as CategoryLabel[]).map(
-                    (label: CategoryLabel) => (
-                      <label
-                        key={uuidv4()}
-                        className={`px-3 py-1.5 rounded-full text-sm border cursor-pointer ${
-                          form.productCategory === categoryLabelMap[label]
-                            ? "bg-indigo-600 text-white border-indigo-600"
-                            : "bg-white text-gray-700 border-gray-300"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="productCategory"
-                          value={categoryLabelMap[label]}
-                          onChange={handleInput}
-                          checked={
-                            form.productCategory === categoryLabelMap[label]
-                          }
-                          className="hidden"
-                        />
-                        {label}{" "}
-                        {/* 사용자에게 보이는 텍스트는 label (예: "디지털 기기") */}
-                      </label>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* 가격 */}
-              <div className="flex items-center gap-4">
-                <label className="w-24 font-semibold">가격</label>
-                <div className="flex items-center gap-2 flex-1">
-                  <input
-                    type="number"
-                    name="price"
-                    value={form.price}
-                    onChange={handleInput}
-                    className="flex-1 border rounded px-4 py-2 bg-gray-50"
-                    required
-                  />
-                  <span className="text-sm">원</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <label className="w-24 font-semibold">내용</label>
-                <textarea
-                  name="content"
-                  value={form.content}
-                  onChange={handleInput}
-                  rows={6}
-                  className="flex-1 border rounded px-4 py-2 bg-gray-50 overflow-y-auto resize-none"
-                  required
-                />
-              </div>
-
-              {/* 이미지 등록 + 대표 설정 */}
-              <div>
-                <label className="block font-semibold mb-2">
-                  사진 등록 (최대 5장)
-                </label>
-                <div className="flex gap-3 flex-wrap">
-                  {imageUrls.map((url, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => setMainImageIndex(idx)}
-                      className={`relative w-24 h-24 border rounded overflow-hidden cursor-pointer ${
-                        mainImageIndex === idx
-                          ? "ring-4 ring-indigo-600"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      <img
-                        src={url}
-                        alt={`image-${idx}`}
-                        className="w-full h-full object-cover"
-                      />
-                      {mainImageIndex === idx && (
-                        <div className="absolute top-1 left-1 bg-indigo-600 text-white text-xs px-2 py-0.5 rounded">
-                          대표
-                        </div>
+                  <div className="flex items-center gap-4">
+                    <label className="w-24 font-semibold">카테고리</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(Object.keys(categoryLabelMap) as CategoryLabel[]).map(
+                        (label: CategoryLabel) => (
+                          <label
+                            key={uuidv4()}
+                            className={`px-3 py-1.5 rounded-full text-sm border cursor-pointer ${
+                              form.productCategory === categoryLabelMap[label]
+                                ? "bg-indigo-600 text-white border-indigo-600"
+                                : "bg-white text-gray-700 border-gray-300"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="productCategory"
+                              value={categoryLabelMap[label]}
+                              onChange={handleInput}
+                              checked={
+                                form.productCategory === categoryLabelMap[label]
+                              }
+                              className="hidden"
+                            />
+                            {label}{" "}
+                            {/* 사용자에게 보이는 텍스트는 label (예: "디지털 기기") */}
+                          </label>
+                        )
                       )}
                     </div>
-                  ))}
+                  </div>
 
-                  <label htmlFor="chat-file-upload">업로드</label>
-                  <input
-                    type="file"
-                    id="chat-file-upload"
-                    multiple
-                    accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
-                    style={{ display: "none" }}
-                    onChange={handleFileChange}
-                  />
-                </div>
+                  {/* 가격 */}
+                  <div className="flex items-center gap-4">
+                    <label className="w-24 font-semibold">가격</label>
+                    <div className="flex items-center gap-2 flex-1">
+                      <input
+                        type="number"
+                        name="price"
+                        value={form.price}
+                        onChange={handleInput}
+                        className="flex-1 border rounded px-4 py-2 bg-gray-50"
+                        required
+                      />
+                      <span className="text-sm">원</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <label className="w-24 font-semibold">내용</label>
+                    <textarea
+                      name="content"
+                      value={form.content}
+                      onChange={handleInput}
+                      rows={6}
+                      className="flex-1 border rounded px-4 py-2 bg-gray-50 overflow-y-auto resize-none"
+                      required
+                    />
+                  </div>
+
+                  {/* 이미지 등록 + 대표 설정 */}
+                  <div>
+                    <label className="block font-semibold mb-2">
+                      사진 등록 (최대 5장)
+                    </label>
+                    <div className="flex gap-3 flex-wrap">
+                      {imageUrls.map((url, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => setMainImageIndex(idx)}
+                          className={`relative w-24 h-24 border rounded overflow-hidden cursor-pointer ${
+                            mainImageIndex === idx
+                              ? "ring-4 ring-indigo-600"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          <img
+                            src={url}
+                            alt={`image-${idx}`}
+                            className="w-full h-full object-cover"
+                          />
+                          {mainImageIndex === idx && (
+                            <div className="absolute top-1 left-1 bg-indigo-600 text-white text-xs px-2 py-0.5 rounded">
+                              대표
+                            </div>
+                          )}
+                        </div>
+                      ))}
+
+                      <label htmlFor="chat-file-upload">업로드</label>
+                      <input
+                        type="file"
+                        id="chat-file-upload"
+                        multiple
+                        accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* 저장 버튼 */}
+                  <button
+                    type="submit"
+                    className="w-full my-3 py-3 bg-green-800 text-white text-lg font-semibold rounded-lg hover:bg-green-900 transition-colors"
+                  >
+                    수정
+                  </button>
+                </form>
               </div>
-
-              {/* 저장 버튼 */}
-              <button
-                type="submit"
-                className="w-full my-3 py-3 bg-green-800 text-white text-lg font-semibold rounded-lg hover:bg-green-900 transition-colors"
-              >
-                수정
-              </button>
-            </form>
+            </div>
           </div>
-        </div>
-      </div>
-      <CheckModal
-        open={modalOpen}
-        message={modalMessage}
-        canUse={modalCanUse}
-        onUse={modalOnUseAction || handleModalClose} // '사용' 버튼 클릭 시 실행할 액션
-        onClose={handleModalClose} // '닫기' 버튼 클릭 시 실행할 액션
-      />
+          <CheckModal
+            open={modalOpen}
+            message={modalMessage}
+            canUse={modalCanUse}
+            onUse={modalOnUseAction || handleModalClose} // '사용' 버튼 클릭 시 실행할 액션
+            onClose={handleModalClose} // '닫기' 버튼 클릭 시 실행할 액션
+          />
+        </>
+      )}
     </div>
   )
 }

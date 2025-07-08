@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Post } from "@/utils/type/mypage/type";
+import { CartPost } from "@/utils/type/mypage/type";
 import Link from "next/link";
 
 interface MyPostCardProps {
-  post: Post;
+  post: CartPost;
 }
 
 export default function MyPostCard({ post }: MyPostCardProps) {

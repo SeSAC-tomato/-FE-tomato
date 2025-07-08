@@ -24,8 +24,16 @@ export default function UserProfilePage() {
   const [address, setAddress] = useState(user?.address || "");
   const [nicknameChecked, setNicknameChecked] = useState(false); // 닉네임 중복확인 통과 여부
   const [nicknameCheckedValue, setNicknameCheckedValue] = useState(""); // 마지막으로 중복확인 통과한 닉네임
-  const [addressTemp, setAddressTemp] = useState(user?.address || ""); // 주소지 임시값
+  const [addressTemp, setAddressTemp] = useState(user?.address || "");
   const [loading, setLoading] = useState(false);
+  const [addressInfo, setAddressInfo] = useState({
+    address: user?.address || "",
+    sido: "",
+    sigungu: "",
+    dong: "",
+    x: "",
+    y: "",
+  });
 
   // 카카오 주소 검색 스크립트 동적 로드
   useEffect(() => {
@@ -72,9 +80,23 @@ export default function UserProfilePage() {
     if (typeof window === "undefined" || !window.daum?.Postcode) return;
     new window.daum.Postcode({
       oncomplete: function (data: any) {
-        setAddressTemp(data.address);
+        handleAddressSelect(data);
       },
     }).open();
+  };
+
+  const handleAddressSelect = (data) => {
+    const address = data.address || data.roadAddress || data.jibunAddress;
+    setAddressTemp(address);
+    setAddressInfo({
+      address,
+      sido: data.sido,
+      sigungu: data.sigungu,
+      dong: data.bname,
+      x: "", // 좌표는 빈 값
+      y: "", // 좌표는 빈 값
+    });
+    setEditField("address");
   };
 
   // 닉네임 변경 시작
@@ -121,14 +143,26 @@ export default function UserProfilePage() {
       await updateUserProfile(
         user.id,
         isNicknameChanged ? nicknameCheckedValue : user.nickname,
-        addressTemp
+        addressInfo.address,
+        addressInfo.sido,
+        addressInfo.sigungu,
+        addressInfo.dong,
+        Number(addressInfo.x),
+        Number(addressInfo.y)
       );
-      // zustand user 정보도 갱신
+      // zustand user 정보 갱신
       setUser({
         ...user,
         nickname: isNicknameChanged ? nicknameCheckedValue : user.nickname,
-        address: addressTemp,
+        address: addressInfo.address, // ← addressTemp 대신 addressInfo.address 사용 권장
       });
+      // **로컬 상태도 모두 최신값으로 동기화**
+      setAddress(addressInfo.address);
+      setAddressTemp(addressInfo.address);
+      setAddressInfo((prev) => ({
+        ...prev,
+        address: addressInfo.address,
+      }));
       alert("적용되었습니다!");
       // 적용 후 상태 초기화
       setEditField(null);
@@ -141,6 +175,14 @@ export default function UserProfilePage() {
     }
   };
 
+  const handleProfileUpdate = () => {
+    api.put("/user/profile", {
+      ...otherFields,
+      x: addressInfo.x, // ← 0이 아닌 실제 값이어야 함
+      y: addressInfo.y,
+    });
+  };
+
   if (!user) return null;
 
   return (
@@ -150,7 +192,7 @@ export default function UserProfilePage() {
         <h1 className="text-2xl font-bold text-center my-8">내 정보</h1>
       </div>
       <div className="flex w-full max-w-4xl mx-auto mt-8">
-        <MyPageMenu userId={user.id} />
+        <MyPageMenu userId={user.id} className="self-start h-fit" />
         <div className="flex-1 flex flex-col items-center justify-center">
           <h2 className="text-2xl font-bold mb-4">
             {user.nickname} 님의 프로필
@@ -203,7 +245,13 @@ export default function UserProfilePage() {
                 <input
                   className="border rounded px-2 py-1"
                   value={addressTemp}
-                  onChange={(e) => setAddressTemp(e.target.value)}
+                  onChange={(e) => {
+                    setAddressTemp(e.target.value);
+                    setAddressInfo((prev) => ({
+                      ...prev,
+                      address: e.target.value,
+                    }));
+                  }}
                 />
                 <button
                   className="ml-2 px-2 py-1 bg-gray-200 rounded"

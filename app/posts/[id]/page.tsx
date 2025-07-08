@@ -10,7 +10,12 @@ import {
   PostStatus,
   postStatusLabelMap,
 } from "@/utils/domain/label"
-import { deletePost, getPostById } from "@/utils/api/post/api"
+import {
+  changeStatus,
+  deletePost,
+  getPostById,
+  setFavorite,
+} from "@/utils/api/post/api"
 import LikeButton from "@/components/button/LikeButton"
 import PostStatusChangeButton from "@/components/button/PostStatusChangeButton"
 import PostPullButton from "@/components/button/PostPullButton"
@@ -96,7 +101,7 @@ export default function Post() {
       }
     }
     getPost()
-  }, [postId])
+  }, [postId, post])
 
   const openModal = (type: "edit" | "delete") => {
     setModalType(type)
@@ -127,14 +132,27 @@ export default function Post() {
   const handleLike = async () => {
     if (!isLoggedIn) return
     setIsLiked((prev) => !prev) //차후에 이부분 수정
-    // try {
-    //   const response = await setFavorite(postId)
-    // } catch (error) {
-    //   console.log(error)
-    // }
+    try {
+      const response = await setFavorite(postId)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const HandleStatuschange = () => {}
+  const HandleStatuschange = async () => {
+    try {
+      const updatedPost = await changeStatus(postId)
+      if (updatedPost) {
+        console.log("상태변경", updatedPost)
+        setPost(updatedPost)
+        setPostStatus(updatedPost.postStatus)
+      } else {
+        console.warn("상태 변경에 실패했습니다")
+      }
+    } catch (error) {
+      console.error("상태 변경 중 오류 발생:", error)
+    }
+  }
 
   const handleEditOrDelete = async () => {
     if (modalType === "edit") {

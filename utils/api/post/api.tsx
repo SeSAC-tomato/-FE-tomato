@@ -141,3 +141,20 @@ export const uploadBase64ImageAPI = async (base64: string): Promise<string> => {
     }
   }
 }
+
+export const changeStatus = async (
+  postId: Number | undefined
+): Promise<PostResponse | null> => {
+  if (postId === undefined) {
+    console.warn("postId is undefined")
+    return null
+  }
+  try {
+    const response = await api.put(`/post/${postId}/status`)
+    console.log(response.data.data)
+    return response.data
+  } catch (error) {
+    console.error("Failed to change status", error)
+    return null
+  }
+}

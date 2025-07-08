@@ -20,7 +20,7 @@ const PostStatusChangeButton: React.FC<PostStatusChangeProps> = ({
     return null
   }
 
-  const label = getNextLabel(postStatus)
+  const label = getNextLabel(postStatus) ?? "알 수 없음"
   const isDisabled = postStatus === "END"
   return (
     <button
@@ -34,7 +34,7 @@ const PostStatusChangeButton: React.FC<PostStatusChangeProps> = ({
         }
         ${className}`}
     >
-      {label}으로 변경
+      {postStatus === "END" ? label : `${label}(으)로 변경`}
     </button>
   )
 }

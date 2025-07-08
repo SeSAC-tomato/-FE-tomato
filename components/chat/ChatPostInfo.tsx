@@ -1,5 +1,6 @@
 "use client"
 import {ChatPostResponse} from "@/utils/type/chat/chat";
+import {getChatPostImageUrl} from "@/utils/chatUtils/constants";
 
 type Props = {
     post:ChatPostResponse
@@ -30,7 +31,8 @@ const ChatPostInfo = ({post }: Props) => {
             <div className="flex p-3 items-center h-30">
                 <div className="h-full w-24 flex-shrink-0 border-0 rounded-md p-2 flex items-center justify-center bg-gray-100">
                     <img
-                        // src={'http://localhost:8080/api/v1/tes/images/' + post.images![0]}
+                        //###수정###
+                        // src={getChatPostImageUrl(post.images![0])}
                         src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYgQrX3JiyR8wWYWKvTnjgxRgxxtRIw0RJtw&s"}
                         alt="alt"
 

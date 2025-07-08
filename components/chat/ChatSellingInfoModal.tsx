@@ -1,4 +1,3 @@
-import {ChatType} from "@/utils/type/chat/chatEnums";
 import {ChatUserSellingResponse} from "@/utils/type/chat/chat";
 import ChatPostInfo from "@/components/chat/ChatPostInfo";
 import ChatBubbleIcon from "@/components/icons/chat/ChatBubbleIcon";

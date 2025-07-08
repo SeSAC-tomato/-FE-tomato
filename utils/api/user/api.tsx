@@ -35,7 +35,20 @@ export const changeUserPassword = (
 export const updateUserProfile = (
   userId: number,
   nickname: string,
-  address: string
+  address: string,
+  sido: string,
+  sigungu: string,
+  dong: string,
+  x: number,
+  y: number
 ) => {
-  return api.put(`/user/${userId}/profile`, { nickname, address });
+  return api.put(`/user/${userId}/profile`, {
+    nickname,
+    address,
+    sido,
+    sigungu,
+    dong,
+    x,
+    y,
+  });
 };

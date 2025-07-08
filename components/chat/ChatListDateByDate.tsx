@@ -4,7 +4,6 @@ import { ChatResponse } from '@/utils/type/chat/chat';
 import ChatDate from './ChatDate';
 import ChatSingle from './ChatSingle';
 import {useAuthStore} from "@/store/useAuthStore";
-import ChatPostInfo from "@/components/chat/ChatPostInfo";
 
 type Props = {
   chats: ChatResponse[];

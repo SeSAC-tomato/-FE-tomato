@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { verify } from "@/utils/api/auth/api";
+import { verify, reverify } from "@/utils/api/auth/api";
 import { VerifyType } from "@/utils/type/auth/type";
 import VerifyResultCard from "@/components/verify/VerifyResultCard";
 
@@ -16,6 +16,10 @@ export default function EmailVerifyPage() {
   );
   const [errorMsg, setErrorMsg] = useState("");
   const [errorCode, setErrorCode] = useState("");
+  const [reverifyStatus, setReverifyStatus] = useState<
+    "idle" | "loading" | "success" | "fail"
+  >("idle");
+  const [reverifyMsg, setReverifyMsg] = useState("");
 
   useEffect(() => {
     if (!token || !email) {
@@ -45,6 +49,28 @@ export default function EmailVerifyPage() {
       doVerify();
     }
   }, [token, email]);
+
+  const handleReverify = async () => {
+    setReverifyStatus("loading");
+    setReverifyMsg("메일을 전송중입니다. 잠시만 기다려 주세요.");
+    try {
+      const res = await reverify(email ?? "", token ?? "", VerifyType.EMAIL);
+      if (res.status == 201) {
+        setReverifyStatus("success");
+        setReverifyMsg("재인증 메일이 발송되었습니다. 메일함을 확인해 주세요!");
+      } else {
+        setReverifyStatus("fail");
+        setReverifyMsg(
+          res.data?.error?.message || "재인증 메일 발송에 실패했습니다."
+        );
+      }
+    } catch (e: any) {
+      setReverifyStatus("fail");
+      setReverifyMsg(
+        e?.response?.data?.error?.message || "재인증 메일 발송에 실패했습니다."
+      );
+    }
+  };
 
   if (!token || !email) {
     return null;
@@ -90,7 +116,45 @@ export default function EmailVerifyPage() {
             onButtonClick={() => router.push("/login")}
           />
         )}
-        {status === "fail" && errorCode !== "TOMATO_AUTH_013" && (
+        {status === "fail" && errorCode === "TOMATO_AUTH_011" ? (
+          <VerifyResultCard
+            icon={<div className="text-5xl mb-4">❌</div>}
+            message="인증 링크가 만료되었습니다."
+            messageClass="text-red-500"
+            buttonText={
+              reverifyStatus === "loading"
+                ? "재전송 중..."
+                : reverifyStatus === "success"
+                ? "재인증 메일 발송 완료"
+                : "재인증 메일 다시 보내기"
+            }
+            buttonColorClass={
+              reverifyStatus === "success" ? "bg-green-500" : "bg-[#e53935]"
+            }
+            onButtonClick={
+              reverifyStatus === "success" || reverifyStatus === "loading"
+                ? undefined
+                : handleReverify
+            }
+            buttonDisabled={
+              reverifyStatus === "success" || reverifyStatus === "loading"
+            }
+          >
+            {reverifyMsg && (
+              <div
+                className={`mt-3 text-sm ${
+                  reverifyStatus === "success"
+                    ? "text-green-600"
+                    : reverifyStatus === "loading"
+                    ? "text-gray-500"
+                    : "text-red-500"
+                }`}
+              >
+                {reverifyMsg}
+              </div>
+            )}
+          </VerifyResultCard>
+        ) : status === "fail" && errorCode !== "TOMATO_AUTH_013" ? (
           <VerifyResultCard
             icon={<div className="text-5xl mb-4">❌</div>}
             message={errorMsg || "유효하지 않은 인증 링크입니다."}
@@ -99,7 +163,7 @@ export default function EmailVerifyPage() {
             buttonColorClass="bg-gray-400"
             onButtonClick={() => router.push("/")}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );

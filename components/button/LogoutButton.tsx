@@ -17,7 +17,6 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
     try {
       await apiLogout();
       logout(); // 전역 상태 로그아웃
-      alert("로그아웃 되었습니다.");
     } catch (e) {
       alert("로그아웃 실패");
     }

@@ -44,7 +44,7 @@ export default function CartPostCard({ post, onUnlike }: CartPostCardProps) {
           <div>{formatDate(post.createdAt)}</div>
         </div>
       </Link>
-      <LikeButton isLiked={true} handleLike={onUnlike} />
+      <LikeButton isLiked={true} handleLike={onUnlike || (() => {})} />
     </div>
   );
 }

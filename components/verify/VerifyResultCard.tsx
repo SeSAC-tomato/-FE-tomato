@@ -9,6 +9,7 @@ interface VerifyResultCardProps {
   buttonColorClass?: string;
   onButtonClick?: () => void;
   children?: React.ReactNode;
+  buttonDisabled?: boolean;
 }
 
 export default function VerifyResultCard({
@@ -19,6 +20,7 @@ export default function VerifyResultCard({
   buttonColorClass = "bg-gray-400",
   onButtonClick,
   children,
+  buttonDisabled = false,
 }: VerifyResultCardProps) {
   return (
     <>
@@ -26,12 +28,14 @@ export default function VerifyResultCard({
       <p className={`text-lg font-bold mb-2 ${messageClass}`}>{message}</p>
       {buttonText && onButtonClick && (
         <button
-          className={`mt-4 px-6 py-2 ${buttonColorClass} text-white rounded-md font-semibold cursor-pointer`}
+          className={`mt-4 px-6 py-2 ${buttonColorClass} text-white rounded-md font-semibold cursor-pointer disabled:opacity-50`}
           onClick={onButtonClick}
+          disabled={buttonDisabled}
         >
           {buttonText}
         </button>
       )}
+      {children}
     </>
   );
 }

@@ -1,5 +1,16 @@
 // utils/type/mypage/type.ts
 interface Post {
+  id: number;
+  title: string;
+  price: number;
+  img: string;
+  createdAt: string;
+  updatedAt: string;
+  postStatus: string;
+  productCategory: string;
+}
+interface CartPost {
+  postId: number;
   title: string;
   price: number;
   img: string;
@@ -29,15 +40,4 @@ interface PostsResponse {
   };
 }
 
-export interface CartPost {
-  postId: number;
-  title: string;
-  price: number;
-  img?: string;
-  createdAt: string;
-  updatedAt: string;
-  postStatus: string;
-  productCategory: string;
-}
-
-export type { Post, PageMeta, PostsResponse };
+export type { Post, CartPost, PageMeta, PostsResponse };

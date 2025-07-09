@@ -59,7 +59,7 @@ export default function AuthInitializer({
         })
         .catch(() => {});
     } else {
-      // accessToken이 이미 있으면 바로 user/me 호출
+      // accessToken이 바뀔 때마다 user/me 호출
       api
         .get("/user/me")
         .then((userRes) => {
@@ -77,7 +77,7 @@ export default function AuthInitializer({
           // user/me 실패 시 처리
         });
     }
-  }, []);
+  }, [accessToken]); // ← accessToken이 바뀔 때마다 실행!
 
   return <>{children}</>;
 }

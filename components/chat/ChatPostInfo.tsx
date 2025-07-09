@@ -32,8 +32,8 @@ const ChatPostInfo = ({post }: Props) => {
                 <div className="h-full w-24 flex-shrink-0 border-0 rounded-md p-2 flex items-center justify-center bg-gray-100">
                     <img
                         //###수정###
-                        // src={getChatPostImageUrl(post.images![0])}
-                        src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYgQrX3JiyR8wWYWKvTnjgxRgxxtRIw0RJtw&s"}
+                        src={getChatPostImageUrl(post.images![0])}
+                        // src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYgQrX3JiyR8wWYWKvTnjgxRgxxtRIw0RJtw&s"}
                         alt="alt"
 
                         className="object-contain h-full w-full"

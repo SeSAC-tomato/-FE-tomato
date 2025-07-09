@@ -7,10 +7,10 @@ export type ButtonProps = {
 }
 
 export interface LikeButtonProps {
+  isCurrentLiked: boolean
+  isLiked: boolean | undefined
   handleLike: () => void
-  isLiked: boolean
-  fillColor?: string
-  id: number | undefined
+  postId : number | undefined
 }
 
 export type PageListProps = {

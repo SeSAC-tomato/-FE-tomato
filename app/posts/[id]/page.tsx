@@ -302,9 +302,10 @@ export default function Post() {
                         </div>
                       </div>
                       <LikeButton
-                        isLiked={isCurrentLiked}
-                        id={post?.id}
+                        isCurrentLiked={isCurrentLiked}
+                        isLiked={post?.isLiked}
                         handleLike={handleLike}
+                        postId = {postId}
                       />
                     </div>
                     {/* 버튼 그룹 (오른쪽 하단, 같은 라인) */}
@@ -353,7 +354,7 @@ export default function Post() {
                       </div>
                     )}
                   </div>
-                  {writer && (
+                  {testuser && testuser.userId != post?.userId && (
                     <div className="flex gap-4 justify-end mr-10">
                       <button
                         onClick={openChatModal}

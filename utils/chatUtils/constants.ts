@@ -21,4 +21,4 @@ export const getUserSellingListUrl = (userId: number) => `/chat/user/${userId}`
 export const getChatImageUrl = (imageName: string) => `${backEndPoint}/api/v1/tes/chat/images/${imageName}`
 
 // 수정
-export const getChatPostImageUrl = (imageName: string) => `${backEndPoint}/api/v1/tes/images/${imageName}`
+export const getChatPostImageUrl = (imageName: string) => `${backEndPoint}/api/v1/post/images/${imageName}`

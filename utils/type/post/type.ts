@@ -6,10 +6,11 @@ export type ButtonProps = {
   className?: string
 }
 
-export type LikeButtonProps = {
+export interface LikeButtonProps {
+  handleLike: () => void
   isLiked: boolean
   fillColor?: string
-  handleLike: () => void
+  id: number | undefined
 }
 
 export type PageListProps = {
@@ -43,4 +44,5 @@ export type PostHeadersProps = {
   setMaxPrice?: (v: string) => void
   region?: string
   setRegion?: (v: string) => void
+  dongs: string[]
 }

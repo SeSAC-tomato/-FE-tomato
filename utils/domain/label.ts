@@ -1,4 +1,5 @@
 export type PostStatus = "SELLING" | "BOOKED" | "END"
+export const BASE_URL = "http://localhost:8080"
 
 export type ProductCategory =
   | "DIGITAL_DEVICE"
@@ -38,8 +39,8 @@ export type PostResponseWithImage = {
   postStatus: PostStatus
   productCategory: ProductCategory
   mainImage: NewImageDisplayInfo
-  isLiked?: boolean
-  region?: string
+  isLiked: boolean
+  region: string
   createdAt: string
   updatedAt: string
   email: string

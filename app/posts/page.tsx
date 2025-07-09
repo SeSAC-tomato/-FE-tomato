@@ -3,12 +3,11 @@ import PostHeader from "@/components/header/PostHeader"
 
 import { useState, useEffect, useCallback } from "react"
 import {
-  PostResponse,
   PostResponseWithImage,
   PostSearchFilter,
   ProductCategory,
 } from "@/utils/domain/label"
-import { getPosts } from "@/utils/api/post/api"
+import { getPosts, getRegionInfo } from "@/utils/api/post/api"
 import Link from "next/link"
 import AddIcon from "@/components/icons/AddIcon"
 import PostsList from "@/components/post/PostsList"
@@ -29,7 +28,18 @@ export default function Page() {
   const [selling, setSelling] = useState<boolean | undefined>(undefined)
   const [minPrice, setMinPrice] = useState<string>("")
   const [maxPrice, setMaxPrice] = useState<string>("")
+  const [dongs, setDongs] = useState<string[]>([])
   const [region, setRegion] = useState<string>("")
+
+  useEffect(() => {
+    const fetchRegions = async () => {
+      const regionInfo = await getRegionInfo()
+      if (regionInfo) {
+        setDongs(regionInfo)
+      }
+    }
+    fetchRegions()
+  }, [])
 
   // API 호출 함수
   const getPostsData = useCallback(
@@ -43,9 +53,14 @@ export default function Page() {
           selling: selling || undefined,
           minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
           maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
+          region: region || undefined,
         }
         console.log(page, pageSize, searchFilter)
+        console.log("@#$@#$@#$@#$@#$@#$")
+
         const responseData = await getPosts(page, pageSize, searchFilter)
+        console.log("123123123123123")
+
         if (responseData.success && responseData.data) {
           const { posts, totalPages } = responseData.data
           setPosts(posts)
@@ -69,7 +84,15 @@ export default function Page() {
         setLoading(false)
       }
     },
-    [searchKeyword, productCategory, selling, minPrice, maxPrice, pageSize]
+    [
+      searchKeyword,
+      productCategory,
+      selling,
+      minPrice,
+      maxPrice,
+      pageSize,
+      region,
+    ]
   )
 
   useEffect(() => {
@@ -96,6 +119,7 @@ export default function Page() {
         setMaxPrice={setMaxPrice}
         region={region}
         setRegion={setRegion}
+        dongs={dongs}
       />
       <div className="mx-auto w-full max-w-4xl flex flex-col">
         <PostsList posts={posts} loading={loading} error={error} />

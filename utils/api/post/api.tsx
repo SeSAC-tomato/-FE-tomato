@@ -43,7 +43,8 @@ export const getPosts = async (
         filter.productCategory !== null) ||
       (filter.selling !== undefined && filter.selling !== null) ||
       (filter.minPrice !== undefined && filter.minPrice !== null) ||
-      (filter.maxPrice !== undefined && filter.maxPrice !== null))
+      (filter.maxPrice !== undefined && filter.maxPrice !== null) ||
+      (filter.region !== undefined && filter.region !== null))
 
   if (hasFilter) {
     endPoint = "post/search"
@@ -63,7 +64,12 @@ export const getPosts = async (
     if (filter.maxPrice !== undefined && filter.maxPrice !== null) {
       query += `&maxPrice=${encodeURIComponent(filter.maxPrice)}`
     }
+    if (filter.region !== undefined && filter.region !== null) {
+      query += `&region=${encodeURIComponent(filter.region)}`
+    }
   }
+
+  console.log("!@#2222222211212")
 
   console.log(`${endPoint}${query}`)
   const response = await api.get<CommonResponse<PostPageResponseData>>(
@@ -91,9 +97,9 @@ export const updatePost = async (
 export const setFavorite = async (
   postId: Number | undefined
 ): Promise<LikeResponse | null> => {
-  const response = await api.get(`/post/${postId}/cart`)
+  const response = await api.post(`/post/${postId}/cart`)
   console.log(response.data)
-  return response.data
+  return response.data.data
 }
 
 export const uploadBase64ImageAPI = async (base64: string): Promise<string> => {
@@ -153,6 +159,18 @@ export const changeStatus = async (
     const response = await api.put(`/post/${postId}/status`)
     console.log(response.data.data)
     return response.data
+  } catch (error) {
+    console.error("Failed to change status", error)
+    return null
+  }
+}
+
+export const getRegionInfo = async (): Promise<string[] | null> => {
+  try {
+    const response = await api.get("/post/region")
+    if (!response) return null
+    console.log(response.data.data.regions)
+    return response.data.data.regions
   } catch (error) {
     console.error("Failed to change status", error)
     return null

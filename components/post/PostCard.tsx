@@ -2,6 +2,7 @@
 import { useState } from "react"
 import LikeButton from "../button/LikeButton"
 import {
+  BASE_URL,
   ImageDisplayInfo,
   PostResponse,
   PostResponseWithImage,
@@ -24,25 +25,25 @@ export default function PostCard({ post }: PostCardProps) {
     productCategory,
     updatedAt,
     mainImage,
-    isLiked: initialIsLiked = false,
+    isLiked,
   } = post
-
-  const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked)
-  const BASE_URL = "http://localhost:8080"
-
-  const handleLike = async () => {
-    setIsLiked((prev) => !prev) //이 부분 차후 수정처리 필요함
-    // try {
-    //   const response = await setFavorite(id)
-
-    // } catch (error) {
-    //   console.log(error)
-    // }
-  }
+  const [currentIsLiked, setCurrentIsLiked] = useState<boolean>(isLiked)
   const timeAgo = formatDistanceToNow(parseISO(updatedAt), {
     addSuffix: true,
     locale: ko,
   })
+
+  const handleLike = async () => {
+    try {
+      const response = await setFavorite(id)
+      console.log(response)
+      if (!response) return
+      setCurrentIsLiked(response.isLiked)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <div className="w-full h-full bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow border border-gray-200 flex flex-col p-3">
@@ -82,7 +83,7 @@ export default function PostCard({ post }: PostCardProps) {
             </div>
           </div>
         </Link>
-        <LikeButton isLiked={isLiked} handleLike={handleLike} />
+        <LikeButton isLiked={currentIsLiked} handleLike={handleLike} id={id} />
       </div>
     </>
   )

@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import {
+  BASE_URL,
   categoryMap,
   ImageDisplayInfo,
   PostResponse,
@@ -19,51 +20,40 @@ import {
 import LikeButton from "@/components/button/LikeButton"
 import PostStatusChangeButton from "@/components/button/PostStatusChangeButton"
 import PostPullButton from "@/components/button/PostPullButton"
-import {axiosGet} from "@/utils/api/chat/chatApi";
+import { axiosGet } from "@/utils/api/chat/chatApi"
 import {
-    ChatCommonResponse,
-    ChatPostResponse,
-    ChatPostStatus,
-    ChatProductCategory,
-    ChatRoomRequest,
-    ChatRoomResponse
-} from "@/utils/type/chat/chat";
-import ChatModal from "@/components/chat/ChatModal";
-import {useAuthStore} from "@/store/useAuthStore";
-import {ChatCreateAndGetRoomUrl} from "@/utils/chatUtils/constants";
+  ChatCommonResponse,
+  ChatPostResponse,
+  ChatPostStatus,
+  ChatProductCategory,
+  ChatRoomRequest,
+  ChatRoomResponse,
+} from "@/utils/type/chat/chat"
+import ChatModal from "@/components/chat/ChatModal"
+import { useAuthStore } from "@/store/useAuthStore"
 
 export default function Post() {
   const testuser = useAuthStore((state) => state.testUser)
-
   const router = useRouter()
   const params = useParams()
   const postId = typeof params?.id === "string" ? Number(params.id) : undefined
   const [post, setPost] = useState<PostResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isLiked, setIsLiked] = useState(false)
+  const [isCurrentLiked, setIsCurrentLiked] = useState(false)
+  const [postStatusChange, setPostStatusChange] =
+    useState<PostStatus>("SELLING")
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalType, setModalType] = useState<"edit" | "delete" | null>(null)
 
   const [resultModalOpen, setResultModalOpen] = useState(false)
   const [resultMessage, setResultMessage] = useState("")
+  const writer: boolean = testuser?.userId == post?.userId
 
-  //기본상태설정
-  const [title, setTitle] = useState<string>("")
-  const [price, setPrice] = useState<number>(0)
-  const [content, setContent] = useState<string>("")
-  const [images, setImages] = useState<ImageDisplayInfo[]>([])
-  const [postStatus, setPostStatus] = useState<PostStatus>("SELLING") // 기본값은 "SELLING" 같은 enum 값 중 하나
-  const [region, setRegion] = useState<string>("")
-  const [productCategory, setProductCategory] = useState<string>("")
-  const [updatedAt, setUpdatedAt] = useState<string | null>(null)
-  const [nickname, setNickname] = useState<string>("")
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   // 카드 너비에 맞춰 버튼바 중앙정렬
   const cardRef = useRef<HTMLDivElement>(null)
   const [cardWidth, setCardWidth] = useState<number | null>(null)
-  const BASE_URL = "http://localhost:8080"
   useEffect(() => {
     function updateWidth() {
       if (cardRef.current) {
@@ -85,15 +75,7 @@ export default function Post() {
         const response = await getPostById(postId)
         if (response) {
           setPost(response)
-          setTitle(response.title)
-          setPrice(Number(response.price)) // 혹시 문자열일 경우 대비해서 Number로 변환
-          setContent(response.content)
-          setPostStatus(response.postStatus)
-          setProductCategory(response.productCategory)
-          setUpdatedAt(response.updatedAt)
-          setNickname(response.nickname)
-          setImages(response.images || [])
-          setRegion(response.region)
+          setPostStatusChange(response.postStatus)
           console.log(response)
         } else {
           setError("게시물을 찾을 수 없습니다.")
@@ -117,7 +99,7 @@ export default function Post() {
   }
 
   const handleConfirm = () => {
-    // 실제 수정/삭제 처리
+    if (!writer) return
     if (modalType === "edit") {
       setResultMessage("수정이 완료되었습니다.")
     } else if (modalType === "delete") {
@@ -133,23 +115,31 @@ export default function Post() {
   }
 
   const handleLike = async () => {
-    if (!isLoggedIn) return
-    setIsLiked((prev) => !prev) //차후에 이부분 수정
+    if (!writer) return
     try {
-      const response = await setFavorite(postId)
+      const response = await setFavorite(post?.id)
+      if (!response) return
+      setIsCurrentLiked(response.isLiked)
     } catch (error) {
       console.log(error)
     }
+  }
 
-  const HandleStatuschange = async () => {
+  const handleStatuschange = async () => {
+    if (!writer) return
+    console.log(postStatusChange)
     try {
-      const updatedPost = await changeStatus(postId)
-      if (updatedPost) {
-        console.log("상태변경", updatedPost)
-        setPost(updatedPost)
-        setPostStatus(updatedPost.postStatus)
+      if (post?.postStatus === "END") {
+        setPostStatusChange("END")
       } else {
-        console.warn("상태 변경에 실패했습니다")
+        const updatedPost = (await changeStatus(postId)) as any
+        console.log(updatedPost)
+        if (updatedPost) {
+          console.log("상태변경", updatedPost.data.postStatus)
+          setPostStatusChange(updatedPost.data.postStatus)
+        } else {
+          console.warn("상태 변경에 실패했습니다")
+        }
       }
     } catch (error) {
       console.error("상태 변경 중 오류 발생:", error)
@@ -157,6 +147,7 @@ export default function Post() {
   }
 
   const handleEditOrDelete = async () => {
+    if (!writer) return
     if (modalType === "edit") {
       if (postId) {
         router.push(`/posts/${postId}/edit`)
@@ -182,72 +173,57 @@ export default function Post() {
   }
   //// chat 관련
 
-    // 테스트용
-    const post2: ChatPostResponse = {
-        id: 22,
-        title: '아이패드 9세대 64GB',
-        price: 240000,
-        content:
-            '사용한지 2년 됐습니다.\n케이스랑 펜슬, 키보드도 같이 드립니다.\n본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을 구성한 대비의 화면입니다.',
-        postStatus: ChatPostStatus.SELLING,
-        productCategory: ChatProductCategory.KIDS,
-        createdAt: 'string',
-        updatedAt: 'string',
-        userId: 2,
-        nickname: 'test1',
-        images: ['cd5722b8-f544-4f59-b346-ff8b04c6a035.png'],
-    };
+  // 테스트용
+  const post2: ChatPostResponse = {
+    id: 22,
+    title: "아이패드 9세대 64GB",
+    price: 240000,
+    content:
+      "사용한지 2년 됐습니다.\n케이스랑 펜슬, 키보드도 같이 드립니다.\n본문의 내용이 아주 길어질수도 있을 경우에 대비하여 스크롤을 구성한 대비의 화면입니다.",
+    postStatus: ChatPostStatus.SELLING,
+    productCategory: ChatProductCategory.KIDS,
+    createdAt: "string",
+    updatedAt: "string",
+    userId: 2,
+    nickname: "test1",
+    images: ["cd5722b8-f544-4f59-b346-ff8b04c6a035.png"],
+  }
 
-    const [modalInfo, setModalInfo] = useState<{
-        roomId: number;
-        targetUserId: number;
-        targetUserNickname: string;
-    }>();
-    const openChatModal = async () => {
+  const [modalInfo, setModalInfo] = useState<{
+    roomId: number
+    targetUserId: number
+    targetUserNickname: string
+  }>()
+  const openChatModal = async () => {
+    const data = await axiosGet<
+      ChatCommonResponse<ChatRoomResponse>,
+      ChatRoomRequest
+    >("/chat/room", { targetUserId: post?.userId ? post.userId : post2.userId })
 
-        if (!testuser) {
-            alert("로그인 한 이용자만 채팅 할 수 있습니다");
-            return
-        }
+    // userId 정보가 있어야함!
 
-        const data = await axiosGet<
-            ChatCommonResponse<ChatRoomResponse>,
-            ChatRoomRequest
-        >(ChatCreateAndGetRoomUrl, {targetUserId: post?.userId ? post.userId : post2.userId});
+    const { roomId, targetUserId, targetUserNickname } = data.data
 
-        // userId 정보가 있어야함!
+    setModalInfo({ roomId, targetUserId, targetUserNickname })
+  }
+  const closeChatModal = () => {
+    setModalInfo(undefined)
+  }
 
-        if (data.data.targetUserId == testuser.userId) {
-            alert("본인과는 채팅 할 수 없습니다");
-            return
-        }
+  // chat
 
-
-        const {roomId, targetUserId, targetUserNickname} = data.data
-
-
-        setModalInfo({roomId, targetUserId, targetUserNickname});
-    };
-    const closeChatModal = () => {
-        setModalInfo(undefined);
-    };
-
-    // chat
-
-
-    const handlePostPull = () => {
-    }
-    return (
-        <>
-            {modalInfo && testuser && testuser.userId != modalInfo.targetUserId && (
-                <ChatModal
-                    userId={modalInfo.targetUserId}
-                    onClose={closeChatModal}
-                    roomId={modalInfo.roomId}
-                    nickname={modalInfo.targetUserNickname}
-                    key={modalInfo.roomId}
-                />
-            )}
+  const handlePostPull = () => {}
+  return (
+    <>
+      {modalInfo && testuser && testuser.userId != modalInfo.targetUserId && (
+        <ChatModal
+          userId={modalInfo.targetUserId}
+          onClose={closeChatModal}
+          roomId={modalInfo.roomId}
+          nickname={modalInfo.targetUserNickname}
+          key={modalInfo.roomId}
+        />
+      )}
 
       <MainHeader>
         {/* 카드/내용 영역만 스크롤, 전체는 overflow-hidden */}
@@ -284,8 +260,8 @@ export default function Post() {
                 {/* 사진 */}
                 <div className="flex-1 flex flex-col items-center justify-start">
                   <div className="w-full max-w-md bg-gray-300 rounded-xl flex items-center justify-center h-full">
-                    {images && images.length > 0 ? (
-                      images
+                    {post?.images && post?.images.length > 0 ? (
+                      post?.images
                         .filter(
                           (item: ImageDisplayInfo) => item.mainImage === true
                         )
@@ -318,12 +294,18 @@ export default function Post() {
                         />
                       </div>
                       <div>
-                        <div className="font-bold text-lg">{nickname}</div>
+                        <div className="font-bold text-lg">
+                          {post?.nickname}
+                        </div>
                         <div className="text-gray-500 text-sm">
                           {post?.region ?? "구로동"}
                         </div>
                       </div>
-                      <LikeButton isLiked={isLiked} handleLike={handleLike} />
+                      <LikeButton
+                        isLiked={isCurrentLiked}
+                        id={post?.id}
+                        handleLike={handleLike}
+                      />
                     </div>
                     {/* 버튼 그룹 (오른쪽 하단, 같은 라인) */}
                   </div>
@@ -341,7 +323,7 @@ export default function Post() {
                       {post?.productCategory &&
                         categoryMap[post.productCategory]}
                     </div>
-                    {isLoggedIn && (
+                    {writer && (
                       <div className="flex justify-between items-center">
                         <div className="text-gray-700 text-lg mx-2">끌올</div>
                         <PostPullButton onClick={handlePostPull} />
@@ -349,9 +331,9 @@ export default function Post() {
                     )}
                   </div>
                   <div className="flex justify-between mr-10 mt-3">
-                    <div className="text-xl font-bold ">{price} 원</div>
+                    <div className="text-xl font-bold ">{post?.price} 원</div>
                     <div className="text-gray-500 text-base ">
-                      게시일 : {updatedAt?.slice(0, 16).replace("T", " ")}
+                      게시일 : {post?.updatedAt?.slice(0, 16).replace("T", " ")}
                     </div>
                   </div>
                 </div>
@@ -360,18 +342,18 @@ export default function Post() {
                     {post?.postStatus && (
                       <div className="flex flex-row gap-2">
                         <div className="flex items-center rounded-full text-xl font-semibold">
-                          {postStatusLabelMap[post.postStatus]}
+                          {postStatusLabelMap[postStatusChange]}
                         </div>
-                        {isLoggedIn && (
+                        {writer && (
                           <PostStatusChangeButton
-                            postStatus={postStatus}
-                            onClick={HandleStatuschange}
+                            postStatusChange={postStatusChange}
+                            handleStatuschange={handleStatuschange}
                           />
                         )}
                       </div>
                     )}
                   </div>
-                  {isLoggedIn && (
+                  {writer && (
                     <div className="flex gap-4 justify-end mr-10">
                       <button
                         onClick={openChatModal}
@@ -383,11 +365,11 @@ export default function Post() {
                   )}
                 </div>
                 <div className="w-full max-w-md h-90 bg-gray-200 rounded-xl p-5 text-gray-700 text-base whitespace-pre-line overflow-y-auto mx-auto hide-scrollbar">
-                  {content}
+                  {post?.content}
                 </div>
               </div>
             </div>
-            {isLoggedIn && (
+            {writer && (
               <div className="fixed bottom-0 left-0 w-full z-[99]">
                 <div className="bg-orange-500/20 p-1 shadow-lg flex items-center justify-end ">
                   <div className="w-full max-w-lg flex space-x-4">

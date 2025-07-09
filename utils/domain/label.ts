@@ -1,5 +1,5 @@
-export type PostStatus = "SELLING" | "BOOKED" | "END";
-
+export type PostStatus = "SELLING" | "BOOKED" | "END"
+export const BASE_URL = "http://localhost:8080"
 export type ProductCategory =
   | "DIGITAL_DEVICE"
   | "HOME_APPLIANCE"
@@ -14,29 +14,60 @@ export const postStatusLabelMap: Record<PostStatus, string> = {
 };
 
 export type PostResponse = {
-  id: number;
-  title: string;
-  price: number;
-  content: string;
-  postStatus: PostStatus;
-  productCategory: ProductCategory;
-  imageUrl?: string;
-  isLiked?: boolean;
-  region?: string;
-  createdAt: string;
-  updatedAt: string;
-  email: string;
-  userId: number;
-  nickname: string;
-};
+  id: number
+  title: string
+  price: number
+  content: string
+  postStatus: PostStatus
+  productCategory: ProductCategory
+  images?: ImageDisplayInfo[]
+  isLiked?: boolean
+  region: string
+  createdAt: string
+  updatedAt: string
+  email: string
+  userId: number
+  nickname: string
+}
+
+export type PostResponseWithImage = {
+  id: number
+  title: string
+  price: number
+  content: string
+  postStatus: PostStatus
+  productCategory: ProductCategory
+  mainImage: NewImageDisplayInfo
+  isLiked: boolean
+  region: string
+  createdAt: string
+  updatedAt: string
+  email: string
+  userId: number
+  nickname: string
+}
+
+export type ImageDisplayInfo = {
+  id?: number
+  savedName: string
+  origialnalName?: string
+  mainImage: boolean
+  url: string
+}
+
+export type NewImageDisplayInfo = {
+  id: number
+  savedName: string
+  mainImage?: boolean
+}
 
 export type PostPageResponseData = {
-  page: number;
-  size: number;
-  totalCount: number;
-  totalPages: number;
-  posts: PostResponse[];
-};
+  page: number
+  size: number
+  totalCount: number
+  totalPages: number
+  posts: PostResponseWithImage[]
+}
 
 export type PostSearchFilter = {
   searchKeyword?: string;
@@ -83,4 +114,24 @@ export function formatDate(dateString: string) {
   if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
   if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`;
   return `${Math.floor(diffInMinutes / 1440)}일 전`;
+}
+
+export type ImageCreatePayload = {
+  // PostCreatePayload와 혼동되지 않도록 이름 변경 제안
+  savedName: string
+  originalName: string
+  mainImage: boolean // 백엔드 DTO의 Boolean mainImage에 맞춰 boolean 타입으로
+}
+
+export type PostCreatePayload = {
+  title: string
+  productCategory: string
+  price: number
+  content: string
+  imageInfo: ImageCreatePayload[]
+}
+
+export type ImageInfo = {
+  savedName: string // 서버에 저장된 파일명 (또는 URL)
+  originalName: string // 사용자가 업로드한 파일의 원본 이름 (프론트에서 관리)
 }

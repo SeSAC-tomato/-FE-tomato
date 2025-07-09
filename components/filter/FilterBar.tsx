@@ -1,10 +1,11 @@
+"use client"
 import DropDown from "@/components/dropdown/dropDown"
 import {
   categoryEnumToLabelMap,
   PostStatus,
   ProductCategory,
 } from "@/utils/domain/label"
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 interface FilterBarProps {
   productCategory?: string | undefined
@@ -18,6 +19,7 @@ interface FilterBarProps {
   maxPrice?: string
   setMaxPrice?: (v: string) => void
   className?: string
+  dongs: string[]
 }
 
 export const categoryLabelMap: Record<string, ProductCategory> = {
@@ -27,8 +29,6 @@ export const categoryLabelMap: Record<string, ProductCategory> = {
   "생활/주방": "KITCHEN",
   유아동: "KIDS",
 }
-
-const regions = ["문래동", "구로동", "대림동", "가산동"]
 
 const FilterBar: React.FC<FilterBarProps> = ({
   productCategory,
@@ -41,73 +41,76 @@ const FilterBar: React.FC<FilterBarProps> = ({
   setMinPrice,
   maxPrice,
   setMaxPrice,
+  dongs,
   className = "",
-}) => (
-  <div
-    className={`w-full bg-white/50 rounded-xl flex flex-wrap md:flex-nowrap gap-3 px-4 py-3 items-center justify-between ${className}`}
-  >
-    <div className="flex gap-2 flex-1 min-w-0">
-      {setProductCategory && (
-        <DropDown
-          buttonText={
-            productCategory
-              ? categoryEnumToLabelMap[productCategory as ProductCategory]
-              : "카테고리"
-          }
-          items={Object.keys(categoryLabelMap)}
-          onSelect={(label: string) => {
-            const selected = categoryLabelMap[label]
-            if (selected) setProductCategory(selected)
-          }}
-          className="bg-gray-100 focus:bg-gray-200 rounded-md shadow-none border-none"
-        />
-      )}
-      {setRegion && (
-        <DropDown
-          buttonText={region || "지역"}
-          items={regions}
-          onSelect={setRegion}
-          className="bg-gray-100 focus:bg-gray-200 rounded-md shadow-none border-none"
-        />
-      )}
-    </div>
+}) => {
+  return (
+    <div
+      className={`w-full bg-white/50 rounded-xl flex flex-wrap md:flex-nowrap gap-3 px-4 py-3 items-center justify-between ${className}`}
+    >
+      <div className="flex gap-2 flex-1 min-w-0">
+        {setProductCategory && (
+          <DropDown
+            buttonText={
+              productCategory
+                ? categoryEnumToLabelMap[productCategory as ProductCategory]
+                : "카테고리"
+            }
+            items={Object.keys(categoryLabelMap)}
+            onSelect={(label: string) => {
+              const selected = categoryLabelMap[label]
+              if (selected) setProductCategory(selected)
+            }}
+            className="bg-gray-100 focus:bg-gray-200 rounded-md shadow-none border-none"
+          />
+        )}
+        {setRegion && (
+          <DropDown
+            buttonText={"지역"}
+            items={dongs}
+            onSelect={(region) => setRegion(region)}
+            className="bg-gray-100 focus:bg-gray-200 rounded-md shadow-none border-none"
+          />
+        )}
+      </div>
 
-    {setSelling && (
-      <button
-        className={`px-4 py-2 rounded-md font-semibold transition h-12 min-w-[110px] shadow-none border-none focus:outline-none ${
-          selling
-            ? "bg-[#e53935] text-white"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-        }`}
-        onClick={() => setSelling(!selling)}
-        type="button"
-      >
-        거래가능만
-      </button>
-    )}
+      {setSelling && (
+        <button
+          className={`px-4 py-2 rounded-md font-semibold transition h-12 min-w-[110px] shadow-none border-none focus:outline-none ${
+            selling
+              ? "bg-[#e53935] text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }`}
+          onClick={() => setSelling(!selling)}
+          type="button"
+        >
+          거래가능만
+        </button>
+      )}
 
-    <div className="flex items-center gap-1">
-      {setMinPrice && (
-        <input
-          type="number"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-          placeholder="최소가격"
-          className="w-20 px-2 py-2 rounded h-12 text-base bg-gray-100 focus:bg-gray-200 border-none shadow-none focus:outline-none"
-        />
-      )}
-      <span className="text-gray-400">~</span>
-      {setMaxPrice && (
-        <input
-          type="number"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          placeholder="최대가격"
-          className="w-20 px-2 py-2 rounded h-12 text-base bg-gray-100 focus:bg-gray-200 border-none shadow-none focus:outline-none"
-        />
-      )}
+      <div className="flex items-center gap-1">
+        {setMinPrice && (
+          <input
+            type="number"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            placeholder="최소가격"
+            className="w-20 px-2 py-2 rounded h-12 text-base bg-gray-100 focus:bg-gray-200 border-none shadow-none focus:outline-none"
+          />
+        )}
+        <span className="text-gray-400">~</span>
+        {setMaxPrice && (
+          <input
+            type="number"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            placeholder="최대가격"
+            className="w-20 px-2 py-2 rounded h-12 text-base bg-gray-100 focus:bg-gray-200 border-none shadow-none focus:outline-none"
+          />
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default FilterBar

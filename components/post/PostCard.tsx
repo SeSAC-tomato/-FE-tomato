@@ -1,14 +1,19 @@
 "use client"
 import { useState } from "react"
 import LikeButton from "../button/LikeButton"
-import { PostResponse } from "@/utils/domain/label"
+import {
+  BASE_URL,
+  ImageDisplayInfo,
+  PostResponse,
+  PostResponseWithImage,
+} from "@/utils/domain/label"
 import Link from "next/link"
 import { formatDistanceToNow, parseISO } from "date-fns"
 import { ko } from "date-fns/locale"
 import { setFavorite } from "@/utils/api/post/api"
 
 interface PostCardProps {
-  post: PostResponse
+  post: PostResponseWithImage
 }
 
 export default function PostCard({ post }: PostCardProps) {
@@ -19,24 +24,26 @@ export default function PostCard({ post }: PostCardProps) {
     region,
     productCategory,
     updatedAt,
-    imageUrl,
-    isLiked: initialIsLiked = false,
+    mainImage,
+    isLiked,
   } = post
-
-  const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked)
-  const handleLike = async () => {
-    setIsLiked((prev) => !prev) //이 부분 차후 수정처리 필요함
-    // try {
-    //   const response = await setFavorite(id)
-
-    // } catch (error) {
-    //   console.log(error)
-    // }
-  }
+  const [currentIsLiked, setCurrentIsLiked] = useState<boolean>(isLiked)
   const timeAgo = formatDistanceToNow(parseISO(updatedAt), {
     addSuffix: true,
     locale: ko,
   })
+
+  const handleLike = async () => {
+    try {
+      const response = await setFavorite(id)
+      console.log(response)
+      if (!response) return
+      setCurrentIsLiked(response.isLiked)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <div className="w-full h-full bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow border border-gray-200 flex flex-col p-3">
@@ -45,12 +52,22 @@ export default function PostCard({ post }: PostCardProps) {
           className="block hover:shadow-lg transition"
         >
           <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-300">
-            <img
-              src={imageUrl ?? `https://picsum.photos/seed/item${id}/400/400`}
-              alt={title}
-              className="object-cover w-full h-full"
-              loading="lazy"
-            />
+            {mainImage ? (
+              <div key={mainImage.id} className="h-full rounded-lg">
+                <img
+                  src={`${BASE_URL}/api/v1/post/images/${mainImage.savedName}`}
+                  alt="제품 이미지"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            ) : (
+              <img
+                src={`https://picsum.photos/seed/item${id}/400/400`}
+                alt={title}
+                className="object-cover w-full h-full"
+                loading="lazy"
+              />
+            )}
           </div>
           <div className="flex flex-col mt-3 gap-1 flex-1">
             <div className="flex items-center justify-between">
@@ -66,7 +83,7 @@ export default function PostCard({ post }: PostCardProps) {
             </div>
           </div>
         </Link>
-        <LikeButton isLiked={isLiked} handleLike={handleLike} />
+        <LikeButton isLiked={currentIsLiked} handleLike={handleLike} id={id} />
       </div>
     </>
   )

@@ -3,11 +3,11 @@ import PostHeader from "@/components/header/PostHeader"
 
 import { useState, useEffect, useCallback } from "react"
 import {
-  PostResponse,
+  PostResponseWithImage,
   PostSearchFilter,
   ProductCategory,
 } from "@/utils/domain/label"
-import { getPosts } from "@/utils/api/post/api"
+import { getPosts, getRegionInfo } from "@/utils/api/post/api"
 import Link from "next/link"
 import AddIcon from "@/components/icons/AddIcon"
 import PostsList from "@/components/post/PostsList"
@@ -16,7 +16,7 @@ import PageList from "@/components/post/PageList"
 export default function Page() {
   const pageSize = 12
   const [currentPage, setCurrentPage] = useState(0) // 0-based 페이지 번호
-  const [posts, setPosts] = useState<PostResponse[]>([])
+  const [posts, setPosts] = useState<PostResponseWithImage[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -28,7 +28,18 @@ export default function Page() {
   const [selling, setSelling] = useState<boolean | undefined>(undefined)
   const [minPrice, setMinPrice] = useState<string>("")
   const [maxPrice, setMaxPrice] = useState<string>("")
+  const [dongs, setDongs] = useState<string[]>([])
   const [region, setRegion] = useState<string>("")
+
+  useEffect(() => {
+    const fetchRegions = async () => {
+      const regionInfo = await getRegionInfo()
+      if (regionInfo) {
+        setDongs(regionInfo)
+      }
+    }
+    fetchRegions()
+  }, [])
 
   // API 호출 함수
   const getPostsData = useCallback(
@@ -42,8 +53,14 @@ export default function Page() {
           selling: selling || undefined,
           minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
           maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
+          region: region || undefined,
         }
+        console.log(page, pageSize, searchFilter)
+        console.log("@#$@#$@#$@#$@#$@#$")
+
         const responseData = await getPosts(page, pageSize, searchFilter)
+        console.log("123123123123123")
+
         if (responseData.success && responseData.data) {
           const { posts, totalPages } = responseData.data
           setPosts(posts)
@@ -67,7 +84,15 @@ export default function Page() {
         setLoading(false)
       }
     },
-    [searchKeyword, productCategory, selling, minPrice, maxPrice, pageSize]
+    [
+      searchKeyword,
+      productCategory,
+      selling,
+      minPrice,
+      maxPrice,
+      pageSize,
+      region,
+    ]
   )
 
   useEffect(() => {
@@ -76,12 +101,8 @@ export default function Page() {
   }, [currentPage, getPostsData])
 
   useEffect(() => {
-    setCurrentPage(0)
+    // setCurrentPage(0)
   }, [searchKeyword, productCategory, selling, minPrice, maxPrice])
-
-  const onPageListHandle = (page: number) => {
-    setCurrentPage(page)
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#ffecd2] via-[#fcb69f] to-[#ff8177]">
@@ -98,13 +119,14 @@ export default function Page() {
         setMaxPrice={setMaxPrice}
         region={region}
         setRegion={setRegion}
+        dongs={dongs}
       />
       <div className="mx-auto w-full max-w-4xl flex flex-col">
         <PostsList posts={posts} loading={loading} error={error} />
         <PageList
           totalPages={totalPages}
           currentPage={currentPage}
-          onPageListHandle={onPageListHandle}
+          setCurrentPage={setCurrentPage}
         />
       </div>
       <Link href="posts/new" passHref>

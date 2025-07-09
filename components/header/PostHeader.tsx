@@ -16,6 +16,7 @@ export default function PostHeader({
   setMaxPrice,
   region,
   setRegion,
+  dongs,
 }: PostHeadersProps) {
   return (
     <>
@@ -35,6 +36,7 @@ export default function PostHeader({
             {...(setMinPrice && { setMinPrice })}
             {...(maxPrice && { maxPrice })}
             {...(setMaxPrice && { setMaxPrice })}
+            dongs={dongs}
           />
         </div>
       </MainHeader>

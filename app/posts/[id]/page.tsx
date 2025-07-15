@@ -31,6 +31,7 @@ import {
 } from "@/utils/type/chat/chat"
 import ChatModal from "@/components/chat/ChatModal"
 import { useAuthStore } from "@/store/useAuthStore"
+import Carousel from "@/components/post/Carousel"
 
 export default function Post() {
   const testuser = useAuthStore((state) => state.testUser)
@@ -40,7 +41,9 @@ export default function Post() {
   const [post, setPost] = useState<PostResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isCurrentLiked, setIsCurrentLiked] = useState(false)
+  const [isCurrentLiked, setIsCurrentLiked] = useState<boolean | undefined>(
+    false
+  )
   const [postStatusChange, setPostStatusChange] =
     useState<PostStatus>("SELLING")
 
@@ -73,9 +76,11 @@ export default function Post() {
       }
       try {
         const response = await getPostById(postId)
+        console.log("응답" + response)
         if (response) {
           setPost(response)
           setPostStatusChange(response.postStatus)
+          setIsCurrentLiked(response.isLiked)
           console.log(response)
         } else {
           setError("게시물을 찾을 수 없습니다.")
@@ -115,9 +120,9 @@ export default function Post() {
   }
 
   const handleLike = async () => {
-    if (!writer) return
     try {
-      const response = await setFavorite(post?.id)
+      const response = await setFavorite(postId)
+      console.log("-----Set------", response)
       if (!response) return
       setIsCurrentLiked(response.isLiked)
     } catch (error) {
@@ -213,6 +218,7 @@ export default function Post() {
   // chat
 
   const handlePostPull = () => {}
+  console.log(isCurrentLiked)
   return (
     <>
       {modalInfo && testuser && testuser.userId != modalInfo.targetUserId && (
@@ -259,29 +265,7 @@ export default function Post() {
                 </div>
                 {/* 사진 */}
                 <div className="flex-1 flex flex-col items-center justify-start">
-                  <div className="w-full max-w-md bg-gray-300 rounded-xl flex items-center justify-center h-full">
-                    {post?.images && post?.images.length > 0 ? (
-                      post?.images
-                        .filter(
-                          (item: ImageDisplayInfo) => item.mainImage === true
-                        )
-                        .map((item: ImageDisplayInfo) => (
-                          <div key={item.id}>
-                            <img
-                              src={`${BASE_URL}/api/v1/post/images/${item.savedName}`}
-                              alt="제품 이미지"
-                              className="object-cover w-full h-full rounded-xl"
-                            />
-                          </div>
-                        ))
-                    ) : (
-                      <img
-                        src={`https://picsum.photos/seed/item${postId}/400/400`}
-                        alt="제품 이미지"
-                        className="object-cover w-full h-full rounded-xl"
-                      />
-                    )}
-                  </div>
+                  {post && postId && <Carousel post={post} postId={postId} />}
                   <div className="flex flex-row items-center justify-between gap-6 mt-4 w-full">
                     {/* 사용자 정보 */}
                     <div className="flex items-center gap-4">
@@ -303,9 +287,7 @@ export default function Post() {
                       </div>
                       <LikeButton
                         isCurrentLiked={isCurrentLiked}
-                        isLiked={post?.isLiked}
                         handleLike={handleLike}
-                        postId = {postId}
                       />
                     </div>
                     {/* 버튼 그룹 (오른쪽 하단, 같은 라인) */}

@@ -12,10 +12,9 @@ import { useParams, useRouter } from "next/navigation"
 import CheckModal from "@/components/modals/CheckModal"
 import { useAuthStore } from "@/store/useAuthStore"
 
-export default function newProduct() {
+export default function UpdateProduct() {
   const router = useRouter()
   const params = useParams()
-  //   const [imageUrls, setImageUrls] = useState<string[]>([])
   const postId = typeof params?.id === "string" ? Number(params.id) : undefined
 
   const [title, setTitle] = useState<string>("")

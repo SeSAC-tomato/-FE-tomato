@@ -68,9 +68,6 @@ export const getPosts = async (
       query += `&region=${encodeURIComponent(filter.region)}`
     }
   }
-
-  console.log("!@#2222222211212")
-
   console.log(`${endPoint}${query}`)
   const response = await api.get<CommonResponse<PostPageResponseData>>(
     `${endPoint}${query}`
@@ -80,14 +77,14 @@ export const getPosts = async (
 }
 
 export const deletePost = async (
-  postId: Number | undefined
+  postId: number | undefined
 ): Promise<CommonResponse<void>> => {
   const response = await api.delete<CommonResponse<void>>(`/post/${postId}`)
   return response.data
 }
 
 export const updatePost = async (
-  postId: Number | undefined,
+  postId: number | undefined,
   payload: any
 ): Promise<PostResponse | null> => {
   const response = await api.put(`post/${postId}`, payload)
@@ -95,7 +92,7 @@ export const updatePost = async (
 }
 
 export const setFavorite = async (
-  postId: Number | undefined
+  postId: number | undefined
 ): Promise<LikeResponse | null> => {
   const response = await api.post(`/post/${postId}/cart`)
   console.log(response.data)

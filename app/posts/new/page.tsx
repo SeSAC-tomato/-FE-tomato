@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import CheckModal from "@/components/modals/CheckModal"
 import { fileToBase64 } from "@/utils/domain/file"
 
+//비로그인 접근 주의
 export default function NewProduct() {
   const router = useRouter()
   const [imageUrls, setImageUrls] = useState<string[]>([])
@@ -35,13 +36,6 @@ export default function NewProduct() {
   ) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const payload = {
-    title: form.title,
-    productCategory: form.productCategory,
-    price: Number(form.price),
-    content: form.content,
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,8 +67,6 @@ export default function NewProduct() {
       console.error("전송 실패", error)
       alert("전송실패")
       console.error("전송 실패", error)
-      // alert("전송실패") // ★★★ 이 alert는 모달과 중복되므로 제거 ★★★
-      // --- 실패 시 모달 띄우기 ---
       setModalMessage("게시글 전송에 실패했습니다. 다시 시도해주세요.")
       setModalCanUse(false)
       setModalOnUseAction(null)
@@ -107,7 +99,6 @@ export default function NewProduct() {
           ...prev,
           { savedName: savedName, originalName: file.name },
         ])
-        if (mainImageIndex == null) setMainImageIndex(0)
       } catch (error) {
         console.error("파일 업로드 실패:", error)
         alert("이미지 업드로 실패")

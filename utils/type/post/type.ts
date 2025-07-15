@@ -1,4 +1,9 @@
-import { ProductCategory } from "@/utils/domain/label"
+import {
+  FormSubmitData,
+  PostFormData,
+  PostResponse,
+  ProductCategory,
+} from "@/utils/domain/label"
 
 export type ButtonProps = {
   children: React.ReactNode
@@ -7,10 +12,8 @@ export type ButtonProps = {
 }
 
 export interface LikeButtonProps {
-  isCurrentLiked: boolean
-  isLiked: boolean | undefined
+  isCurrentLiked: boolean | undefined
   handleLike: () => void
-  postId : number | undefined
 }
 
 export type PageListProps = {
@@ -45,4 +48,15 @@ export type PostHeadersProps = {
   region?: string
   setRegion?: (v: string) => void
   dongs: string[]
+}
+
+export type CarouselProps = {
+  postId: number
+  post: PostResponse
+}
+
+export type PostFormProps = {
+  postId: number
+  onSubmit: (data: FormSubmitData) => Promise<PostResponse | null>
+  isEditing?: boolean // 수정 모드인지 여부 (버튼 텍스트 변경용)
 }

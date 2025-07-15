@@ -5,13 +5,13 @@ export type ProductCategory =
   | "HOME_APPLIANCE"
   | "FURNITURE"
   | "KITCHEN"
-  | "KIDS";
+  | "KIDS"
 
 export const postStatusLabelMap: Record<PostStatus, string> = {
   SELLING: "판매중",
   BOOKED: "예약중",
   END: "거래완료",
-};
+}
 
 export type PostResponse = {
   id: number
@@ -20,7 +20,7 @@ export type PostResponse = {
   content: string
   postStatus: PostStatus
   productCategory: ProductCategory
-  images?: ImageDisplayInfo[]
+  images?: NewImageDisplayInfo[]
   isLiked?: boolean
   region: string
   createdAt: string
@@ -45,6 +45,7 @@ export type PostResponseWithImage = {
   email: string
   userId: number
   nickname: string
+  numberOfLikes: number
 }
 
 export type ImageDisplayInfo = {
@@ -70,13 +71,13 @@ export type PostPageResponseData = {
 }
 
 export type PostSearchFilter = {
-  searchKeyword?: string;
-  productCategory?: ProductCategory;
-  selling?: boolean;
-  region?: string;
-  minPrice?: number;
-  maxPrice?: number;
-};
+  searchKeyword?: string
+  productCategory?: ProductCategory
+  selling?: boolean
+  region?: string
+  minPrice?: number
+  maxPrice?: number
+}
 
 export const categoryLabelMap: Record<string, ProductCategory> = {
   "디지털 기기": "DIGITAL_DEVICE",
@@ -84,43 +85,36 @@ export const categoryLabelMap: Record<string, ProductCategory> = {
   "가구/인테리어": "FURNITURE",
   "생활/주방": "KITCHEN",
   유아동: "KIDS",
-} as const;
+} as const
 
 export const categoryMap = Object.fromEntries(
   Object.entries(categoryLabelMap).map(([label, value]) => [value, label])
-) as Record<ProductCategory, string>;
+) as Record<ProductCategory, string>
 
 export const categoryEnumToLabelMap: Record<ProductCategory, string> =
   Object.entries(categoryLabelMap).reduce((acc, [label, enumValue]) => {
-    acc[enumValue] = label;
-    return acc;
-  }, {} as Record<ProductCategory, string>);
+    acc[enumValue] = label
+    return acc
+  }, {} as Record<ProductCategory, string>)
 
 export type LikeResponse = {
-  id: number;
-  postId: number;
-  userId: number;
-  isLiked: boolean;
-  createdAt: string;
-};
-
-export function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMinutes = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60)
-  );
-  if (diffInMinutes < 1) return "방금 전";
-  if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
-  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`;
-  return `${Math.floor(diffInMinutes / 1440)}일 전`;
+  id: number
+  postId: number
+  userId: number
+  isLiked: boolean
+  createdAt: string
 }
 
-export type ImageCreatePayload = {
-  // PostCreatePayload와 혼동되지 않도록 이름 변경 제안
-  savedName: string
-  originalName: string
-  mainImage: boolean // 백엔드 DTO의 Boolean mainImage에 맞춰 boolean 타입으로
+export function formatDate(dateString: string) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInMinutes = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60)
+  )
+  if (diffInMinutes < 1) return "방금 전"
+  if (diffInMinutes < 60) return `${diffInMinutes}분 전`
+  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`
+  return `${Math.floor(diffInMinutes / 1440)}일 전`
 }
 
 export type PostCreatePayload = {
@@ -131,7 +125,33 @@ export type PostCreatePayload = {
   imageInfo: ImageCreatePayload[]
 }
 
+// 이미지를 생성하기 위해 보내는 payload, 백엔드 DTO의 Boolean mainImage에 맞춤
+export type ImageCreatePayload = {
+  savedName: string
+  originalName: string
+  mainImage: boolean
+}
+
+//서버에 저장된 파일명, 사용자가 업로드한 원본 파일명, (프론트에서 관리)
 export type ImageInfo = {
-  savedName: string // 서버에 저장된 파일명 (또는 URL)
-  originalName: string // 사용자가 업로드한 파일의 원본 이름 (프론트에서 관리)
+  savedName: string
+  originalName: string
+}
+
+export type PostFormData = {
+  title: string
+  productCategory: ProductCategory | ""
+  price: string
+  content: string
+  images?: string[]
+  mainImageIndex?: number | null
+}
+
+export type FormSubmitData = {
+  title: string
+  productCategory: ProductCategory
+  price: number
+  content: string
+  images?: string[]
+  mainImageIndex?: number | null
 }

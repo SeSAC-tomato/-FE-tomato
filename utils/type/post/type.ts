@@ -1,5 +1,6 @@
 import {
   FormSubmitData,
+  PostCreatePayload,
   PostFormData,
   PostResponse,
   ProductCategory,
@@ -56,7 +57,12 @@ export type CarouselProps = {
 }
 
 export type PostFormProps = {
+  onSubmit: (data: PostCreatePayload) => Promise<PostResponse | null>
+  onSubmitSuccess: () => void
+  onSubmitFailure: () => void
+}
+
+export type PatchFormProps = {
   postId: number
   onSubmit: (data: FormSubmitData) => Promise<PostResponse | null>
-  isEditing?: boolean // 수정 모드인지 여부 (버튼 텍스트 변경용)
 }

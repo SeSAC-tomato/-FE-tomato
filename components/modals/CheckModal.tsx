@@ -30,7 +30,7 @@ export default function CheckModal({
             </button>
           )}
           <button className="px-4 py-2 bg-gray-300 rounded" onClick={onClose}>
-            취소
+            닫기
           </button>
         </div>
       </div>

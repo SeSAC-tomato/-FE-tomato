@@ -48,6 +48,37 @@ export type PostResponseWithImage = {
   numberOfLikes: number
 }
 
+//화면 프리뷰
+export type ImagePreview = {
+  id: string
+  url: string
+}
+
+//이미지 전체배열
+export type ImageRegisterInfo = {
+  id: string
+  savedName?: string
+  file: File
+  originalName?: string
+  url: string
+}
+
+// 이미지 DB연동 payload, 백엔드 DTO에 맞춤(id는 string)
+export type ImageCreatePayload = {
+  savedName: string
+  originalName: string
+  mainImage: boolean
+}
+
+//데이터와 이미지를 합해 Post를 생성하기 위한 Payload
+export type PostCreatePayload = {
+  title: string
+  productCategory: string
+  price: number
+  content: string
+  imageInfo: ImageCreatePayload[]
+}
+
 export type ImageDisplayInfo = {
   id?: number
   savedName: string
@@ -60,6 +91,15 @@ export type NewImageDisplayInfo = {
   id: number
   savedName: string
   mainImage?: boolean
+}
+
+export type ImageDisplayInfoMixed = {
+  id: string
+  url: string
+  type?: "existing" | "new"
+  file?: File //new, 서버로 보낼 원본객체
+  savedName?: string //exsting인 경우 서버에서 가져온 경로
+  originalName?: string //new인 경우에 원본파일 이름
 }
 
 export type PostPageResponseData = {
@@ -117,27 +157,6 @@ export function formatDate(dateString: string) {
   return `${Math.floor(diffInMinutes / 1440)}일 전`
 }
 
-export type PostCreatePayload = {
-  title: string
-  productCategory: string
-  price: number
-  content: string
-  imageInfo: ImageCreatePayload[]
-}
-
-// 이미지를 생성하기 위해 보내는 payload, 백엔드 DTO의 Boolean mainImage에 맞춤
-export type ImageCreatePayload = {
-  savedName: string
-  originalName: string
-  mainImage: boolean
-}
-
-//서버에 저장된 파일명, 사용자가 업로드한 원본 파일명, (프론트에서 관리)
-export type ImageInfo = {
-  savedName: string
-  originalName: string
-}
-
 export type PostFormData = {
   title: string
   productCategory: ProductCategory | ""
@@ -152,6 +171,5 @@ export type FormSubmitData = {
   productCategory: ProductCategory
   price: number
   content: string
-  images?: string[]
-  mainImageIndex?: number | null
+  images?: ImageCreatePayload[]
 }

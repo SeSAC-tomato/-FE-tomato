@@ -1,101 +1,109 @@
 "use client"
-
 import React, { useState, useEffect } from "react"
-import { Plus } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
-import { categoryLabelMap, ProductCategory } from "@/utils/domain/label"
-
-// 폼 데이터의 타입 정의
-interface PostFormData {
-  title: string
-  productCategory: ProductCategory | "" // 초기 빈 값 허용
-  price: string
-  content: string
-  initialImageUrls?: string[] // 이미지를 초기화할 필요가 있다면 (수정 시)
-  initialMainImageIndex?: number | null // 메인 이미지 인덱스를 초기화할 필요가 있다면 (수정 시)
-}
-
-// PostForm 컴포넌트의 props 타입 정의
-interface PostFormProps {
-  initialData?: PostFormData // 수정 모드일 때 초기 데이터 (선택 사항)
-  onSubmit: (
-    data: Omit<PostFormData, "initialImageUrls" | "initialMainImageIndex"> & {
-      price: number // price는 number로 변환하여 전달
-      imageUrls: string[] // 이미지 URL 목록 포함
-      mainImageIndex: number | null // 메인 이미지 인덱스 포함
-    }
-  ) => void
-  isEditing?: boolean // 수정 모드인지 여부 (버튼 텍스트 변경용)
-}
+import {
+  categoryLabelMap,
+  ImageCreatePayload,
+  ImagePreview,
+  ImageRegisterInfo,
+  PostCreatePayload,
+} from "@/utils/domain/label"
+import { PostFormData } from "@/utils/domain/label"
+import { PostFormProps } from "@/utils/type/post/type"
+import { uploadBase64ImageAPI } from "@/utils/api/post/api"
+import { fileToBase64 } from "@/utils/domain/file"
 
 const PostForm: React.FC<PostFormProps> = ({
-  initialData,
   onSubmit,
-  isEditing = false,
+  onSubmitSuccess,
+  onSubmitFailure,
 }) => {
+  const [targetImages, setTargetImages] = useState<ImageRegisterInfo[]>([]) //이미지 전체정보
+  const [imagePreview, setImagePreview] = useState<ImagePreview[]>([]) //이미지 Preview
+  const [mainImageIndex, setMainImageIndex] = useState<number | null>(null) //메인 이미지
   const [form, setForm] = useState<PostFormData>(() => ({
     title: "",
     productCategory: "",
     price: "",
     content: "",
-  }))
-  const [imageUrls, setImageUrls] = useState<string[]>([])
-  const [mainImageIndex, setMainImageIndex] = useState<number | null>(null)
-
-  // 수정 모드일 때 초기 데이터를 폼 상태에 설정
-  useEffect(() => {
-    if (initialData) {
-      setForm({
-        title: initialData.title,
-        productCategory: initialData.productCategory,
-        price: initialData.price,
-        content: initialData.content,
-      })
-      // 이미지 URL과 메인 이미지 인덱스도 초기 데이터에서 가져옵니다.
-      setImageUrls(initialData.initialImageUrls || [])
-      setMainImageIndex(initialData.initialMainImageIndex || null)
-    } else {
-      // 새로운 게시글 작성 시 상태 초기화 (혹시 모를 잔여 데이터 방지)
-      setForm({
-        title: "",
-        productCategory: "",
-        price: "",
-        content: "",
-      })
-      setImageUrls([])
-      setMainImageIndex(null)
-    }
-  }, [initialData]) // initialData가 변경될 때마다 실행
+  })) //폼 초기화
+  type CategoryLabel = keyof typeof categoryLabelMap
+  type CategoryValue = (typeof categoryLabelMap)[CategoryLabel]
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
+    setForm((prev) => ({ ...prev, [name]: value })) //변경되는 값이 있으면 변경되는 항목에 값설정
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (!files) return
+    console.log(files)
+    if (!files || files.length === 0) return
 
-    const max = 5 - imageUrls.length
-    const fileArray = Array.from(files).slice(0, max)
+    const maxSize = 5 - targetImages.length
+    const fileArray = Array.from(files).slice(0, maxSize)
 
-    // TODO: 실제 서버에 이미지 업로드 및 URL 받기 (비동기 처리)
-    // 현재는 임시 URL을 사용하지만, 실제로는 여기에 API 호출 로직이 들어가야 합니다.
-    const newImageUrls = fileArray.map((file) => URL.createObjectURL(file))
+    const newImages: ImageRegisterInfo[] = fileArray.map((file) => ({
+      id: uuidv4(),
+      url: URL.createObjectURL(file),
+      file: file,
+      savedName: undefined,
+      originalName: file.name,
+    }))
+    setTargetImages((prev) => [...prev, ...newImages])
 
-    setImageUrls((prev) => [...prev, ...newImageUrls])
-
-    if (mainImageIndex === null && newImageUrls.length > 0) {
+    const previews = newImages.map(({ id, url }) => ({ id, url }))
+    setImagePreview((prev) => [...prev, ...previews])
+    if (mainImageIndex === null && newImages.length > 0) {
       setMainImageIndex(0)
     }
+    for (const newImage of newImages) {
+      try {
+        const saved = await fileToBase64(newImage.file)
+        const savedName = await uploadBase64ImageAPI(saved)
+        console.log(`uploaded: ${savedName}`)
+        setTargetImages((currentImage) =>
+          currentImage.map((img) =>
+            img.id === newImage.id ? { ...img, savedName: savedName } : img
+          )
+        ) //새로운 이미지 저장후 경로 받아옴
+        URL.revokeObjectURL(newImage.url)
+      } catch (error) {
+        console.error("파일 업로드 실패:", error)
+        alert("이미지 업로드 실패")
+        //업로드 실패시 이미지를 목록에서 제거
+        setTargetImages((currentImages) =>
+          currentImages.filter((img) => img.id !== newImage.id)
+        )
+        setImagePreview((currentPreviews) =>
+          currentPreviews.filter((prev) => prev.id !== newImage.id)
+        )
+      }
+    }
+  }
+
+  const handleImageDelete = (idToDelete: string) => {
+    //mainImage삭제 혹은 이미지 삭제로 인해 메인 이미지 인덱스 변경
+    if (mainImageIndex) {
+      const isMainImage = targetImages.some(
+        (el, index) => el.id === idToDelete && index === mainImageIndex
+      )
+      const resetMainImage = targetImages.some(
+        (el, index) => el.id === idToDelete && index < mainImageIndex
+      )
+    }
+    console.log(targetImages)
+    setTargetImages((prevImage) =>
+      prevImage.filter((el) => el.id !== idToDelete)
+    )
+    setImagePreview((image) => image.filter((el) => el.id != idToDelete))
+    console.log(targetImages)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    // 폼 데이터 유효성 검사 (클라이언트 측)
     if (!form.title || !form.productCategory || !form.price || !form.content) {
       alert("모든 필드를 입력해주세요.")
       return
@@ -104,23 +112,34 @@ const PostForm: React.FC<PostFormProps> = ({
       alert("가격은 숫자로 입력해주세요.")
       return
     }
-    if (imageUrls.length === 0) {
+    if (setTargetImages.length === 0) {
       alert("사진을 최소 한 장 등록해주세요.")
       return
     }
-
-    const payload = {
-      title: form.title,
-      productCategory: form.productCategory,
-      price: Number(form.price),
-      content: form.content,
-      imageUrls: imageUrls,
-      mainImageIndex: mainImageIndex,
+    try {
+      const payload: PostCreatePayload = {
+        title: form.title,
+        productCategory: form.productCategory,
+        price: Number(form.price),
+        content: form.content,
+        imageInfo: targetImages
+          .filter((img) => img.savedName && img.originalName)
+          .map<ImageCreatePayload>((info, idx) => ({
+            savedName: info.savedName as string,
+            originalName: info.originalName as string,
+            mainImage: mainImageIndex === idx,
+          })),
+      }
+      console.log(payload)
+      const response = await onSubmit(payload)
+      console.log(response)
+      onSubmitSuccess()
+    } catch (error) {
+      console.error("전송 실패", error)
+      alert("전송실패")
+      onSubmitFailure()
     }
-
-    onSubmit(payload)
   }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center gap-4">
@@ -157,14 +176,11 @@ const PostForm: React.FC<PostFormProps> = ({
                   className="hidden"
                 />
                 {label}{" "}
-                {/* 사용자에게 보이는 텍스트는 label (예: "디지털 기기") */}
               </label>
             )
           )}
         </div>
       </div>
-
-      {/* 가격 */}
       <div className="flex items-center gap-4">
         <label className="w-24 font-semibold">가격</label>
         <div className="flex items-center gap-2 flex-1">
@@ -179,8 +195,6 @@ const PostForm: React.FC<PostFormProps> = ({
           <span className="text-sm">원</span>
         </div>
       </div>
-
-      {/* 내용 */}
       <div className="flex items-center gap-4">
         <label className="w-24 font-semibold">내용</label>
         <textarea
@@ -192,14 +206,22 @@ const PostForm: React.FC<PostFormProps> = ({
           required
         />
       </div>
-
-      {/* 이미지 등록 + 대표 설정 */}
       <div>
         <label className="block font-semibold mb-2">사진 등록 (최대 5장)</label>
         <div className="flex gap-3 flex-wrap">
-          {imageUrls.map((url, idx) => (
+          <label htmlFor="chat-file-upload">업로드 +</label>
+          {/* 사진등록 */}
+          <input
+            type="file"
+            id="chat-file-upload"
+            multiple
+            accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+          {imagePreview.map((el, idx) => (
             <div
-              key={idx}
+              key={el.id}
               onClick={() => setMainImageIndex(idx)}
               className={`relative w-24 h-24 border rounded overflow-hidden cursor-pointer ${
                 mainImageIndex === idx
@@ -208,7 +230,7 @@ const PostForm: React.FC<PostFormProps> = ({
               }`}
             >
               <img
-                src={url}
+                src={el.url}
                 alt={`image-${idx}`}
                 className="w-full h-full object-cover"
               />
@@ -217,34 +239,25 @@ const PostForm: React.FC<PostFormProps> = ({
                   대표
                 </div>
               )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation() // 대표 이미지 설정 방지
+                  handleImageDelete(el.id)
+                }}
+                className="absolute top-1 right-1 bg-white text-gray-700 rounded-full w-5 h-5 text-xs flex items-center justify-center shadow hover:bg-red-500 hover:text-white transition"
+              >
+                ×
+              </button>
             </div>
           ))}
-
-          {imageUrls.length < 5 && (
-            <label
-              htmlFor="image-upload-input"
-              className="w-24 h-24 border rounded flex items-center justify-center bg-gray-100 text-gray-400 cursor-pointer"
-            >
-              <input
-                type="file"
-                id="image-upload-input"
-                multiple
-                accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-              />
-              <Plus className="w-6 h-6" />
-            </label>
-          )}
         </div>
       </div>
-
-      {/* 저장 버튼 */}
       <button
         type="submit"
         className="w-full py-3 bg-green-800 text-white text-lg font-semibold rounded-lg hover:bg-green-900 transition-colors mt-8" // mt-8로 위쪽 여백 추가
       >
-        {isEditing ? "수정 완료" : "저장"} {/* 버튼 텍스트 변경 */}
+        저장
       </button>
     </form>
   )

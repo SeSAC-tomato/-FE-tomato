@@ -5,6 +5,7 @@ import LikeButton from "../button/LikeButton";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { formatDate } from "@/utils/domain/label";
+import { BASE_URL } from "@/utils/domain/label";
 
 interface CartPostCardProps {
   post: CartPost;
@@ -13,6 +14,8 @@ interface CartPostCardProps {
 
 export default function CartPostCard({ post, onUnlike }: CartPostCardProps) {
   // 하트는 항상 채워진 상태
+  console.log("이미지 URL:", `${BASE_URL}/api/v1/post/images/${post.img}`);
+
   return (
     <div className="w-[235px] h-[333px] mx-[6px] my-2 flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow flex flex-col justify-start p-2">
       <Link
@@ -24,9 +27,9 @@ export default function CartPostCard({ post, onUnlike }: CartPostCardProps) {
           {post.img ? (
             <img
               src={
-                post.img?.startsWith("http")
-                  ? post.img
-                  : `http://localhost:8080${post.img}`
+                post.img.startsWith("/api/")
+                  ? `${BASE_URL}${post.img}`
+                  : `${BASE_URL}/api/v1/post/images/${post.img}`
               }
               alt={post.title}
               className="w-full h-full object-cover"

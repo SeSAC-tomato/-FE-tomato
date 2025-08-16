@@ -58,7 +58,7 @@ export type ImagePreview = {
 export type ImageRegisterInfo = {
   id: string
   savedName?: string
-  file: File
+  file?: File
   originalName?: string
   url: string
 }
@@ -79,20 +79,15 @@ export type PostCreatePayload = {
   imageInfo: ImageCreatePayload[]
 }
 
-export type ImageDisplayInfo = {
-  id?: number
-  savedName: string
-  origialnalName?: string
-  mainImage: boolean
-  url: string
-}
-
+//post 수정시 받아오는 원본 이미지
 export type NewImageDisplayInfo = {
   id: number
   savedName: string
+  originalName: string
   mainImage?: boolean
 }
 
+//post 수정시 이미지에 사용할 공통 객체
 export type ImageDisplayInfoMixed = {
   id: string
   url: string
@@ -100,6 +95,14 @@ export type ImageDisplayInfoMixed = {
   file?: File //new, 서버로 보낼 원본객체
   savedName?: string //exsting인 경우 서버에서 가져온 경로
   originalName?: string //new인 경우에 원본파일 이름
+}
+
+export type ImageDisplayInfo = {
+  id?: number
+  savedName: string
+  origialnalName?: string
+  mainImage: boolean
+  url: string
 }
 
 export type PostPageResponseData = {

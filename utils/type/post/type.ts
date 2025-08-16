@@ -1,7 +1,5 @@
 import {
-  FormSubmitData,
   PostCreatePayload,
-  PostFormData,
   PostResponse,
   ProductCategory,
 } from "@/utils/domain/label"
@@ -64,5 +62,10 @@ export type PostFormProps = {
 
 export type PatchFormProps = {
   postId: number
-  onSubmit: (data: FormSubmitData) => Promise<PostResponse | null>
+  onSubmit: (
+    postId: number,
+    data: PostCreatePayload
+  ) => Promise<PostResponse | null>
+  onSubmitSuccess: () => void
+  onSubmitFailure: () => void
 }

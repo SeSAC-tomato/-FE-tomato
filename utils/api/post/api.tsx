@@ -9,15 +9,6 @@ import api from "../axios"
 import { CommonResponse } from "@/utils/type/common/type"
 import axios, { AxiosError } from "axios"
 
-export const createOrUpdatePost = async (
-  payload: PostCreatePayload
-): Promise<PostResponse | null> => {
-  const response = await api.post("/post", payload)
-  console.log(response.data)
-  alert("등록 완료")
-  return response.data
-}
-
 export const createPost = async (
   payload: PostCreatePayload
 ): Promise<PostResponse | null> => {
@@ -94,9 +85,11 @@ export const deletePost = async (
 
 export const updatePost = async (
   postId: number | undefined,
-  payload: any
+  payload: PostCreatePayload
 ): Promise<PostResponse | null> => {
   const response = await api.put(`post/${postId}`, payload)
+    console.log(response.data)
+  alert("등록 완료")
   return response.data
 }
 

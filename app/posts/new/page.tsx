@@ -9,12 +9,9 @@ import MainHeader from "@/components/header/MainHeader"
 //비로그인 접근 주의
 export default function NewProduct() {
   const router = useRouter()
-  // const [imageUrls, setImageUrls] = useState<string[]>([])
-  // const [imageInfo, setImageInfo] = useState<ImageInfo[]>([])
-  // const [mainImageIndex, setMainImageIndex] = useState<number | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalMessage, setModalMessage] = useState("") // string 타입 유지
-  const [modalCanUse, setModalCanUse] = useState(false) // '사용' 버튼 활성화 여부
+  const [modalMessage, setModalMessage] = useState("")
+  const [modalCanUse, setModalCanUse] = useState(false)
   const [modalOnUseAction, setModalOnUseAction] = useState<(() => void) | null>(
     null
   )
@@ -39,12 +36,10 @@ export default function NewProduct() {
                   setModalOpen(false)
                   router.push(`/posts`)
                 })
-                setModalOpen(true) // 모달 열기
+                setModalOpen(true)
               }}
               onSubmitFailure={() => {
-                setModalMessage(
-                  "게시글 전송에 실패했습니다. 다시 시도해주세요."
-                )
+                setModalMessage("등록에 실패했습니다. 다시 시도해주세요.")
                 setModalCanUse(false)
                 setModalOnUseAction(null)
                 setModalOpen(true)

@@ -1,6 +1,4 @@
-import Button from "../button/Button"
 import LogoIcon from "../icons/LogoIcon"
-import SearchIcon from "../icons/SearchIcon"
 import userImage from "../../public/Vector.png"
 import Image from "next/image"
 

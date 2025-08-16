@@ -1,6 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
-import { v4 as uuidv4 } from "uuid"
+import { useState } from "react"
 import { updatePost } from "@/utils/api/post/api"
 import MainHeader from "@/components/header/MainHeader"
 import { useParams, useRouter } from "next/navigation"

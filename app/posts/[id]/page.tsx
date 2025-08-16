@@ -1,12 +1,10 @@
 "use client"
 import MainHeader from "@/components/header/MainHeader"
-import { useActionState, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import {
-  BASE_URL,
   categoryMap,
-  ImageDisplayInfo,
   PostResponse,
   PostStatus,
   postStatusLabelMap,
@@ -39,7 +37,6 @@ export default function Post() {
   const params = useParams()
   const postId = typeof params?.id === "string" ? Number(params.id) : undefined
   const [post, setPost] = useState<PostResponse | null>(null)
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isCurrentLiked, setIsCurrentLiked] = useState<boolean | undefined>(
     false
@@ -102,19 +99,7 @@ export default function Post() {
     setModalOpen(false)
     setModalType(null)
   }
-
-  const handleConfirm = () => {
-    if (!writer) return
-    if (modalType === "edit") {
-      setResultMessage("수정이 완료되었습니다.")
-    } else if (modalType === "delete") {
-      setResultMessage("삭제가 완료되었습니다.")
-    }
-
-    closeModal()
-    setResultModalOpen(true)
-  }
-
+  
   const closeResultModal = () => {
     setResultModalOpen(false)
   }

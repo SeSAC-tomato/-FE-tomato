@@ -21,6 +21,7 @@ const PatchForm: React.FC<PatchFormProps> = ({
   onSubmitSuccess,
   onSubmitFailure,
 }) => {
+  const [loadedImages, setLoadedImages] = useState<ImageDisplayInfoMixed[]>([]) //기존 이미지
   const [payloadImages, setPayLoadImages] = useState<ImageRegisterInfo[]>([]) //전체 이미지
   const [imagePreview, setImagePreview] = useState<ImagePreview[]>([]) //프리뷰이미지
   const [mainImageIndex, setMainImageIndex] = useState<number | null>(null) //메인 이미지

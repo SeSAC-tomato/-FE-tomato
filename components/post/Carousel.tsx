@@ -1,6 +1,5 @@
 import {
   BASE_URL,
-  ImageDisplayInfo,
   NewImageDisplayInfo,
 } from "@/utils/domain/label"
 import { CarouselProps } from "@/utils/type/post/type"

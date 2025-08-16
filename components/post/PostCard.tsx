@@ -3,8 +3,6 @@ import { useState } from "react"
 import LikeButton from "../button/LikeButton"
 import {
   BASE_URL,
-  ImageDisplayInfo,
-  PostResponse,
   PostResponseWithImage,
 } from "@/utils/domain/label"
 import Link from "next/link"

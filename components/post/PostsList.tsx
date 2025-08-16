@@ -1,5 +1,5 @@
 // import mockPosts from "@/utils/mock/mockPosts"
-import { PostResponse, PostResponseWithImage } from "@/utils/domain/label"
+import { PostResponseWithImage } from "@/utils/domain/label"
 import PostCard from "./PostCard"
 
 interface PostsListProps {

@@ -1,4 +1,8 @@
-import { ProductCategory } from "@/utils/domain/label"
+import {
+  PostCreatePayload,
+  PostResponse,
+  ProductCategory,
+} from "@/utils/domain/label"
 
 export type ButtonProps = {
   children: React.ReactNode
@@ -7,10 +11,8 @@ export type ButtonProps = {
 }
 
 export interface LikeButtonProps {
-  isCurrentLiked: boolean
-  isLiked: boolean | undefined
+  isCurrentLiked: boolean | undefined
   handleLike: () => void
-  postId : number | undefined
 }
 
 export type PageListProps = {
@@ -45,4 +47,25 @@ export type PostHeadersProps = {
   region?: string
   setRegion?: (v: string) => void
   dongs: string[]
+}
+
+export type CarouselProps = {
+  postId: number
+  post: PostResponse
+}
+
+export type PostFormProps = {
+  onSubmit: (data: PostCreatePayload) => Promise<PostResponse | null>
+  onSubmitSuccess: () => void
+  onSubmitFailure: () => void
+}
+
+export type PatchFormProps = {
+  postId: number
+  onSubmit: (
+    postId: number,
+    data: PostCreatePayload
+  ) => Promise<PostResponse | null>
+  onSubmitSuccess: () => void
+  onSubmitFailure: () => void
 }

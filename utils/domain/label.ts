@@ -5,13 +5,13 @@ export type ProductCategory =
   | "HOME_APPLIANCE"
   | "FURNITURE"
   | "KITCHEN"
-  | "KIDS";
+  | "KIDS"
 
 export const postStatusLabelMap: Record<PostStatus, string> = {
   SELLING: "판매중",
   BOOKED: "예약중",
   END: "거래완료",
-};
+}
 
 export type PostResponse = {
   id: number
@@ -20,7 +20,7 @@ export type PostResponse = {
   content: string
   postStatus: PostStatus
   productCategory: ProductCategory
-  images?: ImageDisplayInfo[]
+  images?: NewImageDisplayInfo[]
   isLiked?: boolean
   region: string
   createdAt: string
@@ -45,6 +45,56 @@ export type PostResponseWithImage = {
   email: string
   userId: number
   nickname: string
+  numberOfLikes: number
+}
+
+//화면 프리뷰
+export type ImagePreview = {
+  id: string
+  url: string
+}
+
+//이미지 전체배열
+export type ImageRegisterInfo = {
+  id: string
+  savedName?: string
+  file?: File
+  originalName?: string
+  url: string
+}
+
+// 이미지 DB연동 payload, 백엔드 DTO에 맞춤(id는 string)
+export type ImageCreatePayload = {
+  savedName: string
+  originalName: string
+  mainImage: boolean
+}
+
+//데이터와 이미지를 합해 Post를 생성하기 위한 Payload
+export type PostCreatePayload = {
+  title: string
+  productCategory: string
+  price: number
+  content: string
+  imageInfo: ImageCreatePayload[]
+}
+
+//post 수정시 받아오는 원본 이미지
+export type NewImageDisplayInfo = {
+  id: number
+  savedName: string
+  originalName: string
+  mainImage?: boolean
+}
+
+//post 수정시 이미지에 사용할 공통 객체
+export type ImageDisplayInfoMixed = {
+  id: string
+  url: string
+  type?: "existing" | "new"
+  file?: File //new, 서버로 보낼 원본객체
+  savedName?: string //exsting인 경우 서버에서 가져온 경로
+  originalName?: string //new인 경우에 원본파일 이름
 }
 
 export type ImageDisplayInfo = {
@@ -53,12 +103,6 @@ export type ImageDisplayInfo = {
   origialnalName?: string
   mainImage: boolean
   url: string
-}
-
-export type NewImageDisplayInfo = {
-  id: number
-  savedName: string
-  mainImage?: boolean
 }
 
 export type PostPageResponseData = {
@@ -70,13 +114,13 @@ export type PostPageResponseData = {
 }
 
 export type PostSearchFilter = {
-  searchKeyword?: string;
-  productCategory?: ProductCategory;
-  selling?: boolean;
-  region?: string;
-  minPrice?: number;
-  maxPrice?: number;
-};
+  searchKeyword?: string
+  productCategory?: ProductCategory
+  selling?: boolean
+  region?: string
+  minPrice?: number
+  maxPrice?: number
+}
 
 export const categoryLabelMap: Record<string, ProductCategory> = {
   "디지털 기기": "DIGITAL_DEVICE",
@@ -84,54 +128,51 @@ export const categoryLabelMap: Record<string, ProductCategory> = {
   "가구/인테리어": "FURNITURE",
   "생활/주방": "KITCHEN",
   유아동: "KIDS",
-} as const;
+} as const
 
 export const categoryMap = Object.fromEntries(
   Object.entries(categoryLabelMap).map(([label, value]) => [value, label])
-) as Record<ProductCategory, string>;
+) as Record<ProductCategory, string>
 
 export const categoryEnumToLabelMap: Record<ProductCategory, string> =
   Object.entries(categoryLabelMap).reduce((acc, [label, enumValue]) => {
-    acc[enumValue] = label;
-    return acc;
-  }, {} as Record<ProductCategory, string>);
+    acc[enumValue] = label
+    return acc
+  }, {} as Record<ProductCategory, string>)
 
 export type LikeResponse = {
-  id: number;
-  postId: number;
-  userId: number;
-  isLiked: boolean;
-  createdAt: string;
-};
+  id: number
+  postId: number
+  userId: number
+  isLiked: boolean
+  createdAt: string
+}
 
 export function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
+  const date = new Date(dateString)
+  const now = new Date()
   const diffInMinutes = Math.floor(
     (now.getTime() - date.getTime()) / (1000 * 60)
-  );
-  if (diffInMinutes < 1) return "방금 전";
-  if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
-  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`;
-  return `${Math.floor(diffInMinutes / 1440)}일 전`;
+  )
+  if (diffInMinutes < 1) return "방금 전"
+  if (diffInMinutes < 60) return `${diffInMinutes}분 전`
+  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`
+  return `${Math.floor(diffInMinutes / 1440)}일 전`
 }
 
-export type ImageCreatePayload = {
-  // PostCreatePayload와 혼동되지 않도록 이름 변경 제안
-  savedName: string
-  originalName: string
-  mainImage: boolean // 백엔드 DTO의 Boolean mainImage에 맞춰 boolean 타입으로
-}
-
-export type PostCreatePayload = {
+export type PostFormData = {
   title: string
-  productCategory: string
+  productCategory: ProductCategory | ""
+  price: string
+  content: string
+  images?: string[]
+  mainImageIndex?: number | null
+}
+
+export type FormSubmitData = {
+  title: string
+  productCategory: ProductCategory
   price: number
   content: string
-  imageInfo: ImageCreatePayload[]
-}
-
-export type ImageInfo = {
-  savedName: string // 서버에 저장된 파일명 (또는 URL)
-  originalName: string // 사용자가 업로드한 파일의 원본 이름 (프론트에서 관리)
+  images?: ImageCreatePayload[]
 }

@@ -59,7 +59,6 @@ export default function Page() {
         console.log("@#$@#$@#$@#$@#$@#$")
 
         const responseData = await getPosts(page, pageSize, searchFilter)
-        console.log("123123123123123")
 
         if (responseData.success && responseData.data) {
           const { posts, totalPages } = responseData.data

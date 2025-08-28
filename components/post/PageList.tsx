@@ -1,6 +1,5 @@
 "use client"
 import { PageListProps } from "@/utils/type/post/type"
-import { v4 as uuidv4 } from "uuid"
 export default function PageList({
   currentPage,
   totalPages,

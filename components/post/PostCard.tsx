@@ -3,8 +3,6 @@ import { useState } from "react"
 import LikeButton from "../button/LikeButton"
 import {
   BASE_URL,
-  ImageDisplayInfo,
-  PostResponse,
   PostResponseWithImage,
 } from "@/utils/domain/label"
 import Link from "next/link"
@@ -22,10 +20,10 @@ export default function PostCard({ post }: PostCardProps) {
     title,
     price,
     region,
-    productCategory,
     updatedAt,
     mainImage,
     isLiked,
+    numberOfLikes,
   } = post
   const [currentIsLiked, setCurrentIsLiked] = useState<boolean>(isLiked)
   const timeAgo = formatDistanceToNow(parseISO(updatedAt), {
@@ -78,12 +76,25 @@ export default function PostCard({ post }: PostCardProps) {
             <div className="text-[#e53935] font-extrabold text-xl">
               {price.toLocaleString()}원
             </div>
-            <div className="text-gray-500 text-sm truncate">
-              {region ?? "구로동"} · {timeAgo}
+            <div className="flex flex-row justify-baseline items-center mb-1">
+              <div className="text-gray-500 text-sm truncate mr-2">
+                {region ?? "구로동"}
+              </div>
+              <div className="text-gray-500 text-sm truncate  mr-2">
+                {timeAgo}
+              </div>
+              <div className="flex flex-row justify-baseline items-center">
+                <div className="text-gray-700 bold text-sm truncate  mr-1">
+                  찜
+                </div>
+                <div className="text-red-500 text-sm truncate  mr-2">
+                  {numberOfLikes}
+                </div>
+              </div>
             </div>
           </div>
         </Link>
-        <LikeButton isLiked={currentIsLiked} handleLike={handleLike} id={id} />
+        <LikeButton isCurrentLiked={currentIsLiked} handleLike={handleLike} />
       </div>
     </>
   )
